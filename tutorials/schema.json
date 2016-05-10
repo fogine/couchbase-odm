@@ -1,0 +1,37 @@
+{
+     "1.gettingStarted": {
+         "title": "Getting Started"
+     },
+     "2.schemaDefinitionGuide": {
+         "title": "Model schema definition"
+     },
+     "3.quering": {
+         "title": "Quering",
+         "children": {
+             "3a.documentIDLookups": {
+                 "title": "Document ID lookup"
+             },
+             "3b.refDocIndexes": {
+                 "title": "RefDoc Indexes"
+             },
+             "3c.views": {
+                 "title": "Views (next minor release)"
+             },
+             "3d.n1ql": {
+                 "title": "N1QL (on Roadmap)"
+             }
+         }
+     },
+     "4.instances": {
+         "title": "Instances"
+     },
+     "5.hooks": {
+         "title": "Hooks"
+     },
+     "6.errors": {
+         "title": "Errors"
+     },
+     "7.customizingDocumentsKey": {
+         "title": "Customizing Document's Key"
+     }
+ }
