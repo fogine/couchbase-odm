@@ -4,7 +4,7 @@ CouchbaseODM is a [promise-based](http://bluebirdjs.com/docs/getting-started.htm
 
 Installation
 -------------------
-`npm install kouchbase-odm@rc.1e`
+`npm install kouchbase-odm@rc.1f`
 
 **Note:** CouchbaseODM is in "release candidate" stage. Please, fill a bug report at [issues](https://github.com/fogine/couchbase-odm/issues) page if you find any.  
 Also, feedback and suggestions are more than welcome.
