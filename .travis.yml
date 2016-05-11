@@ -1,0 +1,9 @@
+language: node_js
+node_js:
+- stable
+
+script: bash ./deploy.sh
+env:
+  global:
+  - ENCRYPTION_LABEL: "18374567a143"
+  - COMMIT_AUTHOR_EMAIL: "fogine@opmbx.org"
