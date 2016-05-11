@@ -8,5 +8,5 @@ node_js:
 script: bash ./deploy.sh
 env:
   global:
-  - ENCRYPTION_LABEL: "18374567a143"
+  - ENCRYPTION_LABEL: 18374567a143
   - COMMIT_AUTHOR_EMAIL: "fogine@opmbx.org"
