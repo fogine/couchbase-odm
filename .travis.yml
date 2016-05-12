@@ -5,7 +5,7 @@ node_js:
 # nodejs version 0.6 is not supported by official node couchbase sdk
 # nodejs 0.8 is also not supported by this package
 
-script: ./deploy.sh
+script: bash ./deploy.sh
 env:
   global:
   - ENCRYPTION_LABEL: 18374567a143

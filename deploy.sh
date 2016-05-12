@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e # Exit with nonzero exit code if anything fails
 
 SOURCE_BRANCH="master"
@@ -24,12 +24,7 @@ function doCompile {
     cd $bckpwd
 
     mv $docpath/** . && rmdir $docpath && rmdir $docdir
-    cd ..
-
-    #remove everything except the docs and the .git folder
-    shopt -s extglob                # enables extglob
-    rm -rf !(docs|.git|..|.)
-    shopt -u extglob                # disables extglob
+    cd .. #set pwd to the original value
 }
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
@@ -56,6 +51,11 @@ rm -rf docs/**/* || exit 0
 
 # Run our compile script
 doCompile
+
+#remove everything except the docs and the .git folder
+shopt -s extglob                # enables extglob
+rm -rf !(docs|.git|..|.)
+shopt -u extglob                # disables extglob
 
 # Now let's go have some fun with the cloned repo
 cd docs
