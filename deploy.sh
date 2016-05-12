@@ -5,9 +5,25 @@ SOURCE_BRANCH="master"
 TARGET_BRANCH="gh-pages"
 
 function doCompile {
-  npm run-script generate-docs
-  docpath=$(node -e "var json = JSON.parse(process.argv[1]); console.log(json.name + '/' + json.version);" "$(< ../package.json)")
-  mv $docpath/** . && mv $docpath/**/.* . && rmdir $docpath
+
+    npm run-script generate-docs
+    cd docs
+
+    docdir=$(node -e "var json = JSON.parse(process.argv[1]); console.log(json.name);" "$(< ../package.json)")
+    docversion=$(node -e "var json = JSON.parse(process.argv[1]); console.log(json.version);" "$(< ../package.json)")
+    docpath=$docdir/$docversion
+
+    if [ -z "$docdir" ] || [ -z "$docversion" ] ; then
+        echo "Error getting docs path"
+        exit 0
+    fi
+
+    bckpwd=$PWD
+    cd $docpath
+    cd $bckpwd
+
+    mv $docpath/** . && rmdir $docpath && rmdir $docdir
+    cd ..
 }
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
