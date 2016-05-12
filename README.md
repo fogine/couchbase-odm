@@ -21,9 +21,9 @@ Features
 
 Resources
 -------------------
-* [Getting Started]()
-* [Documentation]()
-* [Public API Reference]()
+* [Getting Started](http://fogine.github.io/couchbase-odm/tutorial-1.gettingStarted.html)
+* [Documentation](http://fogine.github.io/couchbase-odm/tutorial-1.gettingStarted.html)
+* [Public API Reference](http://fogine.github.io/couchbase-odm/CouchbaseODM.html)
 
 Tests
 -------------------
