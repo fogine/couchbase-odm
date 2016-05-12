@@ -6,6 +6,8 @@ TARGET_BRANCH="gh-pages"
 
 function doCompile {
   npm run-script generate-docs
+  docpath=$(node -e "var json = JSON.parse(process.argv[1]); console.log(json.name + '/' + json.version);" "$(< ../package.json)")
+  mv $docpath/** . && mv $docpath/**/.* . && rmdir $docpath
 }
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
