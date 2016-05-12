@@ -1,2 +1,5 @@
 tutorials/
 tests/
+.travis.yml
+deploy.sh
+deploy_key.enc
