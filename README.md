@@ -1,6 +1,6 @@
 # CouchbaseODM
 
-[![Build Status](https://travis-ci.org/fogine/couchbase-odm.svg?branch=master)](https://travis-ci.org/fogine/couchbase-odm)  
+[![Build Status](https://travis-ci.org/fogine/couchbase-odm.svg?branch=master)](https://travis-ci.org/fogine/couchbase-odm) [![Test Coverage](https://codeclimate.com/github/fogine/couchbase-odm/badges/coverage.svg)](https://codeclimate.com/github/fogine/couchbase-odm/coverage)  
 
 CouchbaseODM is a [promise-based](http://bluebirdjs.com/docs/getting-started.html) Node.js ODM for [Couchbase](http://www.couchbase.com/nosql-databases/couchbase-server). It strives for clean, easy-to-use API for your business logic, offering (reasonable) customizability.
 
