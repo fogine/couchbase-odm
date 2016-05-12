@@ -1,0 +1,31 @@
+{
+  "name": "kouchbase-odm",
+  "version": "1.0.0-rc.1f",
+  "author": "fogine <fogine@opmbx.org",
+  "keywords": ["couchbase", "odm", "couchbase-odm", "promise"],
+  "description": "Couchbase Promise based ODM",
+  "private": false,
+  "scripts": {
+    "unit-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/unit/**/*.js'",
+    "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json -u ./tutorials --verbose"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bluebird": "3.3.*",
+    "couchbase": "^2.0.8",
+    "debug": "2.2.*",
+    "lodash": "^4.0.0",
+    "moment": "^2.13.0",
+    "node-uuid": "^1.4.7"
+  },
+  "devDependencies": {
+    "chai": "^3.5.0",
+    "chai-as-promised": "^5.3.0",
+    "jsdoc": "^3.4.0",
+    "@fogine/minami": "1.x",
+    "mocha": "^2.4.5",
+    "sinon": "^1.17.3",
+    "sinon-as-promised": "^4.0.0",
+    "sinon-chai": "^2.8.0"
+  }
+}

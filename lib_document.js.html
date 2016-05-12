@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>lib/document.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Tutorials</h3><ul><li><a href="tutorial-1.gettingStarted.html">Getting Started</a></li><li><a href="tutorial-2.schemaDefinitionGuide.html">Model schema definition</a></li><li><a href="tutorial-3.quering.html">Quering</a></li><li><a href="tutorial-4.instances.html">Instances</a></li><li><a href="tutorial-5.hooks.html">Hooks</a></li><li><a href="tutorial-6.errors.html">Errors</a></li><li><a href="tutorial-7.customizingDocumentsKey.html">Customizing Document's Key</a></li></ul><h3>Classes</h3><ul><li><a href="CouchbaseODM.html">CouchbaseODM</a><ul class='methods'><li data-type='method'><a href="CouchbaseODM.html#define">define</a></li></ul></li><li><a href="Document.html">Document</a><ul class='methods'><li data-type='method'><a href="Document.html#getCAS">getCAS</a></li><li data-type='method'><a href="Document.html#getData">getData</a></li><li data-type='method'><a href="Document.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Document.html#getKey">getKey</a></li><li data-type='method'><a href="Document.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Document.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Document.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Document.html#insert">insert</a></li><li data-type='method'><a href="Document.html#remove">remove</a></li><li data-type='method'><a href="Document.html#replace">replace</a></li><li data-type='method'><a href="Document.html#setCAS">setCAS</a></li><li data-type='method'><a href="Document.html#setData">setData</a></li><li data-type='method'><a href="Document.html#setKey">setKey</a></li><li data-type='method'><a href="Document.html#touch">touch</a></li></ul></li><li><a href="DocumentError.html">DocumentError</a></li><li><a href="Hook.html">Hook</a><ul class='methods'><li data-type='method'><a href="Hook.html#addHook">addHook</a></li><li data-type='method'><a href="Hook.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Hook.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Hook.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Hook.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Hook.html#afterGet">afterGet</a></li><li data-type='method'><a href="Hook.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Hook.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Hook.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Hook.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Hook.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Hook.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Hook.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Hook.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#removeHook">removeHook</a></li><li data-type='method'><a href="Hook.html#runHooks">runHooks</a></li></ul></li><li><a href="HookError.html">HookError</a></li><li><a href="IncrementalKey.html">IncrementalKey</a><ul class='methods'><li data-type='method'><a href="IncrementalKey.html#clone">clone</a></li><li data-type='method'><a href="IncrementalKey.html#generate">generate</a></li><li data-type='method'><a href="IncrementalKey.html#getId">getId</a></li><li data-type='method'><a href="IncrementalKey.html#getOptions">getOptions</a></li><li data-type='method'><a href="IncrementalKey.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="IncrementalKey.html#parse">parse</a></li><li data-type='method'><a href="IncrementalKey.html#setId">setId</a></li><li data-type='method'><a href="IncrementalKey.html#toString">toString</a></li></ul></li><li><a href="Instance.html">Instance</a><ul class='methods'><li data-type='method'><a href="Instance.html#clone">clone</a></li><li data-type='method'><a href="Instance.html#cloneData">cloneData</a></li><li data-type='method'><a href="Instance.html#destroy">destroy</a></li><li data-type='method'><a href="Instance.html#getCAS">getCAS</a></li><li data-type='method'><a href="Instance.html#getData">getData</a></li><li data-type='method'><a href="Instance.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Instance.html#getKey">getKey</a></li><li data-type='method'><a href="Instance.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Instance.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Instance.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Instance.html#insert">insert</a></li><li data-type='method'><a href="Instance.html#refresh">refresh</a></li><li data-type='method'><a href="Instance.html#remove">remove</a></li><li data-type='method'><a href="Instance.html#replace">replace</a></li><li data-type='method'><a href="Instance.html#sanitize">sanitize</a></li><li data-type='method'><a href="Instance.html#save">save</a></li><li data-type='method'><a href="Instance.html#setCAS">setCAS</a></li><li data-type='method'><a href="Instance.html#setData">setData</a></li><li data-type='method'><a href="Instance.html#setKey">setKey</a></li><li data-type='method'><a href="Instance.html#toJSON">toJSON</a></li><li data-type='method'><a href="Instance.html#touch">touch</a></li><li data-type='method'><a href="Instance.html#update">update</a></li></ul></li><li><a href="InstanceError.html">InstanceError</a></li><li><a href="Key.html">Key</a><ul class='methods'><li data-type='method'><a href="Key.html#generate">generate</a></li><li data-type='method'><a href="Key.html#getId">getId</a></li><li data-type='method'><a href="Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="Key.html#parse">parse</a></li><li data-type='method'><a href="Key.html#setId">setId</a></li><li data-type='method'><a href="Key.html#toString">toString</a></li></ul></li><li><a href="KeyError.html">KeyError</a></li><li><a href="Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Model.html#addHook">addHook</a></li><li data-type='method'><a href="Model.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Model.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Model.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Model.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Model.html#afterGet">afterGet</a></li><li data-type='method'><a href="Model.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Model.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Model.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Model.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Model.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Model.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Model.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Model.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Model.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Model.html#build">build</a></li><li data-type='method'><a href="Model.html#buildKey">buildKey</a></li><li data-type='method'><a href="Model.html#create">create</a></li><li data-type='method'><a href="Model.html#getById">getById</a></li><li data-type='method'><a href="Model.html#getMulti">getMulti</a></li><li data-type='method'><a href="Model.html#remove">remove</a></li><li data-type='method'><a href="Model.html#removeHook">removeHook</a></li><li data-type='method'><a href="Model.html#runHooks">runHooks</a></li><li data-type='method'><a href="Model.html#toString">toString</a></li><li data-type='method'><a href="Model.html#touch">touch</a></li><li data-type='method'><a href="Model.html#unlock">unlock</a></li></ul></li><li><a href="ModelError.html">ModelError</a></li><li><a href="ModelManager.html">ModelManager</a><ul class='methods'><li data-type='method'><a href="ModelManager.html#add">add</a></li><li data-type='method'><a href="ModelManager.html#get">get</a></li><li data-type='method'><a href="ModelManager.html#getAll">getAll</a></li></ul></li><li><a href="StorageAdapter.html">StorageAdapter</a><ul class='methods'><li data-type='method'><a href="StorageAdapter.html#append">append</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsert">bulkInsert</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsertSync">bulkInsertSync</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemove">bulkRemove</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemoveSync">bulkRemoveSync</a></li><li data-type='method'><a href="StorageAdapter.html#counter">counter</a></li><li data-type='method'><a href="StorageAdapter.html#disconnect">disconnect</a></li><li data-type='method'><a href="StorageAdapter.html#enableN1ql">enableN1ql</a></li><li data-type='method'><a href="StorageAdapter.html#get">get</a></li><li data-type='method'><a href="StorageAdapter.html#getAndLock">getAndLock</a></li><li data-type='method'><a href="StorageAdapter.html#getAndTouch">getAndTouch</a></li><li data-type='method'><a href="StorageAdapter.html#getManager">getManager</a></li><li data-type='method'><a href="StorageAdapter.html#getReplica">getReplica</a></li><li data-type='method'><a href="StorageAdapter.html#insert">insert</a></li><li data-type='method'><a href="StorageAdapter.html#prepend">prepend</a></li><li data-type='method'><a href="StorageAdapter.html#query">query</a></li><li data-type='method'><a href="StorageAdapter.html#remove">remove</a></li><li data-type='method'><a href="StorageAdapter.html#replace">replace</a></li><li data-type='method'><a href="StorageAdapter.html#touch">touch</a></li><li data-type='method'><a href="StorageAdapter.html#unlock">unlock</a></li><li data-type='method'><a href="StorageAdapter.html#upsert">upsert</a></li></ul></li><li><a href="StorageError.html">StorageError</a></li><li><a href="StorageMultiError.html">StorageMultiError</a></li><li><a href="UUID4Key.html">UUID4Key</a><ul class='methods'><li data-type='method'><a href="UUID4Key.html#clone">clone</a></li><li data-type='method'><a href="UUID4Key.html#generate">generate</a></li><li data-type='method'><a href="UUID4Key.html#getId">getId</a></li><li data-type='method'><a href="UUID4Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="UUID4Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="UUID4Key.html#parse">parse</a></li><li data-type='method'><a href="UUID4Key.html#setId">setId</a></li><li data-type='method'><a href="UUID4Key.html#toString">toString</a></li></ul></li><li><a href="ValidationError.html">ValidationError</a></li></ul><h3>Modules</h3><ul><li><a href="Sanitizer_sanitizeData.html">Sanitizer:sanitizeData</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lib/document.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+var _        = require('lodash');
+var Promise  = require('bluebird');
+
+module.exports = Document;
+
+var Instance = require("./instance.js");
+var Key            = require("./key/key.js");
+var StorageAdapter = require("./storageAdapter");
+var DocumentError  = require("./error/documentError.js");
+var StorageError   = require("./error/storageError.js");
+
+/**
+ * Document
+ *
+ * @constructor
+ * @param {Object}            [options]
+ * @param {string|Key}        [options.key] - `optional` may be set later
+ * @param {mixed}             [options.data]
+ * @param {CAS}               [options.cas] - `optional`
+ * @param {StorageAdapter}    [options.storage]
+ * @param {boolean}           [options.isNewRecord] - default=`true`
+ * @param {Document|Instance} [options.reference] - `optional`
+ */
+function Document(options) {
+    var defaults = {
+        key: null,
+        data: null,
+        cas: undefined,//should be of type Bucket.CAS
+        isNewRecord: true,
+        reference: this//reference to parent decument for refDocs
+    }
+
+    Object.defineProperty(this, 'options', {
+        writable: true,
+        value:  _.assign(defaults, options)
+    });
+
+    Object.defineProperty(this, 'storage', {
+        writable: true,
+        value:  options.storage || null
+    });
+
+    if (!(this.storage instanceof StorageAdapter)) {
+        throw new DocumentError("`storage` must be instance of StorageAdapter");
+    }
+}
+
+/**
+ * getStorageAdapter
+ *
+ * @return {StorageAdapter|null}
+ */
+Document.prototype.getStorageAdapter = function() {
+    return this.storage;
+};
+
+/**
+ * getKey
+ *
+ * @return {Key|string|null}
+ */
+Document.prototype.getKey = function() {
+    return this.options.key;
+};
+
+/**
+ * setKey
+ *
+ * @return {undefined}
+ */
+Document.prototype.setKey = function(key) {
+    if (!(key instanceof Key) &amp;&amp; typeof key != 'string') {
+        throw new DocumentError("key must be string or instance of Key");
+    }
+
+    this.options.key = key;
+};
+
+/**
+ * getData
+ *
+ * @param {string} [property]
+ * @return {mixed}
+ */
+Document.prototype.getData = function() {
+    if (arguments.length) {
+        return this.options.data[arguments[0]];
+    }
+    return this.options.data;
+};
+
+/**
+ * setData
+ *
+ * @param {string} [property]
+ * @param {mixed} data
+ * @return {undefined}
+ */
+Document.prototype.setData = function() {
+    if (arguments.length === 2) {
+            this.options.data[arguments[0]] = arguments[1];
+        } else {
+            this.options.data = arguments[0];
+        }
+};
+
+/**
+ * getSerializedData
+ *
+ * @return {Promise&lt;{mixed}>}
+ */
+Document.prototype.getSerializedData = function() {
+
+    return Promise.resolve(this.options.data);
+};
+
+/**
+ * getCAS
+ *
+ * @return {CAS|null}
+ */
+Document.prototype.getCAS = function() {
+    return this.options.cas;
+};
+
+/**
+ * hasCAS
+ *
+ * @return {boolean}
+ */
+Document.prototype.hasCAS = function() {
+    var cas = this.getCAS();
+    return typeof cas === 'string' || (typeof cas === 'object' &amp;&amp; cas !== null);
+};
+
+/**
+ * setCAS
+ *
+ * @param {CAS} cas
+ * @return {undefined}
+ */
+Document.prototype.setCAS = function(cas) {
+    this.options.cas = cas;
+};
+
+/**
+ * getGeneratedKey
+ *
+ * @return {Promise&lt;Key>}
+ */
+Document.prototype.getGeneratedKey = function() {
+    var key = this.options.key;
+    if (key === null || key === undefined || key === '') {
+        return Promise.reject(new DocumentError("Can not perform operation on a document with no `key`"));
+    }
+
+    if (key instanceof Key &amp;&amp; !key.isGenerated()) {
+        return key.generate(this.options.reference);
+        //return key.generate(this.options.reference).call("toString");
+    }
+
+    //key is instance of Key or it's string
+    return Promise.resolve(key);
+};
+
+/**
+ * insert
+ *
+ * @param {Object} options - See StorageAdapter.insert for available options
+ * @return {Promise&lt;Document>}
+ */
+Document.prototype.insert = function(options) {
+    var doc = this;
+    return this.getGeneratedKey().bind({}).then(function(key) {
+            this.key = key;
+            return doc.getSerializedData();
+        }).then(function(data) {
+            return doc.getStorageAdapter().insert(this.key, data, options);
+        }).catch(StorageError, function(err) {
+            err.doc = doc;
+            throw err;
+        });
+};
+
+/**
+ * replace
+ *
+ * @param {Object} options - See StorageAdapter.replace for available options
+ * @return {Promise&lt;Document>}
+ */
+Document.prototype.replace = function(options) {
+    var doc = this;
+    return this.getGeneratedKey().bind({}).then(function(key) {
+            this.key = key;
+            return doc.getSerializedData();
+        }).then(function(data) {
+            var opt = _.assign({}, {cas: doc.getCAS()}, options);
+            return doc.getStorageAdapter().replace(this.key, data, opt);
+        }).catch(StorageError, function(err) {
+            err.doc = doc;
+            throw err;
+        });
+};
+
+/**
+ * remove
+ *
+ * @param {Object} options - See StorageAdapter.remove for available options
+ * @return {Promise&lt;Object>}
+ */
+Document.prototype.remove = function(options) {
+    return this.getGeneratedKey().bind(this).then(function(key) {
+            var opt = _.assign({}, {cas: this.getCAS()}, options);
+            return this.getStorageAdapter().remove(key, opt);
+        }).catch(StorageError, function(err) {
+            err.doc = this;
+            return Promise.reject(err);
+        });
+};
+
+/**
+ * touch
+ *
+ * @param {integer} expiry - time in seconds
+ * @param {Object} options - see {@link StorageAdapter#touch} for available options
+ * @return {Promise&lt;Document>}
+ */
+Document.prototype.touch = function(expiry, options) {
+    return this.getGeneratedKey().bind(this).then(function(key) {
+            var opt = _.assign({}, {cas: this.getCAS()}, options);
+            return this.getStorageAdapter().touch(key, expiry, opt);
+        }).catch(StorageError, function(err) {
+            err.doc = this;
+            throw err;
+        });
+};
+
+/*
+ * inspect
+ *
+ * @private
+ * @return {string}
+ */
+Document.prototype.inspect = function() {
+    var key = this.options &amp;&amp; this.options.key;
+    var cas = key &amp;&amp; this.options.cas;
+    var out = '[object CouchbaseDocument:\n';
+    out += "    key: '" + key + "'\n";
+    out += "    cas: " + cas;
+    out += "]";
+
+    return out;
+};
+
+/**
+ * toString
+ *
+ * @return {string}
+ */
+Document.prototype.toString = Document.prototype.inspect;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 12 2016 11:09:04 GMT+0000 (UTC) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

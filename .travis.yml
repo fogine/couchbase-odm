@@ -1,0 +1,12 @@
+language: node_js
+node_js:
+- "4.2.2"
+
+# nodejs version 0.6 is not supported by official node couchbase sdk
+# nodejs 0.8 is also not supported by this package
+
+script: bash ./deploy.sh
+env:
+  global:
+  - ENCRYPTION_LABEL: 18374567a143
+  - COMMIT_AUTHOR_EMAIL: "fogine@opmbx.org"

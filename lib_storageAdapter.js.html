@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>lib/storageAdapter.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Tutorials</h3><ul><li><a href="tutorial-1.gettingStarted.html">Getting Started</a></li><li><a href="tutorial-2.schemaDefinitionGuide.html">Model schema definition</a></li><li><a href="tutorial-3.quering.html">Quering</a></li><li><a href="tutorial-4.instances.html">Instances</a></li><li><a href="tutorial-5.hooks.html">Hooks</a></li><li><a href="tutorial-6.errors.html">Errors</a></li><li><a href="tutorial-7.customizingDocumentsKey.html">Customizing Document's Key</a></li></ul><h3>Classes</h3><ul><li><a href="CouchbaseODM.html">CouchbaseODM</a><ul class='methods'><li data-type='method'><a href="CouchbaseODM.html#define">define</a></li></ul></li><li><a href="Document.html">Document</a><ul class='methods'><li data-type='method'><a href="Document.html#getCAS">getCAS</a></li><li data-type='method'><a href="Document.html#getData">getData</a></li><li data-type='method'><a href="Document.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Document.html#getKey">getKey</a></li><li data-type='method'><a href="Document.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Document.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Document.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Document.html#insert">insert</a></li><li data-type='method'><a href="Document.html#remove">remove</a></li><li data-type='method'><a href="Document.html#replace">replace</a></li><li data-type='method'><a href="Document.html#setCAS">setCAS</a></li><li data-type='method'><a href="Document.html#setData">setData</a></li><li data-type='method'><a href="Document.html#setKey">setKey</a></li><li data-type='method'><a href="Document.html#touch">touch</a></li></ul></li><li><a href="DocumentError.html">DocumentError</a></li><li><a href="Hook.html">Hook</a><ul class='methods'><li data-type='method'><a href="Hook.html#addHook">addHook</a></li><li data-type='method'><a href="Hook.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Hook.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Hook.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Hook.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Hook.html#afterGet">afterGet</a></li><li data-type='method'><a href="Hook.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Hook.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Hook.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Hook.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Hook.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Hook.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Hook.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Hook.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#removeHook">removeHook</a></li><li data-type='method'><a href="Hook.html#runHooks">runHooks</a></li></ul></li><li><a href="HookError.html">HookError</a></li><li><a href="IncrementalKey.html">IncrementalKey</a><ul class='methods'><li data-type='method'><a href="IncrementalKey.html#clone">clone</a></li><li data-type='method'><a href="IncrementalKey.html#generate">generate</a></li><li data-type='method'><a href="IncrementalKey.html#getId">getId</a></li><li data-type='method'><a href="IncrementalKey.html#getOptions">getOptions</a></li><li data-type='method'><a href="IncrementalKey.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="IncrementalKey.html#parse">parse</a></li><li data-type='method'><a href="IncrementalKey.html#setId">setId</a></li><li data-type='method'><a href="IncrementalKey.html#toString">toString</a></li></ul></li><li><a href="Instance.html">Instance</a><ul class='methods'><li data-type='method'><a href="Instance.html#clone">clone</a></li><li data-type='method'><a href="Instance.html#cloneData">cloneData</a></li><li data-type='method'><a href="Instance.html#destroy">destroy</a></li><li data-type='method'><a href="Instance.html#getCAS">getCAS</a></li><li data-type='method'><a href="Instance.html#getData">getData</a></li><li data-type='method'><a href="Instance.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Instance.html#getKey">getKey</a></li><li data-type='method'><a href="Instance.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Instance.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Instance.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Instance.html#insert">insert</a></li><li data-type='method'><a href="Instance.html#refresh">refresh</a></li><li data-type='method'><a href="Instance.html#remove">remove</a></li><li data-type='method'><a href="Instance.html#replace">replace</a></li><li data-type='method'><a href="Instance.html#sanitize">sanitize</a></li><li data-type='method'><a href="Instance.html#save">save</a></li><li data-type='method'><a href="Instance.html#setCAS">setCAS</a></li><li data-type='method'><a href="Instance.html#setData">setData</a></li><li data-type='method'><a href="Instance.html#setKey">setKey</a></li><li data-type='method'><a href="Instance.html#toJSON">toJSON</a></li><li data-type='method'><a href="Instance.html#touch">touch</a></li><li data-type='method'><a href="Instance.html#update">update</a></li></ul></li><li><a href="InstanceError.html">InstanceError</a></li><li><a href="Key.html">Key</a><ul class='methods'><li data-type='method'><a href="Key.html#generate">generate</a></li><li data-type='method'><a href="Key.html#getId">getId</a></li><li data-type='method'><a href="Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="Key.html#parse">parse</a></li><li data-type='method'><a href="Key.html#setId">setId</a></li><li data-type='method'><a href="Key.html#toString">toString</a></li></ul></li><li><a href="KeyError.html">KeyError</a></li><li><a href="Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Model.html#addHook">addHook</a></li><li data-type='method'><a href="Model.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Model.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Model.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Model.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Model.html#afterGet">afterGet</a></li><li data-type='method'><a href="Model.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Model.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Model.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Model.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Model.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Model.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Model.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Model.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Model.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Model.html#build">build</a></li><li data-type='method'><a href="Model.html#buildKey">buildKey</a></li><li data-type='method'><a href="Model.html#create">create</a></li><li data-type='method'><a href="Model.html#getById">getById</a></li><li data-type='method'><a href="Model.html#getMulti">getMulti</a></li><li data-type='method'><a href="Model.html#remove">remove</a></li><li data-type='method'><a href="Model.html#removeHook">removeHook</a></li><li data-type='method'><a href="Model.html#runHooks">runHooks</a></li><li data-type='method'><a href="Model.html#toString">toString</a></li><li data-type='method'><a href="Model.html#touch">touch</a></li><li data-type='method'><a href="Model.html#unlock">unlock</a></li></ul></li><li><a href="ModelError.html">ModelError</a></li><li><a href="ModelManager.html">ModelManager</a><ul class='methods'><li data-type='method'><a href="ModelManager.html#add">add</a></li><li data-type='method'><a href="ModelManager.html#get">get</a></li><li data-type='method'><a href="ModelManager.html#getAll">getAll</a></li></ul></li><li><a href="StorageAdapter.html">StorageAdapter</a><ul class='methods'><li data-type='method'><a href="StorageAdapter.html#append">append</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsert">bulkInsert</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsertSync">bulkInsertSync</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemove">bulkRemove</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemoveSync">bulkRemoveSync</a></li><li data-type='method'><a href="StorageAdapter.html#counter">counter</a></li><li data-type='method'><a href="StorageAdapter.html#disconnect">disconnect</a></li><li data-type='method'><a href="StorageAdapter.html#enableN1ql">enableN1ql</a></li><li data-type='method'><a href="StorageAdapter.html#get">get</a></li><li data-type='method'><a href="StorageAdapter.html#getAndLock">getAndLock</a></li><li data-type='method'><a href="StorageAdapter.html#getAndTouch">getAndTouch</a></li><li data-type='method'><a href="StorageAdapter.html#getManager">getManager</a></li><li data-type='method'><a href="StorageAdapter.html#getReplica">getReplica</a></li><li data-type='method'><a href="StorageAdapter.html#insert">insert</a></li><li data-type='method'><a href="StorageAdapter.html#prepend">prepend</a></li><li data-type='method'><a href="StorageAdapter.html#query">query</a></li><li data-type='method'><a href="StorageAdapter.html#remove">remove</a></li><li data-type='method'><a href="StorageAdapter.html#replace">replace</a></li><li data-type='method'><a href="StorageAdapter.html#touch">touch</a></li><li data-type='method'><a href="StorageAdapter.html#unlock">unlock</a></li><li data-type='method'><a href="StorageAdapter.html#upsert">upsert</a></li></ul></li><li><a href="StorageError.html">StorageError</a></li><li><a href="StorageMultiError.html">StorageMultiError</a></li><li><a href="UUID4Key.html">UUID4Key</a><ul class='methods'><li data-type='method'><a href="UUID4Key.html#clone">clone</a></li><li data-type='method'><a href="UUID4Key.html#generate">generate</a></li><li data-type='method'><a href="UUID4Key.html#getId">getId</a></li><li data-type='method'><a href="UUID4Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="UUID4Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="UUID4Key.html#parse">parse</a></li><li data-type='method'><a href="UUID4Key.html#setId">setId</a></li><li data-type='method'><a href="UUID4Key.html#toString">toString</a></li></ul></li><li><a href="ValidationError.html">ValidationError</a></li></ul><h3>Modules</h3><ul><li><a href="Sanitizer_sanitizeData.html">Sanitizer:sanitizeData</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lib/storageAdapter.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>var Bucket     = require("couchbase/lib/bucket");
+var BucketMock = require("couchbase/lib/mock/bucket");
+var Promise    = require("bluebird");
+var Key        = require("./key/key.js");
+var Document   = require("./document.js");
+var _          = require("lodash");
+var couchbase  = require('couchbase');
+
+var CouchbaseError = couchbase.Error;
+var StorageError = require("./error/storageError");
+var StorageMultiError = require("./error/storageMultiError");
+
+module.exports = StorageAdapter;
+
+/**
+ * StorageAdapter
+ *
+ * @constructor
+ *
+ * @param {Object} [options]
+ * @param {Bucket} [options.bucket]
+ */
+function StorageAdapter(options) {
+
+    if (!(options.bucket instanceof Bucket) &amp;&amp; !(options.bucket instanceof BucketMock)) {
+        throw new StorageError("`bucket` is not Bucket instance");
+    }
+
+    Object.defineProperty(this, "bucket", {
+        enumerable: false,
+        configurable: false,
+        value: options.bucket
+    });
+}
+
+StorageAdapter.errors = {
+    CouchbaseError: CouchbaseError,
+    StorageMultiError: StorageMultiError,
+    StorageError: StorageError
+};
+
+/**
+ * get
+ *
+ * @param {Key} key
+ * @param {Object}  [options]
+ * @param {boolean} [options.paranoid] - default=`true` if false, both deleted and non-deleted documents will be returned. if `true`, it'll throw `StorageError` (not found) for a document which was sof-deleted.
+ * @param {string}  [options.deletedAtPropName] - should be provided if `options.paranoid` === false
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.get = function(key, options) {
+
+    var self = this;
+    options = options || {};
+
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.get(key.toString(), options, function(err, doc) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            if (   options.hasOwnProperty('paranoid')
+                &amp;&amp; options.paranoid !== false
+                &amp;&amp; _.isPlainObject(doc.value)
+                &amp;&amp; !_.isNil(doc.value[options.deletedAtPropName])
+            ) {
+                return reject(new StorageError('The `key` was not found in the bucket (soft-deleted)', couchbase.errors.keyNotFound));
+            }
+
+            return resolve(doc);
+        });
+    });
+}
+
+/**
+ * getMulti
+ *
+ * if `key` from `keys` array is instance Key, it must be already generated
+ * returns collection of results where `index` is `key` searched and value is
+ * either StorageError or Object result data
+ *
+ * @param {Array&lt;Key,Buffer,String>} keys
+ *
+ * @return {Promise&lt;Object>}
+ */
+//StorageAdapter.prototype.getMulti = function(keys) {
+
+    //var self = this;
+    //return new Promise(function(resolve, reject) {
+
+        //return self.bucket.getMulti(keys, function(numOfFailed, docs) {
+            //if (numOfFailed == keys.length) {
+                //var errs = [];
+                //Object.keys(docs).forEach(function(key) {
+                    //var err = docs[key].error;
+                    //errs.push(new StorageError(err.message, err.code));
+                //});
+                //return reject(new StorageMultiError(errs));
+            //}
+
+            //Object.keys(docs).forEach(function(key) {
+                //var result = docs[key];
+                //if (result.error instanceof CouchbaseError) {
+                    //docs[key] = new StorageError(result.error.message, result.error.code);
+                //}
+            //});
+            //return resolve(docs);
+        //});
+    //});
+//}
+
+/**
+ * getAndTouch
+ *
+ * @param {Key}     key
+ * @param {integer} expirty - time in seconds
+ * @param {Object}  options
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.getAndTouch = function(key, expiry, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.getAndTouch(key.toString(), expiry, options || {}, function(err, doc) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(doc);
+        });
+    });
+}
+
+/**
+ * getAndLock
+ *
+ * @param {Key}     key
+ * @param {Object}  [options]
+ * @param {integer} [options.lockTime] - time in seconds, default=15, max=30
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.getAndLock = function(key, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.getAndLock(key.toString(), options || {}, function(err, doc) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(doc);
+        });
+    });
+}
+
+/**
+ * getReplica
+ *
+ * @param {Key} key
+ * @param {Object} [options]
+ * @param {intger} [options.index] - `optional` The index for which replica you wish to retrieve this value from, or if undefined, use the value from the first server that replies.
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.getReplica = function(key, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.getReplica(key.toString(), options || {}, function(err, doc) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(doc);
+        });
+    });
+}
+
+/**
+ * insert
+ *
+ * @param {Key}     key
+ * @param {mixed}   data
+ * @param {Object}  [options]
+ * @param {integer} [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer} [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer} [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.insert = function(key, data, options) {
+
+    var self = this;
+
+    return new Promise(function(resolve, reject) {
+
+        //TODO - save correct data
+        return self.bucket.insert(key.toString(), data, options || {}, function(err, result) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+            return resolve(result);
+        });
+    });
+}
+
+/**
+ * bulkInsert
+ *
+ * aync version
+ *
+ * @param {Array&lt;Document>} documents
+ * @param {Object}          [options]
+ * @param {integer}         [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer}         [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}         [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Array&lt;PromiseInspection>>}
+ */
+StorageAdapter.prototype.bulkInsert = function(documents, options) {
+
+    return Promise.all(documents.map(function(doc) {
+        return doc.insert(options).reflect();
+    }));
+}
+
+/**
+ * bulkInsertSync
+ *
+ * @param {Array&lt;Document>} documents
+ * @param {Object}          [options]
+ * @param {integer}         [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer}         [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}         [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Array>}
+ */
+StorageAdapter.prototype.bulkInsertSync = function(documents, options) {
+
+    return Promise.mapSeries(documents, function(doc) {
+        return doc.insert(options);
+    });
+}
+
+/**
+ * getManager
+ *
+ * Returns an instance of a BucketManager for performing management operations against a bucket.
+ *
+ * @return {BucketManager}
+ */
+StorageAdapter.prototype.getManager = function() {
+
+    return this.bucket.manager();
+}
+
+/**
+ * append
+ *
+ * @param {Key}       key
+ * @param {mixed}     value
+ * @param {Object}    [options]
+ * @param {BucketCAS} [options.cas] - `optional` The CAS value to check. If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ * @param {integer}   [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer}   [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}   [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.append = function(key, value, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.append(key.toString(), value, options || {}, function(err, doc) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(doc);
+        });
+    });
+}
+
+/**
+ * prepend
+ *
+ * @param {Key}       key
+ * @param {mixed}     value
+ * @param {Object}    [options]
+ * @param {BucketCAS} [options.cas] - `optional` The CAS value to check. If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ * @param {integer}   [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer}   [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}   [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.prepend = function(key, value, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.prepend(key.toString(), value, options || {}, function(err, doc) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(doc);
+        });
+    });
+}
+
+/**
+ * counter
+ *
+ * Increments or decrements a key's numeric value.
+ * Note that JavaScript does not support 64-bit integers (while libcouchbase and the server do).
+ * You might receive an inaccurate value if the number is greater than 53-bits (JavaScript's maximum integer precision).
+ *
+ * @param {Array&lt;string|Buffer>} key
+ * @param {integer}              value
+ * @param {Object}               [options]
+ * @param {integer}              [options.initial] - `optional` Sets the initial value for the document if it does not exist. Specifying a value of undefined will cause the operation to fail if the document does not exist, otherwise this value must be equal to or greater than 0.
+ * @param {integer}              [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer}              [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}              [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.counter = function(key, value, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+        return self.bucket.counter(key, value, options || {}, function(err, doc) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(doc);
+        });
+    });
+}
+
+/**
+ * query
+ *
+ * Executes a previously prepared query object. This could be a ViewQuery or a N1qlQuery.
+ * Note: N1qlQuery queries are currently an uncommitted interface and may be subject to change in 2.0.0's final release.
+ *
+ * @param {ViewQuery|N1qlQuery} query - The query to execute
+ * @param {Object|Array}        params - `optional` A list or map to do replacements on a N1QL query.
+ *
+ * @return {Promise&lt;Bucket.ViewQueryResponse|Bucket.N1qlQueryResponse>}
+ */
+StorageAdapter.prototype.query = function(query, params) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+        return self.bucket.query(query, params, function(err, response) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(response);
+        });
+    });
+}
+
+/**
+ * remove
+ *
+ * @param {Key}       key
+ * @param {Object}    [options]
+ * @param {BucketCAS} [options.cas] - `optional` The CAS value to check. If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ * @param {integer}   [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}   [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.remove = function(key, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        self.bucket.remove(key.toString(), options || {}, function(err, result) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+            return resolve(result);
+        });
+    });
+}
+
+/**
+ * bulkRemoveSync
+ *
+ * @param {Array&lt;Document|Key>} entities
+ * @param {Object}              [options]
+ * @param {BucketCAS}           [options.cas] - `optional` The CAS value to check. If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ * @param {integer}             [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}             [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @throws {StorageError}
+ * @return {Promise&lt;Array>}
+ */
+StorageAdapter.prototype.bulkRemoveSync = function(entities, options) {
+
+    var self = this;
+    return Promise.mapSeries(entities, function(entity) {
+        if (entity instanceof Key) {
+            return self.remove(entity, options);
+        } else if(entity instanceof Document) {
+            return entity.remove(options);
+        } else {
+            var err = new StorageError("Must be instance of `Key` or `Document`");
+            return Promise.reject(err);
+        }
+
+        function catchErr(err) {
+            err.index = entities.indexOf(entity);
+            throw err;
+        }
+    });
+}
+
+/**
+ * bulkRemove
+ *
+ * async version
+ * retruns always fullfiled promise with response implementing PromiseInspection
+ *
+ * @param {Array&lt;Document|Key>} entities
+ * @param {Object}              [options]
+ * @param {BucketCAS}           [options.cas] - `optional` The CAS value to check. If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ * @param {integer}             [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}             [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Array&lt;PromiseInspection>>}
+ */
+StorageAdapter.prototype.bulkRemove = function(entities, options) {
+
+    var self = this;
+    var Document = require("./document.js");
+
+    return Promise.all(entities.map(function(entity) {
+        var prom;
+        if (entity instanceof Key) {
+             prom = self.remove(entity, options);
+        } else if(entity instanceof Document) {
+            prom = entity.remove(options);
+        } else {
+            var err = new StorageError("Must be instance of `Key` or `Document`");
+            prom = Promise.reject(err);
+        }
+
+        return prom.reflect();
+    }));
+}
+
+/**
+ * replace
+ *
+ * Identical to Bucket#set, but will only succeed if the document exists already.
+ *
+ * @param {Key}       key
+ * @param {mixed}     value
+ * @param {Object}    [options]
+ * @param {BucketCAS} [options.cas] - `optional` The CAS value to check. If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ * @param {integer}   [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer}   [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}   [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.replace = function(key, value, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.replace(key.toString(), value, options || {}, function(err, result) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(result);
+        });
+    });
+}
+/**
+ * upsert
+ *
+ * Identical to Bucket#set, but will only succeed if the document exists already.
+ *
+ * @param {Key}       key
+ * @param {mixed}     value
+ * @param {Object}    [options]
+ * @param {BucketCAS} [options.cas] - `optional` The CAS value to check. If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ * @param {integer}   [options.expiry] - `optional` default=`0`. Set the initial expiration time for the document. A value of 0 represents never expiring
+ * @param {integer}   [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer}   [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.upsert = function(key, value, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.upsert(key.toString(), value, options || {}, function(err, result) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(result);
+        });
+    });
+}
+
+/**
+ * touch
+ *
+ * @param {Key}     key
+ * @param {integer} expiry - In seconds. The expiration time to use. If a value of 0 is provided, then the current expiration time is cleared and the key is set to never expire. Otherwise, the key is updated to expire in the time provided.
+ * @param {Object}  [options]
+ * @param {integer} [options.persist_to] - `optional` default=`0` Ensures this operation is persisted to this many nodes
+ * @param {integer} [options.replicate_to] - `optional` default=`0` Ensures this operation is replicated to this many nodes
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.touch = function(key, expiry, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.touch(key.toString(), expiry, options || {}, function(err, result) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+            return resolve(result);
+        });
+    });
+}
+
+/**
+ * unlock
+ *
+ * @param {Key}        key
+ * @param {Bucket.CAS} cas - The CAS value returned when the key was locked. This operation will fail if the CAS value provided does not match that which was the result of the original lock operation.
+ * @param {Object}     options
+ *
+ * @return {Promise&lt;Object>}
+ */
+StorageAdapter.prototype.unlock = function(key, cas, options) {
+
+    var self = this;
+    return new Promise(function(resolve, reject) {
+
+        return self.bucket.unlock(key.toString(), cas, options || {}, function(err, result) {
+            if (err) {
+                return reject(new StorageError(err.message, err.code));
+            }
+
+            return resolve(result);
+        });
+    });
+}
+
+/**
+ * disconnect
+ */
+StorageAdapter.prototype.disconnect = function() {
+    return this.bucket.disconnect();
+}
+
+/**
+ * enableN1ql
+ *
+ * @param {string|Array&lt;string>} hosts
+ */
+StorageAdapter.prototype.enableN1ql = function(hosts) {
+    return this.bucket.enableN1ql(hosts);
+}
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 12 2016 11:09:04 GMT+0000 (UTC) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

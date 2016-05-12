@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>lib/instance.js - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Tutorials</h3><ul><li><a href="tutorial-1.gettingStarted.html">Getting Started</a></li><li><a href="tutorial-2.schemaDefinitionGuide.html">Model schema definition</a></li><li><a href="tutorial-3.quering.html">Quering</a></li><li><a href="tutorial-4.instances.html">Instances</a></li><li><a href="tutorial-5.hooks.html">Hooks</a></li><li><a href="tutorial-6.errors.html">Errors</a></li><li><a href="tutorial-7.customizingDocumentsKey.html">Customizing Document's Key</a></li></ul><h3>Classes</h3><ul><li><a href="CouchbaseODM.html">CouchbaseODM</a><ul class='methods'><li data-type='method'><a href="CouchbaseODM.html#define">define</a></li></ul></li><li><a href="Document.html">Document</a><ul class='methods'><li data-type='method'><a href="Document.html#getCAS">getCAS</a></li><li data-type='method'><a href="Document.html#getData">getData</a></li><li data-type='method'><a href="Document.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Document.html#getKey">getKey</a></li><li data-type='method'><a href="Document.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Document.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Document.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Document.html#insert">insert</a></li><li data-type='method'><a href="Document.html#remove">remove</a></li><li data-type='method'><a href="Document.html#replace">replace</a></li><li data-type='method'><a href="Document.html#setCAS">setCAS</a></li><li data-type='method'><a href="Document.html#setData">setData</a></li><li data-type='method'><a href="Document.html#setKey">setKey</a></li><li data-type='method'><a href="Document.html#touch">touch</a></li></ul></li><li><a href="DocumentError.html">DocumentError</a></li><li><a href="Hook.html">Hook</a><ul class='methods'><li data-type='method'><a href="Hook.html#addHook">addHook</a></li><li data-type='method'><a href="Hook.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Hook.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Hook.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Hook.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Hook.html#afterGet">afterGet</a></li><li data-type='method'><a href="Hook.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Hook.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Hook.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Hook.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Hook.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Hook.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Hook.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Hook.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#removeHook">removeHook</a></li><li data-type='method'><a href="Hook.html#runHooks">runHooks</a></li></ul></li><li><a href="HookError.html">HookError</a></li><li><a href="IncrementalKey.html">IncrementalKey</a><ul class='methods'><li data-type='method'><a href="IncrementalKey.html#clone">clone</a></li><li data-type='method'><a href="IncrementalKey.html#generate">generate</a></li><li data-type='method'><a href="IncrementalKey.html#getId">getId</a></li><li data-type='method'><a href="IncrementalKey.html#getOptions">getOptions</a></li><li data-type='method'><a href="IncrementalKey.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="IncrementalKey.html#parse">parse</a></li><li data-type='method'><a href="IncrementalKey.html#setId">setId</a></li><li data-type='method'><a href="IncrementalKey.html#toString">toString</a></li></ul></li><li><a href="Instance.html">Instance</a><ul class='methods'><li data-type='method'><a href="Instance.html#clone">clone</a></li><li data-type='method'><a href="Instance.html#cloneData">cloneData</a></li><li data-type='method'><a href="Instance.html#destroy">destroy</a></li><li data-type='method'><a href="Instance.html#getCAS">getCAS</a></li><li data-type='method'><a href="Instance.html#getData">getData</a></li><li data-type='method'><a href="Instance.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Instance.html#getKey">getKey</a></li><li data-type='method'><a href="Instance.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Instance.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Instance.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Instance.html#insert">insert</a></li><li data-type='method'><a href="Instance.html#refresh">refresh</a></li><li data-type='method'><a href="Instance.html#remove">remove</a></li><li data-type='method'><a href="Instance.html#replace">replace</a></li><li data-type='method'><a href="Instance.html#sanitize">sanitize</a></li><li data-type='method'><a href="Instance.html#save">save</a></li><li data-type='method'><a href="Instance.html#setCAS">setCAS</a></li><li data-type='method'><a href="Instance.html#setData">setData</a></li><li data-type='method'><a href="Instance.html#setKey">setKey</a></li><li data-type='method'><a href="Instance.html#toJSON">toJSON</a></li><li data-type='method'><a href="Instance.html#touch">touch</a></li><li data-type='method'><a href="Instance.html#update">update</a></li></ul></li><li><a href="InstanceError.html">InstanceError</a></li><li><a href="Key.html">Key</a><ul class='methods'><li data-type='method'><a href="Key.html#generate">generate</a></li><li data-type='method'><a href="Key.html#getId">getId</a></li><li data-type='method'><a href="Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="Key.html#parse">parse</a></li><li data-type='method'><a href="Key.html#setId">setId</a></li><li data-type='method'><a href="Key.html#toString">toString</a></li></ul></li><li><a href="KeyError.html">KeyError</a></li><li><a href="Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Model.html#addHook">addHook</a></li><li data-type='method'><a href="Model.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Model.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Model.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Model.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Model.html#afterGet">afterGet</a></li><li data-type='method'><a href="Model.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Model.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Model.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Model.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Model.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Model.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Model.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Model.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Model.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Model.html#build">build</a></li><li data-type='method'><a href="Model.html#buildKey">buildKey</a></li><li data-type='method'><a href="Model.html#create">create</a></li><li data-type='method'><a href="Model.html#getById">getById</a></li><li data-type='method'><a href="Model.html#getMulti">getMulti</a></li><li data-type='method'><a href="Model.html#remove">remove</a></li><li data-type='method'><a href="Model.html#removeHook">removeHook</a></li><li data-type='method'><a href="Model.html#runHooks">runHooks</a></li><li data-type='method'><a href="Model.html#toString">toString</a></li><li data-type='method'><a href="Model.html#touch">touch</a></li><li data-type='method'><a href="Model.html#unlock">unlock</a></li></ul></li><li><a href="ModelError.html">ModelError</a></li><li><a href="ModelManager.html">ModelManager</a><ul class='methods'><li data-type='method'><a href="ModelManager.html#add">add</a></li><li data-type='method'><a href="ModelManager.html#get">get</a></li><li data-type='method'><a href="ModelManager.html#getAll">getAll</a></li></ul></li><li><a href="StorageAdapter.html">StorageAdapter</a><ul class='methods'><li data-type='method'><a href="StorageAdapter.html#append">append</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsert">bulkInsert</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsertSync">bulkInsertSync</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemove">bulkRemove</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemoveSync">bulkRemoveSync</a></li><li data-type='method'><a href="StorageAdapter.html#counter">counter</a></li><li data-type='method'><a href="StorageAdapter.html#disconnect">disconnect</a></li><li data-type='method'><a href="StorageAdapter.html#enableN1ql">enableN1ql</a></li><li data-type='method'><a href="StorageAdapter.html#get">get</a></li><li data-type='method'><a href="StorageAdapter.html#getAndLock">getAndLock</a></li><li data-type='method'><a href="StorageAdapter.html#getAndTouch">getAndTouch</a></li><li data-type='method'><a href="StorageAdapter.html#getManager">getManager</a></li><li data-type='method'><a href="StorageAdapter.html#getReplica">getReplica</a></li><li data-type='method'><a href="StorageAdapter.html#insert">insert</a></li><li data-type='method'><a href="StorageAdapter.html#prepend">prepend</a></li><li data-type='method'><a href="StorageAdapter.html#query">query</a></li><li data-type='method'><a href="StorageAdapter.html#remove">remove</a></li><li data-type='method'><a href="StorageAdapter.html#replace">replace</a></li><li data-type='method'><a href="StorageAdapter.html#touch">touch</a></li><li data-type='method'><a href="StorageAdapter.html#unlock">unlock</a></li><li data-type='method'><a href="StorageAdapter.html#upsert">upsert</a></li></ul></li><li><a href="StorageError.html">StorageError</a></li><li><a href="StorageMultiError.html">StorageMultiError</a></li><li><a href="UUID4Key.html">UUID4Key</a><ul class='methods'><li data-type='method'><a href="UUID4Key.html#clone">clone</a></li><li data-type='method'><a href="UUID4Key.html#generate">generate</a></li><li data-type='method'><a href="UUID4Key.html#getId">getId</a></li><li data-type='method'><a href="UUID4Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="UUID4Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="UUID4Key.html#parse">parse</a></li><li data-type='method'><a href="UUID4Key.html#setId">setId</a></li><li data-type='method'><a href="UUID4Key.html#toString">toString</a></li></ul></li><li><a href="ValidationError.html">ValidationError</a></li></ul><h3>Modules</h3><ul><li><a href="Sanitizer_sanitizeData.html">Sanitizer:sanitizeData</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">lib/instance.js</h1>
+    
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>'use strict';
+var _        = require('lodash');
+var Promise  = require('bluebird');
+var debug    = require('debug')('couchbase-odm:instance');
+var util     = require('util');
+var moment   = require('moment');
+
+var sanitizer = require("./sanitizer");
+
+var Document        = require("./document.js");
+var Key             = require("./key/key.js");
+var DataTypes       = require("./dataType").types;
+var Operation       = require("./operation.js");
+var InstanceError   = require("./error/instanceError.js");
+var KeyError        = require("./error/keyError.js");
+var ValidationError = require("./error/validationError.js");
+var StorageError    = require("./error/storageError");
+var HookTypes       = require("./hook.js").types;
+
+module.exports = Instance;
+
+/**
+ * Instance
+ *
+ * @constructor
+ * @extends Document
+ *
+ * @param {mixed}         data
+ * @param {Object}        [options]
+ * @param {Key}           [options.key] - `Key` instance representing primary key of the document
+ * @param {boolean}       [options.isNewRecord=true]
+ * @param {CAS}           [options.cas] - If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.
+ *
+ * @throws {DocumentError}
+ * @throws {InstanceError}
+ * @throws {ValidationError}
+ * @throws {Error}
+ */
+function Instance(data, options) {
+
+    Document.call(this, {
+        data: data,
+        key : options.key,
+        cas : options.cas,
+        storage: this.Model.storage
+    });
+
+    var self = this;
+    if (!(options.key instanceof Key)) {
+        throw new InstanceError("`options.key` must be instace of Key");
+    }
+
+    Object.defineProperty(this, "$schemaSettings", {
+        value: this.Model.options.schemaSettings,
+        writable: false,
+        enumerable: false,
+        configurable: false
+    });
+
+    //Instance which is currently perssisted in a bucket
+    Object.defineProperty(this, "$original", {
+        value: null,
+        writable: true,
+        enumerable: false,
+        configurable: false
+    });
+
+    //define `id` (dynamic part of document's `key`) getter property on instance
+    var idPropName =this.$schemaSettings.doc.idPropertyName;
+    Object.defineProperty(this, idPropName, {
+        enumerable: true,
+        get: function() {
+            return this.getKey().getId();
+        },
+        configurable: false
+    });
+
+
+    var schema = this.Model.options.schema;
+    if (this.Model.$dataHasObjectStructure()) {
+        //bind properties from data schema to this instance so properties are
+        //accessible through instance.propertyName
+        bindDataProperties.apply(this, [this, schema.schema]);
+
+        //bind internal properties
+        Object.defineProperty(this.options.data, idPropName, {
+            enumerable: true,
+            get: function() {
+                return self.getKey().getId();
+            },
+            configurable: false
+        });
+
+        var typePropName = this.$schemaSettings.doc.typePropertyName;
+        Object.defineProperty(this.options.data, typePropName, {
+            enumerable: true,
+            get: function() {
+                return self.Model.name;
+            },
+            configurable: false
+        });
+    }
+
+}
+
+//Inherit Document prototype
+Instance.prototype = Object.create(Document.prototype);
+Instance.prototype.constructor = Instance;
+Object.defineProperty(Instance.prototype, "super", {
+    value: Document.prototype
+});
+
+/**
+ * sanitize
+ *
+ * validates &amp; tries to parse data values according to defined schema
+ *
+ * @throws {ValidationError}
+ * @return {undefined}
+ */
+Instance.prototype.sanitize =  function() {
+    this.Model.runHooks(HookTypes.beforeValidate, this);
+    var includeUnlisted = this.Model.options.schemaSettings.doc.hasInternalPropsOnly
+        ? true
+        : false;
+
+    this.setData( sanitizer.sanitizeData.apply(this.Model, [
+                this.Model.options.schema,
+                this.getData(),
+                {includeUnlisted: includeUnlisted}
+    ]));
+    this.Model.runHooks(HookTypes.afterValidate, this);
+};
+
+/**
+ * $buildRefDocument
+ *
+ * @private
+ *
+ * @param {Object} [options]
+ * @param {Object} [options.keyOptions] - see `Model.$buildRefDocKey` for available options
+ * @return {Document}
+ */
+Instance.prototype.$buildRefDocument =  function(options) {
+    return this.getGeneratedKey().bind(this).then(function(key) {
+        var doc = new Document({
+            key: this.Model.$buildRefDocKey(options.keyOptions),
+            data: key.toString(),
+            storage: this.getStorageAdapter(),
+            reference: this
+        });
+        return doc;
+    });
+};
+
+/**
+ * $initRelations
+ *
+ * @private
+ *
+ * @return {undefined}
+ */
+Instance.prototype.$initRelations =  function() {
+    var idPropName = this.$schemaSettings.doc.idPropertyName;
+    var modelManager = this.Model.$modelManager;
+    var dataValues = this.getData();
+    var relations = this.Model.relations;
+
+    for (var i = 0, len = relations.length; i &lt; len; i++) {
+        var rel = relations[i];
+
+        //model's schema can be set up in a way that it only contains
+        //relation to another Document (Model) at root of the data schema.
+        //In that case "rel.path === null" and
+        //this.getData() == association object
+        //eg: this.getData() == {"_id": "User_some-unique-id-of-associated-doc"}
+        var relData = rel.path !== null ? _.get(dataValues, rel.path) : dataValues;
+
+        if(_.isPlainObject(relData)) {
+            var assoc = buildAssoc(rel.type, relData);
+
+            if (rel.path === null) {
+                this.setData(assoc);
+            } else {
+                _.set(dataValues, rel.path, assoc);
+            }
+        } else if (relData instanceof Array) {//initialize array of associations
+            for (var y = 0, len2 = relData.length; y &lt; len2; y++) {
+                if (_.isPlainObject(relData[y])) {
+                    var assoc = buildAssoc(rel.type, relData[y]);
+                    relData[y] = assoc;
+                }
+            }
+        }
+    }
+
+    function buildAssoc(type, data) {
+        var relModel = type.getModel(modelManager);
+        var key      = relModel.buildKey(data[idPropName], true);
+
+        return relModel.build(null, {
+            key: key,
+            isNewRecord: false,
+            sanitize: false
+        });
+    }
+};
+
+/**
+ * getSerializedData
+ *
+ * converts object's associations to json objects with single property with value
+ * of key string
+ * returns object's serialized data
+ *
+ * @override
+ * @return {Promise&lt;{mixed}>}
+ */
+Instance.prototype.getSerializedData = function() {//TODO
+
+    if (!this.Model.$dataHasJsonStructure()) {
+        return this.super.getSerializedData.call(this);
+    }
+
+    var instance = this;
+    var relations = this.Model.relations;
+    var modelManager = this.Model.$modelManager;
+    var data = this.cloneData();
+
+    return Promise.map(relations, function(rel) {
+        //model's schema can be set up in a way that it only contains
+        //relation to another Document (Model) at root of the data schema.
+        //In that case "rel.property === null" and
+        //this.getData() == association object
+        //eg: this.getData() == {"_id": "User_some-unique-id-of-associated-doc"}
+        var assoc = rel.path !== null ? _.get(data, rel.path) : data;
+
+        if (assoc instanceof Array) {//serialize array of associations
+            return Promise.map(assoc, function(association, index) {
+                if (!(association instanceof rel.type.getModel(modelManager).Instance)) {
+                    return null;//continue
+                }
+                return serializeAssoc.call(instance, association).then(function(serializedData) {
+                    assoc[index] = serializedData;
+                    return null;
+                });
+            });
+        } else {
+            if (!(assoc instanceof rel.type.getModel(modelManager).Instance)) {
+                return null;//continue
+            }
+
+            return serializeAssoc.call(instance, assoc).then(function(serializedData) {
+                if (rel.path === null) {
+                    data = serializedData;
+                } else {
+                    _.set(data, rel.path, serializedData);
+                }
+                return null;
+            });
+        }
+    }).return(data);
+
+    function serializeAssoc(assoc) {
+        var self = this;
+        return assoc.getGeneratedKey().then(function(key) {
+            var out = {};
+            var idPropName = self.$schemaSettings.doc.idPropertyName;
+            out[idPropName] = key.toString();
+            return out;
+        });
+    }
+};
+
+
+/**
+ * cloneData
+ *
+ * @return {Mixed}
+ */
+Instance.prototype.cloneData = function() {
+    return _.cloneDeepWith(this.getData(), function(val) {
+        if (val instanceof Instance) return val;
+    });
+};
+
+/**
+ * clone
+ *
+ * @return {Instance}
+ */
+Instance.prototype.clone = function() {
+
+    var self = this;
+    var options =  _.cloneDeepWith(this.options, function(val) {
+        if (val instanceof Key) return val.clone();
+    });
+
+    var clone = new this.Model.Instance(this.cloneData(), options);
+    return clone;
+};
+
+/**
+ * setData
+ *
+ * override `Document.prototype.setData`
+ *
+ * @example
+ *
+ * instance.setData({some: 'data'}) //overwrites instance data
+ * instance.setData('username', 'fogine') //writes to `username` property on data object
+ *
+ * @param {string} [property]
+ * @param {mixed} data
+ * @return {undefined}
+ */
+Instance.prototype.setData = function() {
+    if (arguments.length === 2) {
+        this.options.data[arguments[0]] = arguments[1];
+    } else {
+        var data = arguments[0];
+
+        if (_.isPlainObject(data)) {
+            var keys = Object.keys(data);
+            keys = _.without(keys,
+                    this.$schemaSettings.doc.idPropertyName,
+                    this.$schemaSettings.doc.typePropertyName
+                    );
+
+            for (var i = 0, len = keys.length; i &lt; len; i++) {
+                this.options.data[keys[i]] = data[keys[i]];
+            }
+            return;
+        }
+        this.options.data = data;
+    }
+};
+
+/**
+ * refresh
+ *
+ * @return {Promise&lt;Instance>}
+ */
+Instance.prototype.refresh = function() {
+    return this.getGeneratedKey().bind(this).then(function(key) {
+        return this.Model.getById(key, {plain: true});
+    }).then(function(doc) {
+        this.setData(doc.value);
+        this.setCAS(doc.cas);
+        setOriginal.call(this);
+        return this;
+    });
+};
+
+/**
+ * setOriginal
+ *
+ * @private
+ * @return {undefined}
+ */
+function setOriginal() {
+    if (this.$original !== null) {
+    //TODO check if _id getter property is linked to correct Key object
+        this.$original.setData(_.cloneDeep(this.options.data));
+        this.$original.setCAS(this.getCAS());
+        this.$original.options.isNewRecord = false;
+        this.$original.options = _.cloneDeep(this.options);
+        this.$original.setKey(this.getKey().clone());
+    }
+}
+
+/**
+ * $getRefDocs
+ *
+ * @private
+ * @return {Promise&lt;Array&lt;Document>>}
+ */
+Instance.prototype.$getRefDocs = function() {
+
+    //TODO add reference documents suppport for non-json documents as well??
+    if (!this.Model.$dataHasJsonStructure()) {
+        return Promise.resolve([]);
+    }
+
+    var refDocs = this.Model.options.indexes.refDocs;
+    var refDocMethods = Object.keys(refDocs);
+
+    return Promise.resolve(refDocMethods).bind(this).map(function(refMethod) {
+        var refDocOptions = refDocs[refMethod];
+
+        return this.$buildRefDocument({
+            keyOptions: {
+                ref: refDocOptions.keys,
+                caseSensitive: refDocOptions.caseSensitive
+            }
+        }).tap(function(doc) {
+            return doc.getGeneratedKey();
+        }).catch(KeyError, function(err) {
+            if (refDocOptions.required === false) {
+                return null;
+            }
+            return Promise.reject(err);
+        });
+    }).then(function(refDocs) {
+        //TODO better solution, now it's iterating twice and that's useless!
+        return refDocs.filter(function(refDoc) {
+            return !_.isNil(refDoc);
+        })
+    });
+};
+
+/**
+ * $getDirtyRefDocs
+ *
+ * returns two collections of reference documents one of which are changed `current` and are going to be
+ * persisted to db and other collection of outdated ref docs `old` which should be removed
+ * from bucket in order to fulfill update process of a refdoc indexes
+ *
+ * @private
+ * @return {Object}
+ */
+Instance.prototype.$getDirtyRefDocs = function() {
+
+    var self = this;
+    var out = {
+        current: [],//collection of current ref-documents which will be persisted to the bucket
+        old: [] //collection of outdated ref-documents which will be removed from the bucket
+    };
+
+    //TODO add suppport of reference documents for non-json documents as well??
+    if (!this.Model.$dataHasJsonStructure()) {
+        return Promise.resolve(out);
+    }
+
+    var refDocs = self.Model.options.indexes.refDocs;
+    var refDocMethods = Object.keys(refDocs);
+
+    //pupulate `out` collection
+    return Promise.map(refDocMethods, function(refMethod) {
+        var refDocOptions = refDocs[refMethod];
+
+        var keyOptions = {
+            ref: refDocOptions.keys,
+            caseSensitive: refDocOptions.caseSensitive
+        };
+        var docPool = {};
+
+        //create instance of the reference document with most recent data
+        //from the Instance
+        return self.$buildRefDocument({
+            keyOptions : keyOptions
+        }).bind(docPool).then(function(doc) {
+            this.doc = doc;
+
+            //create instance of the reference document with data which are
+            //currently persisted in bucket
+            return self.$original.$buildRefDocument({
+                keyOptions: keyOptions
+            });
+        }).then(function(oldDoc) {
+            this.oldDoc = oldDoc;
+
+            var keyPool = {
+                key: this.doc.getGeneratedKey().reflect(),
+                oldKey: this.oldDoc.getGeneratedKey().reflect()
+            }
+
+            return Promise.props(keyPool).bind(this).then(function(result) {
+                var key = this.doc.getKey();
+                var oldKey = this.oldDoc.getKey();
+
+                //if rejected, check if expected error has been throwed, otherwise fail
+                if(   result.oldKey.isRejected()
+                        &amp;&amp; !(result.oldKey.reason() instanceof KeyError)
+                  ) {
+                    return Promise.reject(result.oldKey.reason());
+                }
+
+                //if rejected, check if expected error has been throwed, otherwise fail
+                if(   result.key.isRejected()
+                        &amp;&amp; !(result.key.reason() instanceof KeyError)
+                  ) {
+                    return Promise.reject(result.key.reason());
+                }
+
+
+                var required = refDocOptions.required;
+                if (result.key.isFulfilled() &amp;&amp; result.oldKey.isFulfilled()) {
+                    if (key.toString() !== oldKey.toString()) {
+                        out.current.push(this.doc);
+                        out.old.push(this.oldDoc);
+                    }
+                    return out;
+                } else if (required === false) {
+                    if(!key.isGenerated() &amp;&amp; oldKey.isGenerated()) {
+                        out.old.push(this.oldDoc);
+                    } else if(!oldKey.isGenerated() &amp;&amp; key.isGenerated()) {
+                        out.current.push(doc);
+                    }
+                    return out;
+                } else {
+                    var reason = null;
+                    if (result.key.isRejected()) {
+                        reason = result.key.reason();
+                    } else {
+                        reason = result.oldKey.reason();
+                    }
+                    return Promise.reject(reason);
+                }
+            });
+        });
+
+    }).return(out);
+};
+
+/**
+ * save
+ *
+ * shortcut method for calling {@link Instance#replace} / {@link Instance#insert}. if fresh instance is initialized
+ * and the data are not persisted to bucket yet, `insert` is called. If the Instance
+ * is already persisted, data are updated with `replace` method
+ *
+ * @return {Promise&lt;Instance>}
+ */
+Instance.prototype.save = function(options) {
+    if (this.options.isNewRecord) {
+        return this.insert(options);
+    }
+    return this.replace(options);
+};
+
+/**
+ * update
+ *
+ * This is the same as seting data on the instance and then calling {@link Instance#save},
+ * (respectively {@link Instance#replace}) but this only updates the exact values passed to it,
+ * making it more atomic.
+ *
+ * @param {Object} data
+ * @param {Object} [options] - see {@link StorageAdapter#replace} for available options
+ *
+ * @return {Instance}
+ */
+Instance.prototype.update = function(data, options) {
+    if (this.options.isNewRecord) {
+        //TODO ?
+        var error = new InstanceError("Can not call `update` on Instance which has not been persisted to bucket yet, call `save` first");
+        return Promise.reject(error);
+    }
+    var backup = this.$original.cloneData();
+
+    _.merge(this.$original.options.data, data);
+
+    var self = this;
+
+    return this.$original.save(options).then(function(instance) {
+        _.merge(self.options.data, data);
+        return self;
+    }).catch(function(err) {
+        self.$original.setData(backup);
+        return Promise.reject(err);
+    });
+};
+
+/**
+ * destroy
+ *
+ * deletes the document and all related reference documents from a bucket
+ *
+ * @param {Object} [options] - See `StorageAdapter.remove` for available options
+ * @return {Promise}
+ */
+Instance.prototype.destroy = function(options) {
+
+    var self = this;
+
+    //TODO better solution
+    //should determine if the document is loaded
+    //( used for association instances)
+    if (!this.hasCAS()) {
+        return this.refresh().then(function() {
+            return this.destroy(options);
+        });
+    }
+
+    return this.Model.runHooks(HookTypes.beforeDestroy, this).then(function() {
+        return self.$getRefDocs();
+    }).bind({}).then(function(docs) {//remove ref docs
+        this.docs = docs;
+        this.timestamps = self.$touchTimestamps(undefined, {touchDeletedAt: true});
+        return self.getStorageAdapter()
+            .bulkRemoveSync(docs, options);
+    }).then(function() {//remove the doc
+        var opt = _.merge({}, {cas: self.getCAS()}, options);
+
+        if (self.Model.options.paranoid) {
+            return self.super.replace.call(self, opt);
+        }
+        return self.remove(opt);
+    }).then(function(result) {// resolve successful destroy operation
+        if (!self.Model.options.paranoid) {
+            self.options.isNewRecord = true;
+        }
+        self.setCAS(result.cas);//remove operation also returns `cas` value
+        return self.Model.runHooks(HookTypes.afterDestroy, self).return(self);
+    }).catch(StorageError, function(err) {// rollback deleted refdocs
+        var docs = this.docs;
+        var failedIndex = this.docs.indexOf(err.doc);
+        if (failedIndex !== -1) {
+            docs = this.docs.slice(0, failedIndex);
+        }
+
+        return _rollback.call(self, {
+            err        : err,
+            operation  : Operation.REMOVE,
+            docs       : docs,
+            timestamps : this.timestamps
+        });
+    });
+};
+
+/**
+ * insert
+ *
+ * saves NEW document (fails if the document already exists in a bucket) to storage
+ * with all its reference documents, if an error occurs,
+ * an attempt for rollback is made, if the rollback fails,
+ * the `afterFailedRollback` hook is triggered.
+ *
+ * @param {Object} [options] - See `StorageAdapter.insert` for available options
+ * @return {Promise&lt;Instance>}
+ */
+Instance.prototype.insert = function(options) {
+
+    var self = this
+        , report
+        , timestampsBck;
+
+    //validate &amp; sanitize data
+    timestampsBck = this.$touchTimestamps();
+    try {
+        this.sanitize();
+    } catch(e) {
+        this.$touchTimestamps(timestampsBck);
+        return new Promise.reject(e);
+    }
+
+    return this.Model.runHooks(HookTypes.beforeCreate, this).then(function() {
+        return self.$getRefDocs();
+    }).bind({}).then(function(docs) {//Insert ref docs
+        this.docs = docs;
+        this.timestamps = timestampsBck;
+        return self.getStorageAdapter().bulkInsertSync(docs, options);
+    }).then(function() {//Insert the doc
+        return self.super.insert.call(self, options);
+    }).then(function(result) {//Resolve successful `insert` operation
+        self.setCAS(result.cas);
+        self.options.isNewRecord = false;
+        setOriginal.call(self);
+
+        return self.Model.runHooks(HookTypes.afterCreate, self).return(self);
+    }).catch(StorageError, function(err) {//try to rollback inserted refdocs
+
+        var docs = this.docs;
+        var failedIndex = this.docs.indexOf(err.doc);
+        if (failedIndex !== -1) {
+            docs = this.docs.slice(0, failedIndex);
+        }
+
+        return _rollback.call(self, {
+            err        : err,
+            operation  : Operation.INSERT,
+            docs       : docs,
+            timestamps : this.timestamps
+        });
+    });
+};
+
+/**
+ * replace
+ *
+ * replaces (updates) current document (fails if the document with the key does not exists) in a bucket
+ * and synchronizes reference documents (indexes). If an error occur,
+ * an attempt for rollback is made, if the rollback fails,
+ * the `afterFailedRollback` hook is triggered for every document an atempt for rollback failed (includes failed refdocs ops)
+ *
+ * @param {Object} [options] - See `StorageAdapter.replace` for available options
+ * @return {Promise&lt;Instance>}
+ */
+Instance.prototype.replace = function(options) {
+
+    var self = this
+        , timestampsBck;
+
+    //todo needs better check whether to reload doc here if `relation` is not loaded
+    //and user called instance.relation.save();
+    if (!this.hasCAS()) {
+        return this.refresh().then(function() {
+            return this.replace(options);
+        });
+    }
+
+    timestampsBck = this.$touchTimestamps()
+
+        //validate &amp; sanitize data
+        try {
+            this.sanitize();
+        } catch(e) {
+            this.$touchTimestamps(timestampsBck);
+            return new Promise.reject(e);
+        }
+
+
+    return this.Model.runHooks(HookTypes.beforeUpdate, this).then(function() {
+        return self.$getDirtyRefDocs();
+    }).bind({}).then(function(docs) {
+        this.refDocs = docs.current;
+        this.oldRefDocs = docs.old;
+        return null;
+    }).then(function() {
+        return self.getStorageAdapter()
+            .bulkInsertSync(this.refDocs, options);
+    }).then(function() {
+        this.timestamps = timestampsBck;
+        return self.super.replace.call(self, options);
+    }).then(function(result) {
+        self.setCAS(result.cas);
+        return self.getStorageAdapter()
+            .bulkRemove(this.oldRefDocs, options);
+    }).each(function(result, index, length) {
+        if (result.isRejected()) {
+            var err = result.reason();
+            if (err instanceof StorageError) {
+                return self.Model.runHooks(HookTypes.afterFailedIndexRemoval, result.reason());
+            } else {
+                return Promise.reject(err);
+            }
+        }
+        return null;
+    }).then(function() {
+        setOriginal.call(self);
+        return self.Model.runHooks(HookTypes.afterUpdate, self).return(self);
+    }).catch(StorageError, function(err) {//BEGIN rollback
+        var docs = this.refDocs;
+        var failedIndex = this.refDocs.indexOf(err.doc);
+        if (failedIndex !== -1) {
+            docs = this.refDocs.slice(0, failedIndex);
+        }
+
+        return _rollback.call(self, {
+            err        : err,
+            operation  : Operation.REPLACE,
+            docs       : docs,
+            timestamps : this.timestamps
+        });
+    });
+};
+
+/**
+ * _rollback
+ *
+ * @private
+ *
+ * @param {Object}       [options]
+ * @param {StorageError} [options.err] - the error which triggered rollback operation
+ * @param {string}       [options.operation] - see `./operation.js` for available values
+ * @param {Array}        [options.docs] - documents which should be restored/removed
+ * @param {Object}       [options.timestamps] - Instance timestamp values will be reverted to these values
+ * @return {Promise.reject&lt;Error>}
+ */
+function _rollback(options) {
+    options.instance = this;
+
+    var timestamps = options.timestamps;
+    delete options.timestamps;
+    var rollbackMethod;
+
+    switch (options.operation) {
+        case Operation.INSERT:
+        case Operation.REPLACE:
+            rollbackMethod = 'bulkRemove';
+            break;
+        case Operation.REMOVE:
+            rollbackMethod = 'bulkInsert';
+            break;
+    }
+
+    return this.Model.runHooks(HookTypes.beforeRollback, options).bind(options).then(function() {
+        this.instance.$touchTimestamps(timestamps);
+        var storage = this.instance.getStorageAdapter();
+        return storage[rollbackMethod](this.docs);
+    }).each(function(result, index, length) {
+        if (result.isRejected()) {
+            //try {
+            this.instance.Model.runHooks(HookTypes.afterFailedRollback, result.reason(), this);
+            //} catch(e) {}
+            debug("Failed to rollback reference documents");
+        }
+        return null;
+    }).then(function() {
+        return this.instance.Model.runHooks(HookTypes.afterRollback, this);
+    }).return(Promise.reject(options.err));
+}
+
+/**
+ * toJSON
+ *
+ * @return {Object}
+ */
+Instance.prototype.toJSON = function() {
+    if (!this.Model.$dataHasJsonStructure()) {
+        throw InstanceError("Can NOT convert document value of primitive type to JSON");
+    }
+    var data = _.cloneDeep(this.options.data);
+
+    if (this.Model.$dataHasObjectStructure()) {
+        var typePropName = this.$schemaSettings.doc.typePropertyName;
+        delete data[typePropName];
+    }
+    return data;
+};
+
+/**
+ * bindDataProperties
+ *
+ * @param {Object} obj - object to which properties will be bind to
+ * @param {Object} properties
+ * @param {boolean} [forceRebinding=false] - if it's true, existing properties on the instance are redefined
+ *
+ * @private
+ * @return {undefined}
+ *
+ */
+function bindDataProperties(obj, properties, forceRebinding) {
+    var keys = Object.keys(properties);
+    var data = this.getData();
+
+    for (var i = 0, len = keys.length; i &lt; len; i++) {
+        var name = keys[i];
+        (function(name) {
+            if (!obj.hasOwnProperty(name) || forceRebinding === true) {
+                var prop = properties[name];
+                Object.defineProperty(obj, name, {
+                    enumerable: true,
+                    configurable: true,
+                    set: function(value) {
+                        data[name] = value;
+                    },
+                    get: function() {
+                        return data[name];
+                    }
+                });
+            }
+        })(name);
+    }
+}
+
+/**
+ * $touchTimestamps
+ *
+ * @private
+ *
+ * if `timestamps` object is provided, current timestamps are overwriten with
+ * `timestamps` provided and old timestamp values are returned.
+ * if no `timestamps` object is provied, timestamps values are touched and
+ * old timestamp values are returned
+ *
+ * @param {Object}  timestamps - [optional]
+ * @param {Object}  [options] - [optional]
+ * @param {boolean} [options.touchDeletedAt=false] - Applies only if `timestamps`
+ *                                             parameter is not provided
+ * @return {Object} - old timestamp values
+ */
+Instance.prototype.$touchTimestamps = function(timestamps, options) {
+    options = options || {};
+
+    if (   !this.Model.$dataHasObjectStructure()
+            || !this.Model.options.timestamps
+            || (options.touchDeletedAt === true &amp;&amp; this.Model.options.paranoid !== true)
+       ) {
+        return;
+    }
+
+    var data = this.getData();
+
+    var propNames = this.Model.$getTimestampPropertyNames();
+
+    var oldTimestamps = {};
+    oldTimestamps[propNames.createdAt] = data[propNames.createdAt];
+    oldTimestamps[propNames.updatedAt] = data[propNames.updatedAt];
+    oldTimestamps[propNames.deletedAt] = data[propNames.deletedAt];
+
+    if (_.isPlainObject(timestamps)) {
+        _.merge(data, timestamps);
+        return oldTimestamps;
+    }
+
+    var dateValidator = sanitizer.sanitizers[DataTypes.DATE];
+    var now = moment.utc().format();
+
+    try {
+        data[propNames.createdAt]  = dateValidator('', data[propNames.createdAt], {isNullable: false});
+    }catch(e) {
+        data[propNames.createdAt] = now;
+    }
+
+    data[propNames.updatedAt] = now;
+
+    if (options.touchDeletedAt === true) {
+
+        try {
+            data[propNames.deletedAt]  = dateValidator('', data[propNames.deletedAt], {isNullable: false});
+        } catch(e) {
+            data[propNames.deletedAt] = now;
+        }
+    }
+
+    return oldTimestamps;
+};
+
+/*
+ * inspect
+ *
+ * @private
+ * @return {string}
+ */
+Instance.prototype.inspect = function() {
+    var key = this.options &amp;&amp; this.options.key;
+    var cas = key &amp;&amp; this.options.cas;
+    var out = '[object CouchbaseInstance:\n';
+    out += "    key: '" + key + "'\n";
+    out += "    cas: " + cas;
+    out += "]";
+
+    return out;
+};
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 12 2016 11:09:04 GMT+0000 (UTC) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>

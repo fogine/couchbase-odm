@@ -1,0 +1,3468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Instance - Documentation</title>
+
+    <script src="scripts/prettify/prettify.js"></script>
+    <script src="scripts/prettify/lang-css.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+<body>
+
+<input type="checkbox" id="nav-trigger" class="nav-trigger" />
+<label for="nav-trigger" class="navicon-button x">
+  <div class="navicon"></div>
+</label>
+
+<label for="nav-trigger" class="overlay"></label>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Tutorials</h3><ul><li><a href="tutorial-1.gettingStarted.html">Getting Started</a></li><li><a href="tutorial-2.schemaDefinitionGuide.html">Model schema definition</a></li><li><a href="tutorial-3.quering.html">Quering</a></li><li><a href="tutorial-4.instances.html">Instances</a></li><li><a href="tutorial-5.hooks.html">Hooks</a></li><li><a href="tutorial-6.errors.html">Errors</a></li><li><a href="tutorial-7.customizingDocumentsKey.html">Customizing Document's Key</a></li></ul><h3>Classes</h3><ul><li><a href="CouchbaseODM.html">CouchbaseODM</a><ul class='methods'><li data-type='method'><a href="CouchbaseODM.html#define">define</a></li></ul></li><li><a href="Document.html">Document</a><ul class='methods'><li data-type='method'><a href="Document.html#getCAS">getCAS</a></li><li data-type='method'><a href="Document.html#getData">getData</a></li><li data-type='method'><a href="Document.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Document.html#getKey">getKey</a></li><li data-type='method'><a href="Document.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Document.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Document.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Document.html#insert">insert</a></li><li data-type='method'><a href="Document.html#remove">remove</a></li><li data-type='method'><a href="Document.html#replace">replace</a></li><li data-type='method'><a href="Document.html#setCAS">setCAS</a></li><li data-type='method'><a href="Document.html#setData">setData</a></li><li data-type='method'><a href="Document.html#setKey">setKey</a></li><li data-type='method'><a href="Document.html#touch">touch</a></li></ul></li><li><a href="DocumentError.html">DocumentError</a></li><li><a href="Hook.html">Hook</a><ul class='methods'><li data-type='method'><a href="Hook.html#addHook">addHook</a></li><li data-type='method'><a href="Hook.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Hook.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Hook.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Hook.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Hook.html#afterGet">afterGet</a></li><li data-type='method'><a href="Hook.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Hook.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Hook.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Hook.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Hook.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Hook.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Hook.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Hook.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#removeHook">removeHook</a></li><li data-type='method'><a href="Hook.html#runHooks">runHooks</a></li></ul></li><li><a href="HookError.html">HookError</a></li><li><a href="IncrementalKey.html">IncrementalKey</a><ul class='methods'><li data-type='method'><a href="IncrementalKey.html#clone">clone</a></li><li data-type='method'><a href="IncrementalKey.html#generate">generate</a></li><li data-type='method'><a href="IncrementalKey.html#getId">getId</a></li><li data-type='method'><a href="IncrementalKey.html#getOptions">getOptions</a></li><li data-type='method'><a href="IncrementalKey.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="IncrementalKey.html#parse">parse</a></li><li data-type='method'><a href="IncrementalKey.html#setId">setId</a></li><li data-type='method'><a href="IncrementalKey.html#toString">toString</a></li></ul></li><li><a href="Instance.html">Instance</a><ul class='methods'><li data-type='method'><a href="Instance.html#clone">clone</a></li><li data-type='method'><a href="Instance.html#cloneData">cloneData</a></li><li data-type='method'><a href="Instance.html#destroy">destroy</a></li><li data-type='method'><a href="Instance.html#getCAS">getCAS</a></li><li data-type='method'><a href="Instance.html#getData">getData</a></li><li data-type='method'><a href="Instance.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Instance.html#getKey">getKey</a></li><li data-type='method'><a href="Instance.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Instance.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Instance.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Instance.html#insert">insert</a></li><li data-type='method'><a href="Instance.html#refresh">refresh</a></li><li data-type='method'><a href="Instance.html#remove">remove</a></li><li data-type='method'><a href="Instance.html#replace">replace</a></li><li data-type='method'><a href="Instance.html#sanitize">sanitize</a></li><li data-type='method'><a href="Instance.html#save">save</a></li><li data-type='method'><a href="Instance.html#setCAS">setCAS</a></li><li data-type='method'><a href="Instance.html#setData">setData</a></li><li data-type='method'><a href="Instance.html#setKey">setKey</a></li><li data-type='method'><a href="Instance.html#toJSON">toJSON</a></li><li data-type='method'><a href="Instance.html#touch">touch</a></li><li data-type='method'><a href="Instance.html#update">update</a></li></ul></li><li><a href="InstanceError.html">InstanceError</a></li><li><a href="Key.html">Key</a><ul class='methods'><li data-type='method'><a href="Key.html#generate">generate</a></li><li data-type='method'><a href="Key.html#getId">getId</a></li><li data-type='method'><a href="Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="Key.html#parse">parse</a></li><li data-type='method'><a href="Key.html#setId">setId</a></li><li data-type='method'><a href="Key.html#toString">toString</a></li></ul></li><li><a href="KeyError.html">KeyError</a></li><li><a href="Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Model.html#addHook">addHook</a></li><li data-type='method'><a href="Model.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Model.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Model.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Model.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Model.html#afterGet">afterGet</a></li><li data-type='method'><a href="Model.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Model.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Model.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Model.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Model.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Model.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Model.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Model.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Model.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Model.html#build">build</a></li><li data-type='method'><a href="Model.html#buildKey">buildKey</a></li><li data-type='method'><a href="Model.html#create">create</a></li><li data-type='method'><a href="Model.html#getById">getById</a></li><li data-type='method'><a href="Model.html#getMulti">getMulti</a></li><li data-type='method'><a href="Model.html#remove">remove</a></li><li data-type='method'><a href="Model.html#removeHook">removeHook</a></li><li data-type='method'><a href="Model.html#runHooks">runHooks</a></li><li data-type='method'><a href="Model.html#toString">toString</a></li><li data-type='method'><a href="Model.html#touch">touch</a></li><li data-type='method'><a href="Model.html#unlock">unlock</a></li></ul></li><li><a href="ModelError.html">ModelError</a></li><li><a href="ModelManager.html">ModelManager</a><ul class='methods'><li data-type='method'><a href="ModelManager.html#add">add</a></li><li data-type='method'><a href="ModelManager.html#get">get</a></li><li data-type='method'><a href="ModelManager.html#getAll">getAll</a></li></ul></li><li><a href="StorageAdapter.html">StorageAdapter</a><ul class='methods'><li data-type='method'><a href="StorageAdapter.html#append">append</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsert">bulkInsert</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsertSync">bulkInsertSync</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemove">bulkRemove</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemoveSync">bulkRemoveSync</a></li><li data-type='method'><a href="StorageAdapter.html#counter">counter</a></li><li data-type='method'><a href="StorageAdapter.html#disconnect">disconnect</a></li><li data-type='method'><a href="StorageAdapter.html#enableN1ql">enableN1ql</a></li><li data-type='method'><a href="StorageAdapter.html#get">get</a></li><li data-type='method'><a href="StorageAdapter.html#getAndLock">getAndLock</a></li><li data-type='method'><a href="StorageAdapter.html#getAndTouch">getAndTouch</a></li><li data-type='method'><a href="StorageAdapter.html#getManager">getManager</a></li><li data-type='method'><a href="StorageAdapter.html#getReplica">getReplica</a></li><li data-type='method'><a href="StorageAdapter.html#insert">insert</a></li><li data-type='method'><a href="StorageAdapter.html#prepend">prepend</a></li><li data-type='method'><a href="StorageAdapter.html#query">query</a></li><li data-type='method'><a href="StorageAdapter.html#remove">remove</a></li><li data-type='method'><a href="StorageAdapter.html#replace">replace</a></li><li data-type='method'><a href="StorageAdapter.html#touch">touch</a></li><li data-type='method'><a href="StorageAdapter.html#unlock">unlock</a></li><li data-type='method'><a href="StorageAdapter.html#upsert">upsert</a></li></ul></li><li><a href="StorageError.html">StorageError</a></li><li><a href="StorageMultiError.html">StorageMultiError</a></li><li><a href="UUID4Key.html">UUID4Key</a><ul class='methods'><li data-type='method'><a href="UUID4Key.html#clone">clone</a></li><li data-type='method'><a href="UUID4Key.html#generate">generate</a></li><li data-type='method'><a href="UUID4Key.html#getId">getId</a></li><li data-type='method'><a href="UUID4Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="UUID4Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="UUID4Key.html#parse">parse</a></li><li data-type='method'><a href="UUID4Key.html#setId">setId</a></li><li data-type='method'><a href="UUID4Key.html#toString">toString</a></li></ul></li><li><a href="ValidationError.html">ValidationError</a></li></ul><h3>Modules</h3><ul><li><a href="Sanitizer_sanitizeData.html">Sanitizer:sanitizeData</a></li></ul><h3><a href="global.html">Global</a></h3>
+</nav>
+
+<div id="main">
+    
+    <h1 class="page-title">Instance</h1>
+    
+
+    
+
+
+
+
+<section>
+
+<header>
+    
+        <h2>
+        Instance
+        </h2>
+        
+    
+</header>
+
+<article>
+    <div class="container-overview">
+    
+        
+
+    
+
+    <h4 class="name" id="Instance"><span class="type-signature"></span>new Instance<span class="signature">(data, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"></span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>Instance</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">mixed</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last">
+                <h6>Properties</h6>
+                
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+        <th>Default</th>
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>key</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type"><a href="Key.html">Key</a></span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p><code>Key</code> instance representing primary key of the document</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>isNewRecord</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">boolean</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                    true
+                
+                </td>
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>cas</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">CAS</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+                <td class="default">
+                
+                </td>
+            
+
+            <td class="description last"><p>If the item on the server contains a different CAS value, the operation will fail. Note that if this option is undefined, no comparison will be performed.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+            </td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line39">line 39</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+<ul>
+        <li>
+
+    <div class="param-desc">
+    
+        
+<span class="param-type"><a href="DocumentError.html">DocumentError</a></span>
+
+
+    
+    </div>
+
+</li>
+    
+        <li>
+
+    <div class="param-desc">
+    
+        
+<span class="param-type"><a href="InstanceError.html">InstanceError</a></span>
+
+
+    
+    </div>
+
+</li>
+    
+        <li>
+
+    <div class="param-desc">
+    
+        
+<span class="param-type"><a href="ValidationError.html">ValidationError</a></span>
+
+
+    
+    </div>
+
+</li>
+    
+        <li>
+
+    <div class="param-desc">
+    
+        
+<span class="param-type">Error</span>
+
+
+    
+    </div>
+
+</li>
+    </ul>
+
+
+
+
+
+    
+    </div>
+
+    
+        <h3 class="subsection-title">Extends</h3>
+
+        
+
+
+    <ul>
+        <li><a href="Document.html">Document</a></li>
+    </ul>
+
+
+    
+
+    
+
+    
+
+     
+
+    
+
+    
+        <h3 class="subsection-title">Members</h3>
+
+        
+            
+<h4 class="name" id="toString"><span class="type-signature"></span>toString<span class="type-signature"></span></h4>
+
+
+
+
+<div class="description">
+    <p>toString</p>
+</div>
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#toString">Document#toString</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line261">line 261</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+        
+    
+
+    
+        <h3 class="subsection-title">Methods</h3>
+
+        
+            
+
+    
+
+    <h4 class="name" id="clone"><span class="type-signature"></span>clone<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Instance.html">Instance</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>clone</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line292">line 292</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Instance.html">Instance</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="cloneData"><span class="type-signature"></span>cloneData<span class="signature">()</span><span class="type-signature"> &rarr; {Mixed}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>cloneData</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line281">line 281</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Mixed</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="destroy"><span class="type-signature"></span>destroy<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>destroy</p>
+<p>deletes the document and all related reference documents from a bucket</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>See <code>StorageAdapter.remove</code> for available options</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line573">line 573</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getCAS"><span class="type-signature"></span>getCAS<span class="signature">()</span><span class="type-signature"> &rarr; {CAS|null}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>getCAS</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#getCAS">Document#getCAS</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line123">line 123</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">CAS</span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getData"><span class="type-signature"></span>getData<span class="signature">(property<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {mixed}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>getData</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>property</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#getData">Document#getData</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line86">line 86</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">mixed</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getGeneratedKey"><span class="type-signature"></span>getGeneratedKey<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Key.html">Key</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>getGeneratedKey</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#getGeneratedKey">Document#getGeneratedKey</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line152">line 152</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="Key.html">Key</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getKey"><span class="type-signature"></span>getKey<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="Key.html">Key</a>|string|null}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>getKey</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#getKey">Document#getKey</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line63">line 63</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Key.html">Key</a></span>
+|
+
+<span class="param-type">string</span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getSerializedData"><span class="type-signature"></span>getSerializedData<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;{mixed}>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>getSerializedData</p>
+<p>converts object's associations to json objects with single property with value
+of key string
+returns object's serialized data</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Document.html#getSerializedData">Document#getSerializedData</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line219">line 219</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;{mixed}></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="getStorageAdapter"><span class="type-signature"></span>getStorageAdapter<span class="signature">()</span><span class="type-signature"> &rarr; {<a href="StorageAdapter.html">StorageAdapter</a>|null}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>getStorageAdapter</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#getStorageAdapter">Document#getStorageAdapter</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line54">line 54</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="StorageAdapter.html">StorageAdapter</a></span>
+|
+
+<span class="param-type">null</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="hasCAS"><span class="type-signature"></span>hasCAS<span class="signature">()</span><span class="type-signature"> &rarr; {boolean}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>hasCAS</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#hasCAS">Document#hasCAS</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line132">line 132</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">boolean</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="insert"><span class="type-signature"></span>insert<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Instance.html">Instance</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>insert</p>
+<p>saves NEW document (fails if the document already exists in a bucket) to storage
+with all its reference documents, if an error occurs,
+an attempt for rollback is made, if the rollback fails,
+the <code>afterFailedRollback</code> hook is triggered.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>See <code>StorageAdapter.insert</code> for available options</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Document.html#insert">Document#insert</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line633">line 633</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="Instance.html">Instance</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="refresh"><span class="type-signature"></span>refresh<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Instance.html">Instance</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>refresh</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line344">line 344</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="Instance.html">Instance</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="remove"><span class="type-signature"></span>remove<span class="signature">(options)</span><span class="type-signature"> &rarr; {Promise.&lt;Object>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>remove</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>See StorageAdapter.remove for available options</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#remove">Document#remove</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line212">line 212</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;Object></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="replace"><span class="type-signature"></span>replace<span class="signature">(options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Instance.html">Instance</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>replace</p>
+<p>replaces (updates) current document (fails if the document with the key does not exists) in a bucket
+and synchronizes reference documents (indexes). If an error occur,
+an attempt for rollback is made, if the rollback fails,
+the <code>afterFailedRollback</code> hook is triggered for every document an atempt for rollback failed (includes failed refdocs ops)</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>See <code>StorageAdapter.replace</code> for available options</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Document.html#replace">Document#replace</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line690">line 690</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="Instance.html">Instance</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="sanitize"><span class="type-signature"></span>sanitize<span class="signature">()</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>sanitize</p>
+<p>validates &amp; tries to parse data values according to defined schema</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line121">line 121</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+<h5>Throws:</h5>
+
+        
+
+    <div class="param-desc">
+    
+        
+<span class="param-type"><a href="ValidationError.html">ValidationError</a></span>
+
+
+    
+    </div>
+
+
+    
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="save"><span class="type-signature"></span>save<span class="signature">()</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Instance.html">Instance</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>save</p>
+<p>shortcut method for calling <a href="Instance.html#replace"><code>Instance#replace</code></a> / <a href="Instance.html#insert"><code>Instance#insert</code></a>. if fresh instance is initialized
+and the data are not persisted to bucket yet, <code>insert</code> is called. If the Instance
+is already persisted, data are updated with <code>replace</code> method</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line525">line 525</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="Instance.html">Instance</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setCAS"><span class="type-signature"></span>setCAS<span class="signature">(cas)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>setCAS</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>cas</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">CAS</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#setCAS">Document#setCAS</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line143">line 143</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setData"><span class="type-signature"></span>setData<span class="signature">(property<span class="signature-attributes">opt</span>, data)</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>setData</p>
+<p>override <code>Document.prototype.setData</code></p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>property</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">mixed</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-overrides">Overrides:</dt>
+    <dd class="tag-overrides"><ul class="dummy"><li>
+        <a href="Document.html#setData">Document#setData</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line317">line 317</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+    <h5>Example</h5>
+    
+    <pre class="prettyprint"><code>instance.setData({some: 'data'}) //overwrites instance data
+instance.setData('username', 'fogine') //writes to `username` property on data object</code></pre>
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="setKey"><span class="type-signature"></span>setKey<span class="signature">()</span><span class="type-signature"> &rarr; {undefined}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>setKey</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#setKey">Document#setKey</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line72">line 72</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">undefined</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="toJSON"><span class="type-signature"></span>toJSON<span class="signature">()</span><span class="type-signature"> &rarr; {Object}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>toJSON</p>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line810">line 810</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Object</span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="touch"><span class="type-signature"></span>touch<span class="signature">(expiry, options)</span><span class="type-signature"> &rarr; {Promise.&lt;<a href="Document.html">Document</a>>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>touch</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>expiry</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">integer</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>time in seconds</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>see <a href="StorageAdapter.html#touch"><code>StorageAdapter#touch</code></a> for available options</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+    <dt class="inherited-from">Inherited From:</dt>
+    <dd class="inherited-from"><ul class="dummy"><li>
+        <a href="Document.html#touch">Document#touch</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_document.js.html">lib/document.js</a>, <a href="lib_document.js.html#line229">line 229</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">Promise.&lt;<a href="Document.html">Document</a>></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+            
+
+    
+
+    <h4 class="name" id="update"><span class="type-signature"></span>update<span class="signature">(data, options<span class="signature-attributes">opt</span>)</span><span class="type-signature"> &rarr; {<a href="Instance.html">Instance</a>}</span></h4>
+
+    
+
+
+
+<div class="description">
+    <p>update</p>
+<p>This is the same as seting data on the instance and then calling <a href="Instance.html#save"><code>Instance#save</code></a>,
+(respectively <a href="Instance.html#replace"><code>Instance#replace</code></a>) but this only updates the exact values passed to it,
+making it more atomic.</p>
+</div>
+
+
+
+
+
+
+
+
+
+    <h5>Parameters:</h5>
+    
+
+<table class="params">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+        <th>Attributes</th>
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>see <a href="StorageAdapter.html#replace"><code>StorageAdapter#replace</code></a> for available options</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+
+
+
+
+
+<dl class="details">
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <dt class="tag-source">Source:</dt>
+    <dd class="tag-source"><ul class="dummy"><li>
+        <a href="lib_instance.js.html">lib/instance.js</a>, <a href="lib_instance.js.html#line544">line 544</a>
+    </li></ul></dd>
+    
+
+    
+
+    
+
+    
+</dl>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<h5>Returns:</h5>
+
+        
+
+
+<dl class="param-type">
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="Instance.html">Instance</a></span>
+
+
+    </dd>
+</dl>
+
+    
+
+
+
+        
+    
+
+    
+
+    
+</article>
+
+</section>
+
+
+
+
+</div>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu May 12 2016 11:09:04 GMT+0000 (UTC) using the Minami theme.
+</footer>
+
+<script>prettyPrint();</script>
+<script src="scripts/linenumber.js"></script>
+</body>
+</html>
