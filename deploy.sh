@@ -18,12 +18,18 @@ function doCompile {
         exit 0
     fi
 
+    #test if docs directory exists
     bckpwd=$PWD
     cd $docpath
     cd $bckpwd
 
     mv $docpath/** . && rmdir $docpath && rmdir $docdir
     cd ..
+
+    #remove everything except the docs and the .git folder
+    shopt -s extglob                # enables extglob
+    rm -rf !(docs|.git|..|.)
+    shopt -u extglob                # disables extglob
 }
 
 # Pull requests and commits to other branches shouldn't try to deploy, just build to verify
