@@ -2,6 +2,7 @@
   "name": "kouchbase-odm",
   "version": "1.0.0-rc.1f",
   "author": "fogine <fogine@opmbx.org",
+  "keywords": ["couchbase", "odm", "couchbase-odm", "promise"],
   "description": "Couchbase Promise based ODM",
   "private": false,
   "scripts": {
