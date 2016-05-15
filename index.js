@@ -118,10 +118,14 @@ CouchbaseODM.prototype.define = function(name, schema, options) {
         }
     });
 
-    options = _.merge({}, this.options, options || {});
+    var opt = _.merge({}, this.options);
+    options = _.mergeWith(opt, options || {}, function(objValue, srcValue, key) {
+        if (key === 'bucket') {
+            return srcValue;
+        }
+    });
 
     var model = new Model(name, schema, options);
-
     model.$init(this.modelManager);
 
     this.modelManager.add(model);
