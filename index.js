@@ -76,6 +76,8 @@ function CouchbaseODM(options) {
         }
     };
 
+    var self = this;
+
     /**
      * @instance
      * @type {ModelManager}
@@ -85,8 +87,8 @@ function CouchbaseODM(options) {
 
     //Transform mapped hooks of type to collection of hooks if not collection already
     Object.keys(this.options.hooks || {}).forEach(function(hookType) {
-        if (!(this.options.hooks[hookType] instanceof Array)) {
-            this.options.hooks[hookType] = [this.options.hooks[hookType]];
+        if (!(self.options.hooks[hookType] instanceof Array)) {
+            self.options.hooks[hookType] = [self.options.hooks[hookType]];
         }
     });
 }
