@@ -6,8 +6,16 @@
     "couchbase",
     "odm",
     "couchbase-odm",
-    "promise"
+    "promise",
+    "n1ql"
   ],
+  "repository" : {
+      "type" : "git",
+      "url" : "https://github.com/fogine/couchbase-odm.git"
+  },
+  "bugs": {
+      "url": "https://github.com/fogine/couchbase-odm/issues"
+  },
   "description": "Couchbase Promise based ODM",
   "private": false,
   "scripts": {
