@@ -1,5 +1,6 @@
 tutorials/
 tests/
+.tern-project
 .travis.yml
 deploy.sh
 deploy_key.enc
