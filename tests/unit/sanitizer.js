@@ -398,7 +398,7 @@ describe("Sanitizer", function() {
             var data = {
                 username: null,
                 address: undefined,
-                age: null,//this should throw when validating
+                //age: null,//this should throw when validating
                 created_at: new Date()
             };
 
@@ -406,7 +406,7 @@ describe("Sanitizer", function() {
                 .to.throw(ValidationError);
         });
 
-        it("should NOT include data received from bucket which are not in schema definition if `includeUnlisted` options is NOT set", function() {
+        it("should NOT include data which are not in schema definition if `includeUnlisted` options is NOT set", function() {
             var data = {
                 username: 'test',
                 address: {
