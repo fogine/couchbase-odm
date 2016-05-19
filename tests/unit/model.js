@@ -383,14 +383,18 @@ describe('Model', function() {
 
             var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
 
-            var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541');
+            var options = {
+                hooks: true,
+                paranoid: false
+            };
+            var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', options);
 
             return promise.should.be.fulfilled.then(function(doc){
                 self.getStub.should.have.been.calledOnce;
-                hookStub.firstCall.should.have.been.calledWith(ODM.Hook.types.beforeGet);
+                hookStub.firstCall.should.have.been.calledWith(ODM.Hook.types.beforeGet, doc.getKey(), options);
                 //does not work for some misterious reason.. probably bug
                 //expect(hookStub.firstCall).to.have.been.calledBefore(self.getStub);
-                hookStub.secondCall.should.have.been.calledWith(ODM.Hook.types.afterGet);
+                hookStub.secondCall.should.have.been.calledWith(ODM.Hook.types.afterGet, doc, options);
                 hookStub.should.have.been.calledTwice;
                 hookStub.restore();
             });

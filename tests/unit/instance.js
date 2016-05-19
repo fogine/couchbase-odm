@@ -881,7 +881,11 @@ describe('Instance', function() {
                 this.user.Model.beforeDestroy(beforeDestroyHookStub, 'testhook');
                 this.user.Model.afterDestroy(afterDestroyHookStub, 'testhook');
 
-                var promise = this.user.destroy();
+                var options = {
+                    persist_to: 2
+                };
+
+                var promise = this.user.destroy(options);
 
                 return promise.should.be.fulfilled.then(function(result) {
 
@@ -891,7 +895,7 @@ describe('Instance', function() {
 
                     afterDestroyHookStub.should.have.been.calledOnce;
                     afterDestroyHookStub.should.have.been.calledAfter(self.removeStub);
-                    afterDestroyHookStub.should.have.been.calledWith(self.user);
+                    afterDestroyHookStub.should.have.been.calledWith(self.user, options);
 
                     self.user.Model.removeHook('beforeDestroy', 'testhook');
                     self.user.Model.removeHook('afterDestroy', 'testhook');
@@ -1096,7 +1100,7 @@ describe('Instance', function() {
                 this.user.setCAS(undefined);
             });
 
-            it('should call defined `beforeInsert` and `afterInsert` hooks before and after insert process', function() {
+            it('should call defined `beforeCreate` and `afterCreate` hooks before and after insert process', function() {
                 var self = this;
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
@@ -1107,17 +1111,21 @@ describe('Instance', function() {
                 this.user.Model.beforeCreate(beforeCreateHookStub, 'testhook');
                 this.user.Model.afterCreate(afterCreateHookStub, 'testhook');
 
-                var promise = this.user.insert();
+                var options = {
+                    expiry: 3600
+                };
+
+                var promise = this.user.insert(options);
 
                 return promise.should.be.fulfilled.then(function(result) {
 
                     beforeCreateHookStub.should.have.been.calledOnce;
                     beforeCreateHookStub.should.have.been.calledBefore(self.insertStub);
-                    beforeCreateHookStub.should.have.been.calledWith(self.user);
+                    beforeCreateHookStub.should.have.been.calledWith(self.user, options);
 
                     afterCreateHookStub.should.have.been.calledOnce;
                     afterCreateHookStub.should.have.been.calledAfter(self.insertStub);
-                    afterCreateHookStub.should.have.been.calledWith(self.user);
+                    afterCreateHookStub.should.have.been.calledWith(self.user, options);
 
                     self.user.Model.removeHook('beforeCreate', 'testhook');
                     self.user.Model.removeHook('afterCreate', 'testhook');
@@ -1308,7 +1316,11 @@ describe('Instance', function() {
                 this.user.Model.beforeUpdate(beforeUpdateHookStub, 'testhook');
                 this.user.Model.afterUpdate(afterUpdateHookStub, 'testhook');
 
-                var promise = this.user.replace();
+                var options = {
+                    expiry: 9000
+                };
+
+                var promise = this.user.replace(options);
 
                 promise.catch(function(err) {
                     console.log(err.stack);
@@ -1318,11 +1330,11 @@ describe('Instance', function() {
 
                     beforeUpdateHookStub.should.have.been.calledOnce;
                     beforeUpdateHookStub.should.have.been.calledBefore(self.replaceStub);
-                    beforeUpdateHookStub.should.have.been.calledWith(self.user);
+                    beforeUpdateHookStub.should.have.been.calledWith(self.user, options);
 
                     afterUpdateHookStub.should.have.been.calledOnce;
                     afterUpdateHookStub.should.have.been.calledAfter(self.replaceStub);
-                    afterUpdateHookStub.should.have.been.calledWith(self.user);
+                    afterUpdateHookStub.should.have.been.calledWith(self.user, options);
 
                     self.user.Model.removeHook('beforeUpdate', 'testhook');
                     self.user.Model.removeHook('afterUpdate', 'testhook');
