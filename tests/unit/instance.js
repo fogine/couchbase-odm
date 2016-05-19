@@ -1081,7 +1081,7 @@ describe('Instance', function() {
                         };
 
                         afterFailedRollbackStub.should.have.been.calledOnce;
-                        afterFailedRollbackStub.should.have.been.calledWith(reportObj);
+                        afterFailedRollbackStub.should.have.been.calledWith(storageErr, reportObj);
 
                         self.user.Model.removeHook('afterFailedRollback', 'testhook');
                     });
@@ -1282,7 +1282,7 @@ describe('Instance', function() {
                         };
 
                         afterFailedRollbackStub.should.have.been.calledOnce;
-                        afterFailedRollbackStub.should.have.been.calledWith(reportObj);
+                        afterFailedRollbackStub.should.have.been.calledWith(storageErr, reportObj);
 
                         self.user.Model.removeHook('afterFailedRollback', 'testhook');
                     });
@@ -1563,7 +1563,7 @@ describe('Instance', function() {
                         };
 
                         afterFailedRollbackStub.should.have.been.calledOnce;
-                        afterFailedRollbackStub.should.have.been.calledWith(reportObj);
+                        afterFailedRollbackStub.should.have.been.calledWith(storageErr, reportObj);
 
                         self.user.Model.removeHook('afterFailedRollback', 'testhook');
                     });
