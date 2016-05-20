@@ -9,4 +9,4 @@ node_modules/
 coverage/
 *.vim
 npm-debug.log
-
+.jsdoc.json
