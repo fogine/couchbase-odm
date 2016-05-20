@@ -17,16 +17,19 @@ Features
 * Promises!
 * Model based
 * Hooks
+* Key generation strategies (eg. incremented integer or uuidv4)
 * Advanced quering:
     * Application layer indexes (reference documents)
     * `Views` support (*next minor release*)
     * `N1QL` support (*on Roadmap*)
+* and more (see Public API Reference)!
 
 Resources
 -------------------
 * [Getting Started](http://fogine.github.io/couchbase-odm/tutorial-1.gettingStarted.html)
 * [Documentation](http://fogine.github.io/couchbase-odm/tutorial-1.gettingStarted.html)
 * [Public API Reference](http://fogine.github.io/couchbase-odm/CouchbaseODM.html)
+* [Changelog](./CHANGELOG.md)
 
 Tests
 -------------------
