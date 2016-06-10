@@ -18,6 +18,8 @@ Features
 * Model based
 * Hooks
 * Key generation strategies (eg. incremented integer or uuidv4)
+* Strictly typed schema definitions
+* Document associations
 * Advanced quering:
     * Application layer indexes (reference documents)
     * `Views` support (*next minor release*)
