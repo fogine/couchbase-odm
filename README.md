@@ -17,7 +17,7 @@ Features
 * Promises!
 * Model based
 * Hooks
-* Key generation strategies (eg. incremented integer or uuidv4)
+* Key generation strategies (eg. incremented integer, uuidv4 or user defined strategies)
 * Strictly typed schema definitions
 * Document associations
 * Advanced quering:
