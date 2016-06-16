@@ -466,6 +466,37 @@ describe('StorageAdapter', function() {
         });
     });
 
+    describe('exists', function() {
+
+        it('should return a Promise', function() {
+            this.storageAdapter.exists('key').should.be.an.instanceof(Promise);
+        });
+
+        it('should call `bucket.insert` with given key and return false, signalizing that the document does NOT exists', function() {
+            var key = 'key';
+
+            return this.storageAdapter.exists(key).bind(this).then(function(result) {
+                result.should.be.equal(false);
+                this.stubInsert.should.have.been.calledWith(key, true, {expiry: 1});
+                this.stubInsert.should.have.been.calledOnce;
+            });
+        });
+
+        it('should call `bucket.insert` with given key and return true, signalizing that the document exists', function() {
+            var key = 'key2';
+            var err = new Error();
+            err.code = this.StorageAdapter.errorCodes.keyAlreadyExists;
+
+            this.stubInsert.yields(err);
+
+            return this.storageAdapter.exists(key).bind(this).then(function(result) {
+                result.should.be.equal(true);
+                this.stubInsert.should.have.been.calledWith(key, true, {expiry: 1});
+                this.stubInsert.should.have.been.calledOnce;
+            });
+        });
+    });
+
     describe('disconnect', function() {
 
         it('should call `bucket.disconnect`', function() {
