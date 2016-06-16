@@ -1,5 +1,4 @@
 var _            = require("lodash");
-var couchbaseSDK = require('couchbase');
 
 var InstanceError           = require("./lib/error/instanceError.js");
 var DocumentError           = require("./lib/error/documentError.js");
@@ -144,7 +143,7 @@ CouchbaseODM.prototype.define = function(name, schema, options) {
  * @property {StorageError}      StorageError
  * @property {StorageMultiError} StorageMultiError
  * @property {ValidationError}   ValidationError
- * @property {CouchbaseSDKError} couchbaseSDK.CouchbaseError
+ * @property {CouchbaseError}    StorageAdapter.CouchbaseError - native couchbase sdk error object
  */
 
 /**
@@ -164,24 +163,8 @@ CouchbaseODM.errors = CouchbaseODM.prototype.errors = {
     StorageError      : StorageError,
     StorageMultiError : StorageMultiError,
     ValidationError   : ValidationError,
-    CouchbaseSDKError : couchbaseSDK.Error
+    CouchbaseError    : StorageAdapter.CouchbaseError
 };
-
-
-
-/**
- * @name CouchbaseODM.errorCodes
- * mirrors native couchbase sdk require('couchbase').errors
- * @type {Object}
- */
-CouchbaseODM.errorCodes = couchbaseSDK.errors;
-
-/**
- * @name CouchbaseODM.prototype.errorCodes
- * mirrors native couchbase sdk require('couchbase').errors
- * @type {Object}
- */
-CouchbaseODM.prototype.errorCodes = couchbaseSDK.errors;
 
 CouchbaseODM.Key            = CouchbaseODM.prototype.Key            = Key;
 CouchbaseODM.UUID4Key       = CouchbaseODM.prototype.UUID4Key       = UUID4Key;
