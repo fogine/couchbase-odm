@@ -1,4 +1,5 @@
-var _  = require("lodash");
+var _            = require("lodash");
+var couchbaseSDK = require('couchbase');
 
 var InstanceError           = require("./lib/error/instanceError.js");
 var DocumentError           = require("./lib/error/documentError.js");
@@ -143,13 +144,19 @@ CouchbaseODM.prototype.define = function(name, schema, options) {
  * @property {StorageError}      StorageError
  * @property {StorageMultiError} StorageMultiError
  * @property {ValidationError}   ValidationError
+ * @property {CouchbaseSDKError} couchbaseSDK.CouchbaseError
+ */
+
+/**
+ * @name CouchbaseODM.prototype.errors
+ * @type {ErrorList}
  */
 
 /**
  * @name CouchbaseODM.errors
  * @type {ErrorList}
  */
-CouchbaseODM.errors = {
+CouchbaseODM.errors = CouchbaseODM.prototype.errors = {
     InstanceError     : InstanceError,
     ModelError        : ModelError,
     DocumentError     : DocumentError,
@@ -157,23 +164,42 @@ CouchbaseODM.errors = {
     StorageError      : StorageError,
     StorageMultiError : StorageMultiError,
     ValidationError   : ValidationError,
-}
+    CouchbaseSDKError : couchbaseSDK.Error
+};
 
-CouchbaseODM.Key            = Key;
-CouchbaseODM.UUID4Key       = UUID4Key;
-CouchbaseODM.IncrementalKey = IncrementalKey;
-CouchbaseODM.RefDocKey      = RefDocKey;
-CouchbaseODM.DataTypes      = DataTypes;
-CouchbaseODM.Operation      = Operation;
-CouchbaseODM.Instance       = Instance;
-CouchbaseODM.Document       = Document;
-CouchbaseODM.Model          = Model;
-CouchbaseODM.ModelManager   = ModelManager;
-CouchbaseODM.Sanitizer      = Sanitizer;
-CouchbaseODM.StorageAdapter = StorageAdapter;
-CouchbaseODM.Hook           = Hook;
+
+
+/**
+ * @name CouchbaseODM.errorCodes
+ * mirrors native couchbase sdk require('couchbase').errors
+ * @type {Object}
+ */
+CouchbaseODM.errorCodes = couchbaseSDK.errors;
+
+/**
+ * @name CouchbaseODM.prototype.errorCodes
+ * mirrors native couchbase sdk require('couchbase').errors
+ * @type {Object}
+ */
+CouchbaseODM.prototype.errorCodes = couchbaseSDK.errors;
+
+CouchbaseODM.Key            = CouchbaseODM.prototype.Key            = Key;
+CouchbaseODM.UUID4Key       = CouchbaseODM.prototype.UUID4Key       = UUID4Key;
+CouchbaseODM.IncrementalKey = CouchbaseODM.prototype.IncrementalKey = IncrementalKey;
+CouchbaseODM.RefDocKey      = CouchbaseODM.prototype.RefDocKey      = RefDocKey;
+CouchbaseODM.DataTypes      = CouchbaseODM.prototype.DataTypes      = DataTypes;
+CouchbaseODM.Operation      = CouchbaseODM.prototype.Operation      = Operation;
+CouchbaseODM.Instance       = CouchbaseODM.prototype.Instance       = Instance;
+CouchbaseODM.Document       = CouchbaseODM.prototype.Document       = Document;
+CouchbaseODM.Model          = CouchbaseODM.prototype.Model          = Model;
+CouchbaseODM.ModelManager   = CouchbaseODM.prototype.ModelManager   = ModelManager;
+CouchbaseODM.Sanitizer      = CouchbaseODM.prototype.Sanitizer      = Sanitizer;
+CouchbaseODM.StorageAdapter = CouchbaseODM.prototype.StorageAdapter = StorageAdapter;
+CouchbaseODM.Hook           = CouchbaseODM.prototype.Hook           = Hook;
 
 module.exports = CouchbaseODM;
+
+//============= STATIC members ==============
 
 /**
  * @name CouchbaseODM.Key
@@ -237,6 +263,73 @@ module.exports = CouchbaseODM;
 
 /**
  * @name CouchbaseODM.Hook
+ * @type Hook
+ */
+
+//============= INSTANCE members ==============
+
+/**
+ * @name CouchbaseODM.prototype.Key
+ * @type Key
+ */
+
+/**
+ * @name CouchbaseODM.prototype.UUID4Key
+ * @type UUID4Key
+ */
+
+/**
+ * @name CouchbaseODM.prototype.IncrementalKey
+ * @type IncrementalKey
+ */
+
+/**
+ * @name CouchbaseODM.prototype.RefDocKey
+ * @type RefDocKey
+ */
+
+/**
+ * @name CouchbaseODM.prototype.DataTypes
+ * @type DataTypes
+ */
+
+/**
+ * @name CouchbaseODM.prototype.Operation
+ * @type Operation
+ */
+
+/**
+ * @name CouchbaseODM.prototype.Instance
+ * @type Instance
+ */
+
+/**
+ * @name CouchbaseODM.prototype.Document
+ * @type Document
+ */
+
+/**
+ * @name CouchbaseODM.prototype.Model
+ * @type Model
+ */
+
+/**
+ * @name CouchbaseODM.prototype.ModelManager
+ * @type ModelManager
+ */
+
+/**
+ * @name CouchbaseODM.prototype.Sanitizer
+ * @type Sanitizer
+ */
+
+/**
+ * @name CouchbaseODM.prototype.StorageAdapter
+ * @type StorageAdapter
+ */
+
+/**
+ * @name CouchbaseODM.prototype.Hook
  * @type Hook
  */
 
