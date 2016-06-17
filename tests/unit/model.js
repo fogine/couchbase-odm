@@ -704,4 +704,44 @@ describe('Model', function() {
             });
         });
     });
+
+    describe('exists', function() {
+        it('should call `StorageAdapter.exists` method with provided `Key` object', function() {
+            var model = this.buildModel('Test17', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+
+            var existsStub = sinon.stub(model.storage, 'exists').returns(Promise.resolve({}));
+
+            var promise = model.exists(key);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                existsStub.should.have.been.calledWith(key);
+                existsStub.should.have.been.calledOnce;
+            });
+        });
+
+        it('should allow to provide an `id` value instead of whole `Key` object', function() {
+            var model = this.buildModel('Test18', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+
+            var existsStub = sinon.stub(model.storage, 'exists').returns(Promise.resolve({}));
+
+            var promise = model.exists(id);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                var keyArg = existsStub.args[0][0];
+                keyArg.should.be.an.instanceof(model.Key);
+                keyArg.getId().should.be.equal(id);
+                existsStub.should.have.been.calledOnce;
+            });
+        });
+    });
 });
