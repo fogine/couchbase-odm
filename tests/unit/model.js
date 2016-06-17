@@ -664,4 +664,44 @@ describe('Model', function() {
             });
         });
     });
+
+    describe('unlock', function() {
+        it('should call `StorageAdapter.unlock` method with provided `Key` object', function() {
+            var model = this.buildModel('Test15', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+
+            var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
+
+            var promise = model.unlock(key);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                unlockStub.should.have.been.calledWith(key);
+                unlockStub.should.have.been.calledOnce;
+            });
+        });
+
+        it('should allow to provide an `id` value instead of whole `Key` object', function() {
+            var model = this.buildModel('Test16', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+
+            var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
+
+            var promise = model.unlock(id);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                var keyArg = unlockStub.args[0][0];
+                keyArg.should.be.an.instanceof(model.Key);
+                keyArg.getId().should.be.equal(id);
+                unlockStub.should.have.been.calledOnce;
+            });
+        });
+    });
 });
