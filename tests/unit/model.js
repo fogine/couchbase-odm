@@ -624,4 +624,44 @@ describe('Model', function() {
             });
         });
     });
+
+    describe('touch', function() {
+        it('should call `StorageAdapter.touch` method with provided `Key` object', function() {
+            var model = this.buildModel('Test13', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+
+            var touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
+
+            var promise = model.touch(key);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                touchStub.should.have.been.calledWith(key);
+                touchStub.should.have.been.calledOnce;
+            });
+        });
+
+        it('should allow to provide an `id` value instead of whole `Key` object', function() {
+            var model = this.buildModel('Test14', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+
+            var touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
+
+            var promise = model.touch(id);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                var keyArg = touchStub.args[0][0];
+                keyArg.should.be.an.instanceof(model.Key);
+                keyArg.getId().should.be.equal(id);
+                touchStub.should.have.been.calledOnce;
+            });
+        });
+    });
 });
