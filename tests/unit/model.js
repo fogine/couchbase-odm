@@ -309,6 +309,37 @@ describe('Model', function() {
                 instance.should.have.been.an.instanceof(model.Instance);
             });
         });
+
+        it('should allow to define a `Key` object under which document should be created', function() {
+            var model = this.buildModel('Test11', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+            var insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
+
+            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+
+            var promise = model.create(5, {key: key});
+            return promise.should.have.been.fulfilled.then(function(instance) {
+                insertStub.should.have.been.calledWith(key);
+            });
+        });
+
+        it('should allow to define an `id` string value a document should be saved with', function() {
+            var model = this.buildModel('Test11', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+            var insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
+
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+
+            var promise = model.create(5, {key: id});
+            return promise.should.have.been.fulfilled.then(function(instance) {
+                expect(insertStub.args[0][0]).to.be.an.instanceof(model.Key);
+                expect(insertStub.args[0][0].getId()).to.be.equal(id);
+            });
+        });
     });
 
     describe('getById', function() {
