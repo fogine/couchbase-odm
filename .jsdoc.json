@@ -12,7 +12,23 @@
         "plugins/markdown"
     ],
     "templates": {
-        "cleverLinks": false,
+        "applicationName": "Couchbase ODM",
+        "disqus": "couchbase-odm",
+        "googleAnalytics": "",
+        "openGraph": {
+            "title": "Couchbase ODM",
+            "type": "website",
+            "image": "",
+            "site_name": "",
+            "url": ""
+        },
+        "meta": {
+            "title": "",
+            "description": "",
+            "keyword": "couchbase odm promise n1ql views"
+        },
+        "linenums": true,
+        "cleverLinks": true,
         "monospaceLinks": true,
         "default": {
             "staticFiles": {
@@ -25,6 +41,7 @@
         "encoding": "utf8",
         "private": false,
         "recurse": true,
-        "template": "./node_modules/@fogine/minami"
+        "template": "./node_modules/realm-jsdoc/template"
+
     }
 }
