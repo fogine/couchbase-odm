@@ -1,59 +1,824 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
-    <title>Tutorial: Views (next minor release) - Documentation</title>
+    <title>Tutorial: Views (next minor release)</title>
+    
+    
+    
+        <meta name="keywords" content="couchbase odm promise n1ql views" />
+        <meta name="keyword" content="couchbase odm promise n1ql views" />
+    
+    
+    
+    <meta property="og:title" content="Couchbase ODM"/>
+    <meta property="og:type" content="website"/>
+    <meta property="og:image" content=""/>
+    
+    <meta property="og:url" content=""/>
+    
 
-    <script src="scripts/prettify/prettify.js"></script>
-    <script src="scripts/prettify/lang-css.js"></script>
+    <link type="text/css" rel="stylesheet" href="styles/normalize.css">
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/bootstrap.min.css">
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link type="text/css" rel="stylesheet" href="styles/ui.css">
+
+    <script src="scripts/prettify/prettify.js" defer></script>
+    <script src="scripts/prettify/lang-css.js" defer></script>
+    <script src="scripts/jquery.min.js" defer></script>
+    <script src="scripts/bootstrap.min.js" defer></script>
+    <script src="scripts/linenumber.js" defer></script>
+    <script src="scripts/main.js" defer></script>
     <!--[if lt IE 9]>
       <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
-    <link type="text/css" rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
-    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
-    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+
+    
+    <script>
+    var config = {"monospaceLinks":true,"cleverLinks":true,"applicationName":"Couchbase ODM","disqus":"couchbase-odm","googleAnalytics":"","openGraph":{"title":"Couchbase ODM","type":"website","image":"","site_name":"","url":""},"meta":{"title":"","description":"","keyword":"couchbase odm promise n1ql views"},"linenums":true,"default":{"staticFiles":{"include":["./tutorials/images"]}}};
+    </script>
+    
+
+    
 </head>
-<body>
-
-<input type="checkbox" id="nav-trigger" class="nav-trigger" />
-<label for="nav-trigger" class="navicon-button x">
-  <div class="navicon"></div>
-</label>
-
-<label for="nav-trigger" class="overlay"></label>
-
-<nav>
-    <h2><a href="index.html">Home</a></h2><h3>Tutorials</h3><ul><li><a href="tutorial-1.gettingStarted.html">Getting Started</a></li><li><a href="tutorial-2.schemaDefinitionGuide.html">Model schema definition</a></li><li><a href="tutorial-3.quering.html">Quering</a></li><li><a href="tutorial-4.instances.html">Instances</a></li><li><a href="tutorial-5.hooks.html">Hooks</a></li><li><a href="tutorial-6.errors.html">Errors</a></li><li><a href="tutorial-7.customizingDocumentsKey.html">Customizing Document's Key</a></li></ul><h3>Classes</h3><ul><li><a href="CouchbaseODM.html">CouchbaseODM</a><ul class='methods'><li data-type='method'><a href="CouchbaseODM.html#define">define</a></li></ul></li><li><a href="Document.html">Document</a><ul class='methods'><li data-type='method'><a href="Document.html#getCAS">getCAS</a></li><li data-type='method'><a href="Document.html#getData">getData</a></li><li data-type='method'><a href="Document.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Document.html#getKey">getKey</a></li><li data-type='method'><a href="Document.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Document.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Document.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Document.html#insert">insert</a></li><li data-type='method'><a href="Document.html#remove">remove</a></li><li data-type='method'><a href="Document.html#replace">replace</a></li><li data-type='method'><a href="Document.html#setCAS">setCAS</a></li><li data-type='method'><a href="Document.html#setData">setData</a></li><li data-type='method'><a href="Document.html#setKey">setKey</a></li><li data-type='method'><a href="Document.html#touch">touch</a></li></ul></li><li><a href="DocumentError.html">DocumentError</a></li><li><a href="Hook.html">Hook</a><ul class='methods'><li data-type='method'><a href="Hook.html#addHook">addHook</a></li><li data-type='method'><a href="Hook.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Hook.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Hook.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Hook.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Hook.html#afterGet">afterGet</a></li><li data-type='method'><a href="Hook.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Hook.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Hook.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Hook.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Hook.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Hook.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Hook.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Hook.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Hook.html#removeHook">removeHook</a></li><li data-type='method'><a href="Hook.html#runHooks">runHooks</a></li></ul></li><li><a href="HookError.html">HookError</a></li><li><a href="IncrementalKey.html">IncrementalKey</a><ul class='methods'><li data-type='method'><a href="IncrementalKey.html#clone">clone</a></li><li data-type='method'><a href="IncrementalKey.html#generate">generate</a></li><li data-type='method'><a href="IncrementalKey.html#getId">getId</a></li><li data-type='method'><a href="IncrementalKey.html#getOptions">getOptions</a></li><li data-type='method'><a href="IncrementalKey.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="IncrementalKey.html#parse">parse</a></li><li data-type='method'><a href="IncrementalKey.html#setId">setId</a></li><li data-type='method'><a href="IncrementalKey.html#toString">toString</a></li></ul></li><li><a href="Instance.html">Instance</a><ul class='methods'><li data-type='method'><a href="Instance.html#clone">clone</a></li><li data-type='method'><a href="Instance.html#cloneData">cloneData</a></li><li data-type='method'><a href="Instance.html#destroy">destroy</a></li><li data-type='method'><a href="Instance.html#getCAS">getCAS</a></li><li data-type='method'><a href="Instance.html#getData">getData</a></li><li data-type='method'><a href="Instance.html#getGeneratedKey">getGeneratedKey</a></li><li data-type='method'><a href="Instance.html#getKey">getKey</a></li><li data-type='method'><a href="Instance.html#getSerializedData">getSerializedData</a></li><li data-type='method'><a href="Instance.html#getStorageAdapter">getStorageAdapter</a></li><li data-type='method'><a href="Instance.html#hasCAS">hasCAS</a></li><li data-type='method'><a href="Instance.html#insert">insert</a></li><li data-type='method'><a href="Instance.html#refresh">refresh</a></li><li data-type='method'><a href="Instance.html#remove">remove</a></li><li data-type='method'><a href="Instance.html#replace">replace</a></li><li data-type='method'><a href="Instance.html#sanitize">sanitize</a></li><li data-type='method'><a href="Instance.html#save">save</a></li><li data-type='method'><a href="Instance.html#setCAS">setCAS</a></li><li data-type='method'><a href="Instance.html#setData">setData</a></li><li data-type='method'><a href="Instance.html#setKey">setKey</a></li><li data-type='method'><a href="Instance.html#toJSON">toJSON</a></li><li data-type='method'><a href="Instance.html#touch">touch</a></li><li data-type='method'><a href="Instance.html#update">update</a></li></ul></li><li><a href="InstanceError.html">InstanceError</a></li><li><a href="Key.html">Key</a><ul class='methods'><li data-type='method'><a href="Key.html#clone">clone</a></li><li data-type='method'><a href="Key.html#generate">generate</a></li><li data-type='method'><a href="Key.html#getId">getId</a></li><li data-type='method'><a href="Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="Key.html#parse">parse</a></li><li data-type='method'><a href="Key.html#setId">setId</a></li><li data-type='method'><a href="Key.html#toString">toString</a></li></ul></li><li><a href="KeyError.html">KeyError</a></li><li><a href="Model.html">Model</a><ul class='methods'><li data-type='method'><a href="Model.html#addHook">addHook</a></li><li data-type='method'><a href="Model.html#afterCreate">afterCreate</a></li><li data-type='method'><a href="Model.html#afterDestroy">afterDestroy</a></li><li data-type='method'><a href="Model.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a></li><li data-type='method'><a href="Model.html#afterFailedRollback">afterFailedRollback</a></li><li data-type='method'><a href="Model.html#afterGet">afterGet</a></li><li data-type='method'><a href="Model.html#afterRollback">afterRollback</a></li><li data-type='method'><a href="Model.html#afterUpdate">afterUpdate</a></li><li data-type='method'><a href="Model.html#afterValidate">afterValidate</a></li><li data-type='method'><a href="Model.html#beforeCreate">beforeCreate</a></li><li data-type='method'><a href="Model.html#beforeDestroy">beforeDestroy</a></li><li data-type='method'><a href="Model.html#beforeGet">beforeGet</a></li><li data-type='method'><a href="Model.html#beforeRollback">beforeRollback</a></li><li data-type='method'><a href="Model.html#beforeUpdate">beforeUpdate</a></li><li data-type='method'><a href="Model.html#beforeValidate">beforeValidate</a></li><li data-type='method'><a href="Model.html#build">build</a></li><li data-type='method'><a href="Model.html#buildKey">buildKey</a></li><li data-type='method'><a href="Model.html#create">create</a></li><li data-type='method'><a href="Model.html#getById">getById</a></li><li data-type='method'><a href="Model.html#getMulti">getMulti</a></li><li data-type='method'><a href="Model.html#remove">remove</a></li><li data-type='method'><a href="Model.html#removeHook">removeHook</a></li><li data-type='method'><a href="Model.html#runHooks">runHooks</a></li><li data-type='method'><a href="Model.html#toString">toString</a></li><li data-type='method'><a href="Model.html#touch">touch</a></li><li data-type='method'><a href="Model.html#unlock">unlock</a></li></ul></li><li><a href="ModelError.html">ModelError</a></li><li><a href="ModelManager.html">ModelManager</a><ul class='methods'><li data-type='method'><a href="ModelManager.html#add">add</a></li><li data-type='method'><a href="ModelManager.html#get">get</a></li><li data-type='method'><a href="ModelManager.html#getAll">getAll</a></li></ul></li><li><a href="StorageAdapter.html">StorageAdapter</a><ul class='methods'><li data-type='method'><a href="StorageAdapter.html#append">append</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsert">bulkInsert</a></li><li data-type='method'><a href="StorageAdapter.html#bulkInsertSync">bulkInsertSync</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemove">bulkRemove</a></li><li data-type='method'><a href="StorageAdapter.html#bulkRemoveSync">bulkRemoveSync</a></li><li data-type='method'><a href="StorageAdapter.html#counter">counter</a></li><li data-type='method'><a href="StorageAdapter.html#disconnect">disconnect</a></li><li data-type='method'><a href="StorageAdapter.html#enableN1ql">enableN1ql</a></li><li data-type='method'><a href="StorageAdapter.html#get">get</a></li><li data-type='method'><a href="StorageAdapter.html#getAndLock">getAndLock</a></li><li data-type='method'><a href="StorageAdapter.html#getAndTouch">getAndTouch</a></li><li data-type='method'><a href="StorageAdapter.html#getManager">getManager</a></li><li data-type='method'><a href="StorageAdapter.html#getReplica">getReplica</a></li><li data-type='method'><a href="StorageAdapter.html#insert">insert</a></li><li data-type='method'><a href="StorageAdapter.html#prepend">prepend</a></li><li data-type='method'><a href="StorageAdapter.html#query">query</a></li><li data-type='method'><a href="StorageAdapter.html#remove">remove</a></li><li data-type='method'><a href="StorageAdapter.html#replace">replace</a></li><li data-type='method'><a href="StorageAdapter.html#touch">touch</a></li><li data-type='method'><a href="StorageAdapter.html#unlock">unlock</a></li><li data-type='method'><a href="StorageAdapter.html#upsert">upsert</a></li></ul></li><li><a href="StorageError.html">StorageError</a></li><li><a href="StorageMultiError.html">StorageMultiError</a></li><li><a href="UUID4Key.html">UUID4Key</a><ul class='methods'><li data-type='method'><a href="UUID4Key.html#clone">clone</a></li><li data-type='method'><a href="UUID4Key.html#generate">generate</a></li><li data-type='method'><a href="UUID4Key.html#getId">getId</a></li><li data-type='method'><a href="UUID4Key.html#getOptions">getOptions</a></li><li data-type='method'><a href="UUID4Key.html#isGenerated">isGenerated</a></li><li data-type='method'><a href="UUID4Key.html#parse">parse</a></li><li data-type='method'><a href="UUID4Key.html#setId">setId</a></li><li data-type='method'><a href="UUID4Key.html#toString">toString</a></li></ul></li><li><a href="ValidationError.html">ValidationError</a></li></ul><h3>Modules</h3><ul><li><a href="Sanitizer_sanitizeData.html">Sanitizer:sanitizeData</a></li></ul><h3><a href="global.html">Global</a></h3>
-</nav>
-
-<div id="main">
+<body onload="prettyPrint()">
+<div class="container-fluid">
+    <div class="nav-side-menu">
+        
+<div class="brand"><a href="index.html">Couchbase ODM</a></div>
+<i class="fa fa-bars fa-2x toggle-btn" data-toggle="collapse" data-target="#menu-content"></i>
+<div class="search">
+    <input id="search" type="text" class="form-control input-sm" placeholder="Search Documentation">
+    <span class="clearer fa fa-lg fa-times pull-right"></span>
+</div>
+<div id="side-bar-menu" class="menu-list">
+    <ul id="menu-content" class="menu-content collapse out">
+        
+                
+<li id="nav-Tutorials-item" data-toggle="collapse" data-target="#nav-Tutorials" class="collapsed">
+<span style="padding-left:10px"<i class="fa fa-code fa-lg"></i> Tutorials<span class="arrow"></span></span>
+<ul class="sub-menu collapse" id="nav-Tutorials">
     
-    <h1 class="page-title">Tutorial: Views (next minor release)</h1>
+        
+            <li>
+                <div class="section-header">Getting Started</div>
+                    
+                           <a href="tutorial-1.gettingStarted.html">Getting Started</a>
+                        
+            </li>
+        
+            <li>
+                <div class="section-header">Model schema definition</div>
+                    
+                           <a href="tutorial-2.schemaDefinitionGuide.html">Model schema definition</a>
+                        
+            </li>
+        
+            <li>
+                <div class="section-header">Quering</div>
+                    
+                                <a href="tutorial-3a.documentIDLookups.html">Document ID lookup</a>
+                            
+                                <a href="tutorial-3b.refDocIndexes.html">RefDoc Indexes</a>
+                            
+                                <a href="tutorial-3c.views.html">Views (next minor release)</a>
+                            
+                                <a href="tutorial-3d.n1ql.html">N1QL (on Roadmap)</a>
+                            
+            </li>
+        
+            <li>
+                <div class="section-header">Instances</div>
+                    
+                           <a href="tutorial-4.instances.html">Instances</a>
+                        
+            </li>
+        
+            <li>
+                <div class="section-header">Hooks</div>
+                    
+                           <a href="tutorial-5.hooks.html">Hooks</a>
+                        
+            </li>
+        
+            <li>
+                <div class="section-header">Errors</div>
+                    
+                           <a href="tutorial-6.errors.html">Errors</a>
+                        
+            </li>
+        
+            <li>
+                <div class="section-header">Customizing Document's Key</div>
+                    
+                           <a href="tutorial-7.customizingDocumentsKey.html">Customizing Document's Key</a>
+                        
+            </li>
+        
+    
+</ul>
+</li>
+
+            
+                
+<li id="nav-CouchbaseODM-item" data-toggle="collapse" data-target="#nav-CouchbaseODM" class="collapsed">
+<a href="CouchbaseODM.html"><i class="fa fa-code fa-lg"></i>CouchbaseODM<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-CouchbaseODM">
     
 
-    <section>
+    
+    <li>
+        <div class="section-header">Members<span class="badge pull-right">15</span></div>
+        
+            <a href="CouchbaseODM.html#.DataTypes">DataTypes</a>
+        
+            <a href="CouchbaseODM.html#.Document">Document</a>
+        
+            <a href="CouchbaseODM.html#.errors">errors</a>
+        
+            <a href="CouchbaseODM.html#.Hook">Hook</a>
+        
+            <a href="CouchbaseODM.html#.IncrementalKey">IncrementalKey</a>
+        
+            <a href="CouchbaseODM.html#.Instance">Instance</a>
+        
+            <a href="CouchbaseODM.html#.Key">Key</a>
+        
+            <a href="CouchbaseODM.html#.Model">Model</a>
+        
+            <a href="CouchbaseODM.html#.ModelManager">ModelManager</a>
+        
+            <a href="CouchbaseODM.html#.Operation">Operation</a>
+        
+            <a href="CouchbaseODM.html#.RefDocKey">RefDocKey</a>
+        
+            <a href="CouchbaseODM.html#.Sanitizer">Sanitizer</a>
+        
+            <a href="CouchbaseODM.html#.StorageAdapter">StorageAdapter</a>
+        
+            <a href="CouchbaseODM.html#.UUID4Key">UUID4Key</a>
+        
+            <a href="CouchbaseODM.html#modelManager">modelManager</a>
+        
+    </li>
+    
 
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">1</span></div>
+        
+            <a href="CouchbaseODM.html#define">define</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                
+<li id="nav-Document-item" data-toggle="collapse" data-target="#nav-Document" class="collapsed">
+<a href="Document.html"><i class="fa fa-code fa-lg"></i>Document<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-Document">
+    
+
+    
+    <li>
+        <div class="section-header">Members<span class="badge pull-right">1</span></div>
+        
+            <a href="Document.html#toString">toString</a>
+        
+    </li>
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">14</span></div>
+        
+            <a href="Document.html#getCAS">getCAS</a>
+        
+            <a href="Document.html#getData">getData</a>
+        
+            <a href="Document.html#getGeneratedKey">getGeneratedKey</a>
+        
+            <a href="Document.html#getKey">getKey</a>
+        
+            <a href="Document.html#getSerializedData">getSerializedData</a>
+        
+            <a href="Document.html#getStorageAdapter">getStorageAdapter</a>
+        
+            <a href="Document.html#hasCAS">hasCAS</a>
+        
+            <a href="Document.html#insert">insert</a>
+        
+            <a href="Document.html#remove">remove</a>
+        
+            <a href="Document.html#replace">replace</a>
+        
+            <a href="Document.html#setCAS">setCAS</a>
+        
+            <a href="Document.html#setData">setData</a>
+        
+            <a href="Document.html#setKey">setKey</a>
+        
+            <a href="Document.html#touch">touch</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                <li id="nav-DocumentError-item">
+                    <a href="DocumentError.html"><i class="fa fa-users fa-lg"></i>DocumentError</a>
+                </li>
+        
+                
+<li id="nav-Hook-item" data-toggle="collapse" data-target="#nav-Hook" class="collapsed">
+<a href="Hook.html"><i class="fa fa-code fa-lg"></i>Hook<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-Hook">
+    
+
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">18</span></div>
+        
+            <a href="Hook.html#addHook">addHook</a>
+        
+            <a href="Hook.html#afterCreate">afterCreate</a>
+        
+            <a href="Hook.html#afterDestroy">afterDestroy</a>
+        
+            <a href="Hook.html#afterFailedIndexRemoval">afterFailedIndexRemoval</a>
+        
+            <a href="Hook.html#afterFailedRollback">afterFailedRollback</a>
+        
+            <a href="Hook.html#afterGet">afterGet</a>
+        
+            <a href="Hook.html#afterRollback">afterRollback</a>
+        
+            <a href="Hook.html#afterUpdate">afterUpdate</a>
+        
+            <a href="Hook.html#afterValidate">afterValidate</a>
+        
+            <a href="Hook.html#beforeCreate">beforeCreate</a>
+        
+            <a href="Hook.html#beforeDestroy">beforeDestroy</a>
+        
+            <a href="Hook.html#beforeGet">beforeGet</a>
+        
+            <a href="Hook.html#beforeRollback">beforeRollback</a>
+        
+            <a href="Hook.html#beforeUpdate">beforeUpdate</a>
+        
+            <a href="Hook.html#beforeValidate">beforeValidate</a>
+        
+            <a href="Hook.html#beforeValidate">beforeValidate</a>
+        
+            <a href="Hook.html#removeHook">removeHook</a>
+        
+            <a href="Hook.html#runHooks">runHooks</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                <li id="nav-HookError-item">
+                    <a href="HookError.html"><i class="fa fa-users fa-lg"></i>HookError</a>
+                </li>
+        
+                
+<li id="nav-IncrementalKey-item" data-toggle="collapse" data-target="#nav-IncrementalKey" class="collapsed">
+<a href="IncrementalKey.html"><i class="fa fa-code fa-lg"></i>IncrementalKey<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-IncrementalKey">
+    
+
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">2</span></div>
+        
+            <a href="IncrementalKey.html#generate" class="override">generate</a>
+        
+            <a href="IncrementalKey.html#parse" class="override">parse</a>
+        
+    </li>
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Inherited Methods<span class="badge pull-right">6</span></div>
+        
+            <a href="IncrementalKey.html#clone" class="inherit">clone</a>
+        
+            <a href="IncrementalKey.html#getId" class="inherit">getId</a>
+        
+            <a href="IncrementalKey.html#getOptions" class="inherit">getOptions</a>
+        
+            <a href="IncrementalKey.html#isGenerated" class="inherit">isGenerated</a>
+        
+            <a href="IncrementalKey.html#setId" class="inherit">setId</a>
+        
+            <a href="IncrementalKey.html#toString" class="inherit">toString</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                
+<li id="nav-Instance-item" data-toggle="collapse" data-target="#nav-Instance" class="collapsed">
+<a href="Instance.html"><i class="fa fa-code fa-lg"></i>Instance<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-Instance">
+    
+
+    
+    <li>
+        <div class="section-header">Members<span class="badge pull-right">1</span></div>
+        
+            <a href="Instance.html#toString" class="inherit">toString</a>
+        
+    </li>
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">12</span></div>
+        
+            <a href="Instance.html#clone">clone</a>
+        
+            <a href="Instance.html#cloneData">cloneData</a>
+        
+            <a href="Instance.html#destroy">destroy</a>
+        
+            <a href="Instance.html#getSerializedData" class="override">getSerializedData</a>
+        
+            <a href="Instance.html#insert" class="override">insert</a>
+        
+            <a href="Instance.html#refresh">refresh</a>
+        
+            <a href="Instance.html#replace" class="override">replace</a>
+        
+            <a href="Instance.html#sanitize">sanitize</a>
+        
+            <a href="Instance.html#save">save</a>
+        
+            <a href="Instance.html#setData" class="override">setData</a>
+        
+            <a href="Instance.html#toJSON">toJSON</a>
+        
+            <a href="Instance.html#update">update</a>
+        
+    </li>
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Inherited Methods<span class="badge pull-right">10</span></div>
+        
+            <a href="Instance.html#getCAS" class="inherit">getCAS</a>
+        
+            <a href="Instance.html#getData" class="inherit">getData</a>
+        
+            <a href="Instance.html#getGeneratedKey" class="inherit">getGeneratedKey</a>
+        
+            <a href="Instance.html#getKey" class="inherit">getKey</a>
+        
+            <a href="Instance.html#getStorageAdapter" class="inherit">getStorageAdapter</a>
+        
+            <a href="Instance.html#hasCAS" class="inherit">hasCAS</a>
+        
+            <a href="Instance.html#remove" class="inherit">remove</a>
+        
+            <a href="Instance.html#setCAS" class="inherit">setCAS</a>
+        
+            <a href="Instance.html#setKey" class="inherit">setKey</a>
+        
+            <a href="Instance.html#touch" class="inherit">touch</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                <li id="nav-InstanceError-item">
+                    <a href="InstanceError.html"><i class="fa fa-users fa-lg"></i>InstanceError</a>
+                </li>
+        
+                
+<li id="nav-Key-item" data-toggle="collapse" data-target="#nav-Key" class="collapsed">
+<a href="Key.html"><i class="fa fa-code fa-lg"></i>Key<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-Key">
+    
+
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">8</span></div>
+        
+            <a href="Key.html#clone">clone</a>
+        
+            <a href="Key.html#generate">generate</a>
+        
+            <a href="Key.html#getId">getId</a>
+        
+            <a href="Key.html#getOptions">getOptions</a>
+        
+            <a href="Key.html#isGenerated">isGenerated</a>
+        
+            <a href="Key.html#parse">parse</a>
+        
+            <a href="Key.html#setId">setId</a>
+        
+            <a href="Key.html#toString">toString</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                <li id="nav-KeyError-item">
+                    <a href="KeyError.html"><i class="fa fa-users fa-lg"></i>KeyError</a>
+                </li>
+        
+                
+<li id="nav-Model-item" data-toggle="collapse" data-target="#nav-Model" class="collapsed">
+<a href="Model.html"><i class="fa fa-code fa-lg"></i>Model<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-Model">
+    
+
+    
+    <li>
+        <div class="section-header">Members<span class="badge pull-right">3</span></div>
+        
+            <a href="Model.html#name">name</a>
+        
+            <a href="Model.html#relations">relations</a>
+        
+            <a href="Model.html#storage">storage</a>
+        
+    </li>
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">9</span></div>
+        
+            <a href="Model.html#build">build</a>
+        
+            <a href="Model.html#buildKey">buildKey</a>
+        
+            <a href="Model.html#create">create</a>
+        
+            <a href="Model.html#getById">getById</a>
+        
+            <a href="Model.html#getMulti">getMulti</a>
+        
+            <a href="Model.html#remove">remove</a>
+        
+            <a href="Model.html#toString">toString</a>
+        
+            <a href="Model.html#touch">touch</a>
+        
+            <a href="Model.html#unlock">unlock</a>
+        
+    </li>
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Inherited Methods<span class="badge pull-right">17</span></div>
+        
+            <a href="Model.html#addHook" class="inherit">addHook</a>
+        
+            <a href="Model.html#afterCreate" class="inherit">afterCreate</a>
+        
+            <a href="Model.html#afterDestroy" class="inherit">afterDestroy</a>
+        
+            <a href="Model.html#afterFailedIndexRemoval" class="inherit">afterFailedIndexRemoval</a>
+        
+            <a href="Model.html#afterFailedRollback" class="inherit">afterFailedRollback</a>
+        
+            <a href="Model.html#afterGet" class="inherit">afterGet</a>
+        
+            <a href="Model.html#afterRollback" class="inherit">afterRollback</a>
+        
+            <a href="Model.html#afterUpdate" class="inherit">afterUpdate</a>
+        
+            <a href="Model.html#afterValidate" class="inherit">afterValidate</a>
+        
+            <a href="Model.html#beforeCreate" class="inherit">beforeCreate</a>
+        
+            <a href="Model.html#beforeDestroy" class="inherit">beforeDestroy</a>
+        
+            <a href="Model.html#beforeGet" class="inherit">beforeGet</a>
+        
+            <a href="Model.html#beforeRollback" class="inherit">beforeRollback</a>
+        
+            <a href="Model.html#beforeUpdate" class="inherit">beforeUpdate</a>
+        
+            <a href="Model.html#beforeValidate" class="inherit">beforeValidate</a>
+        
+            <a href="Model.html#removeHook" class="inherit">removeHook</a>
+        
+            <a href="Model.html#runHooks" class="inherit">runHooks</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                <li id="nav-ModelError-item">
+                    <a href="ModelError.html"><i class="fa fa-users fa-lg"></i>ModelError</a>
+                </li>
+        
+                
+<li id="nav-ModelManager-item" data-toggle="collapse" data-target="#nav-ModelManager" class="collapsed">
+<a href="ModelManager.html"><i class="fa fa-code fa-lg"></i>ModelManager<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-ModelManager">
+    
+
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">3</span></div>
+        
+            <a href="ModelManager.html#add">add</a>
+        
+            <a href="ModelManager.html#get">get</a>
+        
+            <a href="ModelManager.html#getAll">getAll</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                
+<li id="nav-StorageAdapter-item" data-toggle="collapse" data-target="#nav-StorageAdapter" class="collapsed">
+<a href="StorageAdapter.html"><i class="fa fa-code fa-lg"></i>StorageAdapter<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-StorageAdapter">
+    
+
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">21</span></div>
+        
+            <a href="StorageAdapter.html#append">append</a>
+        
+            <a href="StorageAdapter.html#bulkInsert">bulkInsert</a>
+        
+            <a href="StorageAdapter.html#bulkInsertSync">bulkInsertSync</a>
+        
+            <a href="StorageAdapter.html#bulkRemove">bulkRemove</a>
+        
+            <a href="StorageAdapter.html#bulkRemoveSync">bulkRemoveSync</a>
+        
+            <a href="StorageAdapter.html#counter">counter</a>
+        
+            <a href="StorageAdapter.html#disconnect">disconnect</a>
+        
+            <a href="StorageAdapter.html#enableN1ql">enableN1ql</a>
+        
+            <a href="StorageAdapter.html#get">get</a>
+        
+            <a href="StorageAdapter.html#getAndLock">getAndLock</a>
+        
+            <a href="StorageAdapter.html#getAndTouch">getAndTouch</a>
+        
+            <a href="StorageAdapter.html#getManager">getManager</a>
+        
+            <a href="StorageAdapter.html#getReplica">getReplica</a>
+        
+            <a href="StorageAdapter.html#insert">insert</a>
+        
+            <a href="StorageAdapter.html#prepend">prepend</a>
+        
+            <a href="StorageAdapter.html#query">query</a>
+        
+            <a href="StorageAdapter.html#remove">remove</a>
+        
+            <a href="StorageAdapter.html#replace">replace</a>
+        
+            <a href="StorageAdapter.html#touch">touch</a>
+        
+            <a href="StorageAdapter.html#unlock">unlock</a>
+        
+            <a href="StorageAdapter.html#upsert">upsert</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                <li id="nav-StorageError-item">
+                    <a href="StorageError.html"><i class="fa fa-users fa-lg"></i>StorageError</a>
+                </li>
+        
+                <li id="nav-StorageMultiError-item">
+                    <a href="StorageMultiError.html"><i class="fa fa-users fa-lg"></i>StorageMultiError</a>
+                </li>
+        
+                
+<li id="nav-UUID4Key-item" data-toggle="collapse" data-target="#nav-UUID4Key" class="collapsed">
+<a href="UUID4Key.html"><i class="fa fa-code fa-lg"></i>UUID4Key<span class="arrow"></span></a>
+<ul class="sub-menu collapse" id="nav-UUID4Key">
+    
+
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Methods<span class="badge pull-right">3</span></div>
+        
+            <a href="UUID4Key.html#generate" class="override">generate</a>
+        
+            <a href="UUID4Key.html#parse" class="override">parse</a>
+        
+            <a href="UUID4Key.html#setId" class="override">setId</a>
+        
+    </li>
+    
+
+    
+
+    
+    <li>
+        <div class="section-header">Inherited Methods<span class="badge pull-right">5</span></div>
+        
+            <a href="UUID4Key.html#clone" class="inherit">clone</a>
+        
+            <a href="UUID4Key.html#getId" class="inherit">getId</a>
+        
+            <a href="UUID4Key.html#getOptions" class="inherit">getOptions</a>
+        
+            <a href="UUID4Key.html#isGenerated" class="inherit">isGenerated</a>
+        
+            <a href="UUID4Key.html#toString" class="inherit">toString</a>
+        
+    </li>
+    
+
+    
+
+    
+
+    
+</ul>
+</li>
+
+            
+                <li id="nav-ValidationError-item">
+                    <a href="ValidationError.html"><i class="fa fa-users fa-lg"></i>ValidationError</a>
+                </li>
+        
+    </ul>
+ </div>
+
+    </div>
+    <div class="main">
+        <section>
+    
 <header>
     
 
     <h2>Views (next minor release)</h2>
-</header>
+</header>  
 
 <article>
     
 </article>
 
-</section>
+</section>  
 
+
+        
+        <!-- disqus code -->
+        <div id="disqus_thread"></div>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+        <!-- // disqus code -->
+        
+    </div>
 </div>
-
-<br class="clear">
-
-<footer>
-    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a> on Thu Jun 16 2016 20:49:26 GMT+0000 (UTC) using the Minami theme.
-</footer>
-
-<script>prettyPrint();</script>
-<script src="scripts/linenumber.js"></script>
 </body>
 </html>
