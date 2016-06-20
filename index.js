@@ -7,6 +7,8 @@ var ModelError              = require("./lib/error/modelError.js");
 var StorageMultiError       = require("./lib/error/storageMultiError.js");
 var StorageError            = require("./lib/error/storageError.js");
 var ValidationError         = require("./lib/error/validationError.js");
+var ModelManagerError       = require("./lib/error/modelManagerError.js");
+var ModelNotFoundError      = require("./lib/error/modelNotFoundError.js");
 
 
 var RefDocKey      = require("./lib/key/refDocKey.js");
@@ -136,13 +138,15 @@ CouchbaseODM.prototype.define = function(name, schema, options) {
 /**
  * @typedef ErrorList
  * @type {Object}
- * @property {InstanceError}     InstanceError
- * @property {ModelError}        ModelError
- * @property {DocumentError}     DocumentError
- * @property {KeyError}          KeyError
- * @property {StorageError}      StorageError
- * @property {StorageMultiError} StorageMultiError
- * @property {ValidationError}   ValidationError
+ * @property {InstanceError}      InstanceError
+ * @property {ModelError}         ModelError
+ * @property {DocumentError}      DocumentError
+ * @property {KeyError}           KeyError
+ * @property {StorageError}       StorageError
+ * @property {StorageMultiError}  StorageMultiError
+ * @property {ValidationError}    ValidationError
+ * @property {ModelManagerError}  ModelManagerError
+ * @property {ModelNotFoundError} ModelNotFoundError
  */
 
 /**
@@ -157,6 +161,8 @@ CouchbaseODM.errors = {
     StorageError      : StorageError,
     StorageMultiError : StorageMultiError,
     ValidationError   : ValidationError,
+    ModelManagerError : ModelManagerError,
+    ModelNotFoundError: ModelNotFoundError
 }
 
 CouchbaseODM.Key            = Key;
