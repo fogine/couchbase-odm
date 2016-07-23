@@ -552,4 +552,108 @@ describe('Model', function() {
             });
         });
     });
+
+    describe('remove', function() {
+        it('should find a document which should be removed and then call `destroy` method on the instance object', function() {
+            var model = this.buildModel('Test12', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var instance = model.build(5);
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+
+            var getByIdStub = sinon.stub(ODM.Model.prototype, 'getById').returns(Promise.resolve(instance));
+            var destroyStub = sinon.stub(model.Instance.prototype, 'destroy').returns(instance);
+
+            var promise = model.remove(id);
+
+            return promise.should.have.been.fulfilled.then(function(instanceObject) {
+                getByIdStub.should.have.been.calledWith(id);
+                destroyStub.should.have.been.calledOnce;
+                instanceObject.should.be.equal(instance);
+            });
+        });
+    });
+
+    describe('touch', function() {
+        it('should call `StorageAdapter.touch` method with provided `Key` object and other options', function() {
+            var model = this.buildModel('Test13', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            var expiry = 50;
+
+            var touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
+
+            var promise = model.touch(key, expiry);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                touchStub.should.have.been.calledWithExactly(key, expiry);
+                touchStub.should.have.been.calledOnce;
+            });
+        });
+
+        it('should allow to provide an `id` value instead of whole `Key` object', function() {
+            var model = this.buildModel('Test14', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+
+            var touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
+
+            var promise = model.touch(id);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                var keyArg = touchStub.args[0][0];
+                keyArg.should.be.an.instanceof(model.Key);
+                keyArg.getId().should.be.equal(id);
+                touchStub.should.have.been.calledOnce;
+            });
+        });
+    });
+
+    describe('unlock', function() {
+        it('should call `StorageAdapter.unlock` method with provided `Key` object', function() {
+            var model = this.buildModel('Test15', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+
+            var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
+
+            var promise = model.unlock(key);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                unlockStub.should.have.been.calledWith(key);
+                unlockStub.should.have.been.calledOnce;
+            });
+        });
+
+        it('should allow to provide an `id` value instead of whole `Key` object', function() {
+            var model = this.buildModel('Test16', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+
+            var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
+
+            var promise = model.unlock(id);
+
+            return promise.should.have.been.fulfilled.then(function() {
+                var keyArg = unlockStub.args[0][0];
+                keyArg.should.be.an.instanceof(model.Key);
+                keyArg.getId().should.be.equal(id);
+                unlockStub.should.have.been.calledOnce;
+            });
+        });
+    });
 });
