@@ -1,6 +1,6 @@
 {
   "name": "kouchbase-odm",
-  "version": "1.0.0-rc.3",
+  "version": "1.0.0",
   "author": "fogine <fogine@opmbx.org",
   "keywords": [
     "couchbase",
