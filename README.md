@@ -9,7 +9,7 @@ Installation
 -------------------
 `npm install kouchbase-odm@rc.3`
 
-**Note:** CouchbaseODM is in "release candidate" stage. Please, fill a bug report at [issues](https://github.com/fogine/couchbase-odm/issues) page if you find any.  
+Please, fill a bug report at [issues](https://github.com/fogine/couchbase-odm/issues) page if you find any.  
 Also, feedback and suggestions are more than welcome.
 
 Features
