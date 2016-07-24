@@ -269,6 +269,7 @@ describe('Model', function() {
             key.should.be.an.instanceof(model.Key);
             stub.should.have.been.calledOnce;
             stub.should.have.been.calledWith(keyString);
+            stub.restore();
         });
     });
 
@@ -621,25 +622,28 @@ describe('Model', function() {
                 getByIdStub.should.have.been.calledWith(id);
                 destroyStub.should.have.been.calledOnce;
                 instanceObject.should.be.equal(instance);
+                getByIdStub.restore();
+                destroyStub.restore();
             });
         });
     });
 
     describe('touch', function() {
-        it('should call `StorageAdapter.touch` method with provided `Key` object', function() {
+        it('should call `StorageAdapter.touch` method with provided `Key` object and other options', function() {
             var model = this.buildModel('Test13', {
                 type: DataTypes.INT
             });
             model.$init(this.modelManager);
 
             var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            var expiry = 50;
 
             var touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
 
-            var promise = model.touch(key);
+            var promise = model.touch(key, expiry);
 
             return promise.should.have.been.fulfilled.then(function() {
-                touchStub.should.have.been.calledWith(key);
+                touchStub.should.have.been.calledWithExactly(key, expiry);
                 touchStub.should.have.been.calledOnce;
             });
         });
@@ -743,5 +747,71 @@ describe('Model', function() {
                 existsStub.should.have.been.calledOnce;
             });
         });
+    });
+
+    describe('getByRefDoc', function() {
+        it("should call `Model.getById` with correct document's key and options", function() {
+            var modelName = 'Test17';
+            var model = this.buildModel(modelName, {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    username: {
+                        type: DataTypes.STRING
+                    }
+                }
+            }, {
+                indexes: {
+                    refDocs: {
+                        getByUsername: {keys: ['username']}
+                    }
+                }
+            });
+
+            model.$init(this.modelManager);
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            var key = modelName + '_' + id;
+            var username = 'happie';
+            var expectedRefDocKey = modelName + '_username_' + username;
+
+            var getStub = sinon.stub(model.storage, 'get');
+
+            //on first call it returns parent document key
+            getStub.onFirstCall().returns(Promise.resolve({
+                value: key
+            }));
+            //on second call it returns parent document data
+            getStub.onSecondCall().returns(Promise.resolve({
+                _id: id,
+                _type: modelName,
+                username: username
+            }));
+
+            var getByIdSpy = sinon.spy(model, 'getById');
+
+            var options = {
+                paranoid: false
+            };
+
+            var promise = model.getByUsername(username, options);
+
+            promise.catch(function(err) {
+                console.error(err);
+                throw err;
+            })
+
+            return promise.should.have.been.fulfilled.then(function(instance) {
+                var keyArg = getByIdSpy.args[0][0];
+                getStub.should.have.been.calledTwice;
+
+                keyArg.should.be.an.instanceof(model.Key);
+                keyArg.toString().should.be.equal(key);
+
+                getByIdSpy.should.have.been.calledOne;
+                getByIdSpy.should.have.been.calledWith(instance.getKey(), options);
+
+                getByIdSpy.restore();
+                getStub.restore();
+            })
+        })
     });
 });
