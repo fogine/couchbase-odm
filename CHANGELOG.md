@@ -1,3 +1,9 @@
+## v1.0.0
+
+* [BUGFIX] - ModelManager throws `ModelManagerError` & `ModelNotFoundError` instead of generic `Error` object
+* [BUGFIX] - Model "getByRefDoc" methods ignored provided options object
+* [BUGFIX] - `expiry` option was ignored in `Model.touch` method
+* [BUGFIX] - documentation clarifications
 
 ## v1.0.0-rc.3
 
