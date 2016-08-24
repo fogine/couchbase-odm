@@ -670,6 +670,14 @@ describe('Instance', function() {
                 }
             }, {
                 key: ODM.UUID4Key,
+                indexes: {
+                    //must be here because of the #14 bug
+                    refDocs: {
+                        getByName: {
+                            keys: ['name']
+                        }
+                    }
+                }
             });
 
             this.Model.$init(this.modelManager);
