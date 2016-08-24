@@ -1,3 +1,7 @@
+## FUTURE  
+
+* [BUGFIX] - `Instance.update` method raised "Cannot read property '$buildRefDocument' of null". See #14
+
 ## v1.0.0
 
 * [BUGFIX] - ModelManager throws `ModelManagerError` & `ModelNotFoundError` instead of generic `Error` object
