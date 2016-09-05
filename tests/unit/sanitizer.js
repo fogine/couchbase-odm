@@ -5,6 +5,9 @@ var sanitizer      = require('../../lib/sanitizer.js');
 var DataTypes      = require('../../lib/dataType.js').types;
 var ComplexDataType= require('../../lib/dataType.js').Complex;
 var ValidationError= require("../../lib/error/validationError.js");
+var couchbase      = require('couchbase').Mock;
+var ODM            = require('../../index.js');
+var DataTypes      = ODM.DataTypes;
 
 chai.use(sinonChai);
 chai.should();
@@ -323,6 +326,28 @@ describe("Sanitizer", function() {
             this.number   = sinon.stub(sanitizers, DataTypes.NUMBER, validatorFn);
             this.date     = sinon.stub(sanitizers, DataTypes.DATE, validatorFn);
 
+            // Build testing Model
+            var cluster = new couchbase.Cluster();
+            var bucket = cluster.openBucket('test');
+
+            var odm = new ODM({bucket: bucket});
+            this.model = odm.define('Test', {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    prop: {
+                        type: DataTypes.STRING,
+                        default: 'test'
+                    }
+                }
+            });
+            this.model.$init(odm.modelManager);
+
+            // explicitly bind context object of the sanitizerData method
+            sanitizer.sanitizeData = sanitizer.sanitizeData.bind({
+                $modelManager: odm.modelManager
+            });
+
+            // sanitizer schema definition
             this.schema = {
                 type: DataTypes.HASH_TABLE,
                 schema: {
@@ -346,6 +371,10 @@ describe("Sanitizer", function() {
                                 type: DataTypes.STRING
                             }
                         }
+                    },
+                    association: {
+                        type: DataTypes.COMPLEX('Test'),
+                        default: this.model.build()
                     },
                     age: {
                         type: DataTypes.NUMBER
@@ -391,6 +420,15 @@ describe("Sanitizer", function() {
             var result = sanitizer.sanitizeData(this.schema, data);
             expect(result).to.have.property('username', this.schema.schema.username.default);
             expect(result.address).to.be.eql(this.schema.schema.address.default);
+
+            // the default value must be cloned
+            // before assigned to validated data object
+            expect(result.address).to.not.be.equal(this.schema.schema.address.default);
+
+            // Make sure that default association Instance object
+            // are cloned before they are assigned
+            expect(result.association).to.be.an.instanceof(this.model.Instance);
+            expect(result.association).to.not.be.equal(this.schema.schema.association.default);
         });
 
         it("should fail the validation if `property` is empty (null/undefined) and `allowEmptyValue` options is NOT set", function() {
