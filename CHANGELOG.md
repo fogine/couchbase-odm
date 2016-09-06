@@ -1,6 +1,7 @@
 ## FUTURE  
 
 * [BUGFIX] - `Instance.update` method raised "Cannot read property '$buildRefDocument' of null". See #14
+* [BUGFIX] - Setting Model's association default value on schema definition property of `Complex` type was throwing unexpected `ValidationError`/`TypeError`
 
 ## v1.0.0
 

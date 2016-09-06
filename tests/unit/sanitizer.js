@@ -18,6 +18,27 @@ var assert         = sinon.assert;
 var expect         = chai.expect;
 
 describe("Sanitizer", function() {
+    before(function() {
+        // Build testing Model
+        var cluster = new couchbase.Cluster();
+        var bucket = cluster.openBucket('test');
+
+        var odm = new ODM({bucket: bucket});
+
+        this.model = odm.define('Test', {
+            type: DataTypes.HASH_TABLE,
+            default: {}, // should support setting default root empty value
+                     schema: {
+                         prop: {
+                             type: DataTypes.STRING,
+                             default: 'test'
+                         }
+                     }
+        }, {timestamps: true});
+
+        this.odm = odm;
+    });
+
     describe("Validation", function() {
         before(function() {
             this.numVal     = sanitizers[DataTypes.NUMBER];
@@ -326,25 +347,9 @@ describe("Sanitizer", function() {
             this.number   = sinon.stub(sanitizers, DataTypes.NUMBER, validatorFn);
             this.date     = sinon.stub(sanitizers, DataTypes.DATE, validatorFn);
 
-            // Build testing Model
-            var cluster = new couchbase.Cluster();
-            var bucket = cluster.openBucket('test');
-
-            var odm = new ODM({bucket: bucket});
-            this.model = odm.define('Test', {
-                type: DataTypes.HASH_TABLE,
-                schema: {
-                    prop: {
-                        type: DataTypes.STRING,
-                        default: 'test'
-                    }
-                }
-            });
-            this.model.$init(odm.modelManager);
-
             // explicitly bind context object of the sanitizerData method
             sanitizer.sanitizeData = sanitizer.sanitizeData.bind({
-                $modelManager: odm.modelManager
+                $modelManager: this.odm.modelManager
             });
 
             // sanitizer schema definition
@@ -515,6 +520,34 @@ describe("Sanitizer", function() {
             report.getRelations().should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
             report.getRelations().should.have.deep.property('[0].path', 'user');
             report.getRelations().should.have.deep.property('[1].path', 'connections.friends');
+        });
+
+        it('should allow to define default value for `DataType.COMPLEX()` data type', function() {
+            var schema = {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    test: {
+                        type: DataTypes.COMPLEX('Test'),
+                        default: this.model.build({})
+                    }
+                }
+            };
+
+            var complexValSpy = sinon .spy(sanitizers, ComplexDataType.toString());
+
+            var report = sanitizer.sanitizeSchema(schema, this.odm.modelManager);
+
+            report.should.be.an.instanceof(Report);
+            report.getRelations().should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
+            report.getRelations().should.have.deep.property('[0].path', 'test');
+            complexValSpy.should.have.been.calledOnce;
+            complexValSpy.should.have.been.calledWith(
+                    'test.default',
+                    schema.schema.test.default,
+                    schema.schema.test,
+                    this.odm.modelManager
+            );
+            complexValSpy.restore();
         });
 
         it('should allow to define `DataType.COMPLEX()` as root data type', function() {
