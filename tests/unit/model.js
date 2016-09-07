@@ -130,7 +130,7 @@ describe('Model', function() {
             model.$init(this.modelManager);
 
             stub.should.have.been.calledOnce;
-            stub.should.have.been.calledWith(model.options.schema);
+            stub.should.have.been.calledWith(model.options.schema, model.$modelManager);
             stub.restore();//important!
         });
 
