@@ -1,7 +1,10 @@
-## FUTURE  
+## v1.0.1
 
-* [BUGFIX] - `Instance.update` method raised "Cannot read property '$buildRefDocument' of null". See #14
-* [BUGFIX] - Setting Model's association default value on schema definition property of `Complex` type was throwing unexpected `ValidationError`/`TypeError`
+* [BUGFIX] - Default values of an object type should be cloned before they are assigned to an `Instance`
+* [BUGFIX] - `Model.getById` was throwing synchronous exeption when building of document's `Key` object failed. See #12
+* [BUGFIX] - Setting Model's association default value on schema definition property of `Complex` type was throwing unexpected `ValidationError`/`TypeError`. See #19
+* [BUGFIX] - It was not possible to update `refDoc` index of already persisted `Instance` with no index value present yet. See #15
+* [BUGFIX] - Semantic error - `Instance.update` method was trowing "Cannot read property '$buildRefDocument' of null". See #14
 
 ## v1.0.0
 

@@ -1,5 +1,6 @@
 tutorials/
 tests/
+.gitgub/
 .tern-project
 .travis.yml
 deploy.sh
@@ -10,3 +11,4 @@ coverage/
 *.vim
 npm-debug.log
 .jsdoc.json
+test.js
