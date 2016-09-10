@@ -331,7 +331,9 @@
 
     
     <li>
-        <div class="section-header">Methods<span class="badge pull-right">12</span></div>
+        <div class="section-header">Methods<span class="badge pull-right">13</span></div>
+        
+            <a href="Instance.html#$cloneOptions">$cloneOptions</a>
         
             <a href="Instance.html#clone">clone</a>
         
@@ -915,6 +917,24 @@
         
 
         
+            <h5><b>Throws</b>:</h5>
+            
+
+<div class="exceptions">
+    <ul>
+    
+        
+            <li>
+                <code class="text-nowrap"><a href="StorageError.html">StorageError</a></code>
+
+                
+            </li>
+        
+    
+    </ul>
+</div>
+
+        
 
         
 
@@ -1104,9 +1124,11 @@
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -1333,9 +1355,11 @@
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -1561,9 +1585,11 @@
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -2322,9 +2348,11 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -2959,7 +2987,7 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
     <div class="panel-heading" id="getAndTouch">
         <div class="row">
             <div class="panel-title   ">
-                <strong>getAndTouch</strong><span class="signature">(key, expirty, options)</span><i class="return-type-icon"></i><span class="type-signature"><code>Promise&lt;Object></code></span>
+                <strong>getAndTouch</strong><span class="signature">(key, expiry, options)</span><i class="return-type-icon"></i><span class="type-signature"><code>Promise&lt;Object></code></span>
             </div>
             
         </div>
@@ -3027,7 +3055,7 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
 <ul class="params">
     <li>
         
-            <b>expirty</b>
+            <b>expiry</b>
         
 
         
@@ -3044,7 +3072,7 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
         
 
         
-            <li><p>time in seconds</p></li>
+            <li><p>time in seconds. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -3509,9 +3537,11 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -3791,9 +3821,11 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -4442,9 +4474,11 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -4643,7 +4677,7 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
         
 
         
-            <li><p>In seconds. The expiration time to use. If a value of 0 is provided, then the current expiration time is cleared and the key is set to never expire. Otherwise, the key is updated to expire in the time provided.</p></li>
+            <li><p>In seconds. The expiration time to use. If a value of 0 is provided, then the current expiration time is cleared and the key is set to never expire. Otherwise, the key is updated to expire in the time provided. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
@@ -5113,9 +5147,11 @@ You might receive an inaccurate value if the number is greater than 53-bits (Jav
         
 
         
+            <li>Default: <code>0</code></li>
+        
 
         
-            <li><p><code>optional</code> default=<code>0</code>. Set the initial expiration time for the document. A value of 0 represents never expiring</p></li>
+            <li><p>Set the initial expiration time for the document. A value of 0 represents never expiring. If the value is greater than number of seconds in one month, the value must be provided in unix timestamp format.</p></li>
         
 
         
