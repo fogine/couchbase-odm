@@ -650,6 +650,73 @@ describe('Instance', function() {
                 replaceStub.should.have.been.calledWith(options);
             });
         });
+
+        it('should allow to update refDoc index of already persisted Instance with no index value present yet', function() {
+            var Model = this.buildModel('Test', {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    name: {
+                        type: DataTypes.STRING,
+                        allowEmptyValue: true
+                    },
+                    age: {
+                        type: DataTypes.INT
+                    }
+                }
+            }, {
+                key: ODM.UUID4Key,
+                indexes: {
+                    refDocs: {
+                        getByName: {keys: ["name"], required: false}
+                    }
+                }
+            });
+            Model.$init(this.modelManager);
+
+            var instance = Model.build({
+                age: 21
+            });
+            //fake that the instance has been persisted to bucket
+            instance.options.isNewRecord = false;
+            instance.$original.options.isNewRecord = false;
+            instance.options.cas = '213124123';
+            instance.$original.options.cas = '213124123';
+
+            //update field so an index will be generated
+            instance.name = 'David';
+
+            var replaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace')
+                .returns(Promise.resolve({
+                    cas: '31423214',
+                    value: {age: 21, name: 'David'}
+                }));
+
+            var insertStub = sinon.stub(ODM.StorageAdapter.prototype, 'insert')
+                .returns(Promise.resolve({
+                    cas: '3214233',
+                    value: ''
+                }));
+
+            var promise = instance.save().catch(function(e) {
+                console.error(e.stack);
+                throw e;
+            });
+
+            return promise.should.be.fulfilled.then(function() {
+                insertStub.should.have.callCount(1);
+                replaceStub.should.have.been.calledOnce;
+                rollback();
+            }).catch(rollback);
+
+            function rollback(e) {
+                replaceStub.restore();
+                insertStub.restore();
+
+                if (e instanceof Error) {
+                    throw e;
+                }
+            }
+        })
     });
 
     describe('update', function() {
@@ -670,6 +737,14 @@ describe('Instance', function() {
                 }
             }, {
                 key: ODM.UUID4Key,
+                indexes: {
+                    //must be here because of the #14 bug
+                    refDocs: {
+                        getByName: {
+                            keys: ['name']
+                        }
+                    }
+                }
             });
 
             this.Model.$init(this.modelManager);
