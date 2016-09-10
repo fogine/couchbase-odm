@@ -11,4 +11,4 @@ coverage/
 *.vim
 npm-debug.log
 .jsdoc.json
-./test.js
+test.js
