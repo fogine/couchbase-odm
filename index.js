@@ -32,31 +32,33 @@ var Hook           = require("./lib/hook.js");
  * main enterance to the couchbase-odm
  *
  * @constructor
- * @param {Object}  [options]
- * @param {Bucket}  options.bucket - must be instance of Couchbase.Bucket (from official nodejs couchbase sdk)
- * @param {Key}     [options.key={UUID4Key}] - The strategy used for document's `key` generation. Must inherit from base `Key` class
- * @param {boolean} [options.timestamps=true] - Adds automatically handled timestamp schema properties: `created_at`, `updated_at` and if `paranoid` option is true, `deleted_at` property
- * @param {boolean} [options.paranoid=false] - if `true` is set, a document is not actually removed from `bucket` but rather `deleted_at` flag on the document is set. aka. `soft delete`
- * @param {boolean} [options.camelCase=false] - if `true` is set, camel case notation is used for document's internal properties.
- * @param {Object}  [options.schemaSettings] - allows to modify default values used for document's `key` generation and document's property names handled by ODM
- * @param {Object}  [options.schemaSettings.key]
- * @param {string}  [options.schemaSettings.key.prefix=defaults to Model's name] - you most likely do not want to set default value at `CouchbaseODM` constructor level
- * @param {string}  [options.schemaSettings.key.postfix=""]
- * @param {string}  [options.schemaSettings.key.delimiter=""]
- * @param {boolean} [options.schemaSettings.key.caseSensitive=true]
- * @param {Object}  [options.schemaSettings.doc]
- * @param {string}  [options.schemaSettings.doc.idPropertyName="_id"] - `_id` contains generated id of document (not whole document's key)
- * @param {string}  [options.schemaSettings.doc.typePropertyName="_type"] - `_type` contains the name of a Model
- * @param {Object}  [options.hooks] - allows to add one or more hooks of a hook type (eg. `afterValidate`)
- * @param {Object}  [options.classMethods] - custom method definitions which are bound to a Model.
- * @param {Object}  [options.instanceMethods] - custom method definitions which are bound to a Instance.
- * @param {Object}  [options.indexes]
- * @param {Object}  [options.indexes.refDocs] - Global reference document definitions. Refdoc is a document which reference parent document with its string value(=key). See {@tutorial 3b.refDocIndexes} tutorial for more details
+ * @param {Object}    [options]
+ * @param {Bucket}    options.bucket - must be instance of Couchbase.Bucket (from official nodejs couchbase sdk)
+ * @param {Key}       [options.key={UUID4Key}] - The strategy used for document's `key` generation. Must inherit from base `Key` class
+ * @param {RefDocKey} [options.refDocKey=RefDocKey] - The strategy used for reference document `key` generation. Must inherit from base `RefDocKey` class
+ * @param {boolean}   [options.timestamps=true] - Adds automatically handled timestamp schema properties: `created_at`, `updated_at` and if `paranoid` option is true, `deleted_at` property
+ * @param {boolean}   [options.paranoid=false] - if `true` is set, a document is not actually removed from `bucket` but rather `deleted_at` flag on the document is set. aka. `soft delete`
+ * @param {boolean}   [options.camelCase=false] - if `true` is set, camel case notation is used for document's internal properties.
+ * @param {Object}    [options.schemaSettings] - allows to modify default values used for document's `key` generation and document's property names handled by ODM
+ * @param {Object}    [options.schemaSettings.key]
+ * @param {string}    [options.schemaSettings.key.prefix=defaults to Model's name] - you most likely do not want to set default value at `CouchbaseODM` constructor level
+ * @param {string}    [options.schemaSettings.key.postfix=""]
+ * @param {string}    [options.schemaSettings.key.delimiter=""]
+ * @param {boolean}   [options.schemaSettings.key.caseSensitive=true]
+ * @param {Object}    [options.schemaSettings.doc]
+ * @param {string}    [options.schemaSettings.doc.idPropertyName="_id"] - `_id` contains generated id of document (not whole document's key)
+ * @param {string}    [options.schemaSettings.doc.typePropertyName="_type"] - `_type` contains the name of a Model
+ * @param {Object}    [options.hooks] - allows to add one or more hooks of a hook type (eg. `afterValidate`)
+ * @param {Object}    [options.classMethods] - custom method definitions which are bound to a Model.
+ * @param {Object}    [options.instanceMethods] - custom method definitions which are bound to a Instance.
+ * @param {Object}    [options.indexes]
+ * @param {Object}    [options.indexes.refDocs] - Global reference document definitions. Refdoc is a document which reference parent document with its string value(=key). See {@tutorial 3b.refDocIndexes} tutorial for more details
  */
 function CouchbaseODM(options) {
 
     var defaults = {
         key: UUID4Key,
+        refDocKey: RefDocKey,
         schemaSettings : {
             key: {
                 postfix: "",

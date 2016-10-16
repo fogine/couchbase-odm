@@ -278,22 +278,40 @@ describe('Model', function() {
 
         before(function() {
 
-            this.model = this.buildModel('RefDocTestModel', {
+            function CustomRefDocKey(options) {
+                ODM.RefDocKey.call(this, options);
+            }
+
+            util.inherits(CustomRefDocKey, ODM.RefDocKey);
+
+            var modelSchema = {
                 type: DataTypes.HASH_TABLE,
                 schema: {
                     name: {
                         type: DataTypes.STRING
                     }
                 }
-            }, {
+            };
+
+            var modelOptinos = {
                 indexes: {
                     refDocs: {
                         getByName: {keys: ["name"]}
                     }
                 }
-            });
-            this.model.$init(this.modelManager);
+            };
 
+            this.model = this.buildModel('RefDocTestModel', modelSchema, modelOptinos);
+            this.modelWithCustomRefDocKey = this.buildModel(
+                    'RefDocTestModelWithCustomKey',
+                    modelSchema,
+                    _.assign({refDocKey: CustomRefDocKey}, modelOptinos)
+            );
+
+            this.model.$init(this.modelManager);
+            this.modelWithCustomRefDocKey.$init(this.modelManager);
+
+            this.CustomRefDocKey = CustomRefDocKey;
             this.options = _.merge(
                     {},
                     this.model.options.schemaSettings.key,
@@ -303,15 +321,17 @@ describe('Model', function() {
 
         after(function() {
             delete this.model;
+            delete this.modelWithCustomRefDocKey;
             delete this.options;
+            delete this.CustomRefDocKey;
         });
 
-        it("should return new instance of Model.RefDocKey object with correct initialization values assigned  ()", function() {
+        it("should return new instance of Model.RefDocKey object with correct initialization values assigned", function() {
             var refDocKey = this.model.$buildRefDocKey(this.options);
 
             refDocKey.should.be.an.instanceof(this.model.RefDocKey);
 
-            for (opt in this.options){
+            for (var opt in this.options){
                 if (this.options.hasOwnProperty(opt)) {
                     refDocKey[opt].should.be.eql(this.options[opt]);
                 }
@@ -323,25 +343,13 @@ describe('Model', function() {
 
             refDocKey.should.be.an.instanceof(ODM.RefDocKey);
             refDocKey.should.be.an.instanceof(ODM.Key);
-        })
+        });
 
         it("should respect the refDocKey option (set on a Model) which allows to change default prototype object", function() {
-            var originalOptValue = this.model.options.refDocKey;
-            this.model.options.refDocKey = CustomRefDocKey;
+            var refDocKey = this.modelWithCustomRefDocKey.$buildRefDocKey(this.options);
 
-            var refDocKey = this.model.$buildRefDocKey(this.options);
-
-            refDocKey.should.be.an.instanceof(CustomRefDocKey);
-            refDocKey.should.be.an.instanceof(ODM.Key);
-
-            //restore
-            this.model.options.refDocKey = originalOptValue;
-
-            function CustomRefDocKey(options) {
-                ODM.Key.call(this, options);
-            }
-
-            util.inherits(CustomRefDocKey, ODM.Key);
+            refDocKey.should.be.an.instanceof(this.CustomRefDocKey);
+            refDocKey.should.be.an.instanceof(ODM.RefDocKey);
         });
     });
 
