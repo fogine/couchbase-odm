@@ -1,6 +1,9 @@
 ## FUTURE
 
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
+* [ADDED] new `key` option  to `Model.create` method which can be an `Key` object or `id` string value
+* [ADDED] new `Model.exists` method
+* [ADDED] new `indexed` option to `Model.getMulti` method which if false, causes method to return an Array instead of Object (default=true)
 
 ## v1.0.1
 
