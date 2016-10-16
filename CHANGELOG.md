@@ -1,3 +1,7 @@
+## FUTURE
+
+* [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
+
 ## v1.0.1
 
 * [BUGFIX] - Default values of an object type should be cloned before they are assigned to an `Instance`
