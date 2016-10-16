@@ -1,3 +1,4 @@
+var util           = require('util');
 var _              = require("lodash");
 var Promise        = require('bluebird');
 var sinon          = require('sinon');
@@ -270,6 +271,77 @@ describe('Model', function() {
             stub.should.have.been.calledOnce;
             stub.should.have.been.calledWith(keyString);
             stub.restore();
+        });
+    });
+
+    describe('$buildRefDocKey', function() {
+
+        before(function() {
+
+            this.model = this.buildModel('RefDocTestModel', {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    name: {
+                        type: DataTypes.STRING
+                    }
+                }
+            }, {
+                indexes: {
+                    refDocs: {
+                        getByName: {keys: ["name"]}
+                    }
+                }
+            });
+            this.model.$init(this.modelManager);
+
+            this.options = _.merge(
+                    {},
+                    this.model.options.schemaSettings.key,
+                    {ref: ['name']}
+            );
+        });
+
+        after(function() {
+            delete this.model;
+            delete this.options;
+        });
+
+        it("should return new instance of Model.RefDocKey object with correct initialization values assigned  ()", function() {
+            var refDocKey = this.model.$buildRefDocKey(this.options);
+
+            refDocKey.should.be.an.instanceof(this.model.RefDocKey);
+
+            for (opt in this.options){
+                if (this.options.hasOwnProperty(opt)) {
+                    refDocKey[opt].should.be.eql(this.options[opt]);
+                }
+            }
+        });
+
+        it("should always return new refDocKey object which includes generic RefDocKey & Key prototypes in it's prototype chain", function() {
+            var refDocKey = this.model.$buildRefDocKey(this.options);
+
+            refDocKey.should.be.an.instanceof(ODM.RefDocKey);
+            refDocKey.should.be.an.instanceof(ODM.Key);
+        })
+
+        it("should respect the refDocKey option (set on a Model) which allows to change default prototype object", function() {
+            var originalOptValue = this.model.options.refDocKey;
+            this.model.options.refDocKey = CustomRefDocKey;
+
+            var refDocKey = this.model.$buildRefDocKey(this.options);
+
+            refDocKey.should.be.an.instanceof(CustomRefDocKey);
+            refDocKey.should.be.an.instanceof(ODM.Key);
+
+            //restore
+            this.model.options.refDocKey = originalOptValue;
+
+            function CustomRefDocKey(options) {
+                ODM.Key.call(this, options);
+            }
+
+            util.inherits(CustomRefDocKey, ODM.Key);
         });
     });
 

@@ -43,6 +43,7 @@ var Hook           = require("./lib/hook.js");
  * @param {string}  [options.schemaSettings.key.prefix=defaults to Model's name] - you most likely do not want to set default value at `CouchbaseODM` constructor level
  * @param {string}  [options.schemaSettings.key.postfix=""]
  * @param {string}  [options.schemaSettings.key.delimiter=""]
+ * @param {boolean} [options.schemaSettings.key.caseSensitive=true]
  * @param {Object}  [options.schemaSettings.doc]
  * @param {string}  [options.schemaSettings.doc.idPropertyName="_id"] - `_id` contains generated id of document (not whole document's key)
  * @param {string}  [options.schemaSettings.doc.typePropertyName="_type"] - `_type` contains the name of a Model
