@@ -730,6 +730,9 @@ describe('Instance', function() {
                     email: {
                         type: DataTypes.STRING,
                     },
+                    apps: {
+                        type: DataTypes.ARRAY
+                    },
                     user: {
                         type: DataTypes.COMPLEX('Model'),
                         allowEmptyValue: true
@@ -771,6 +774,7 @@ describe('Instance', function() {
             var instance = this.Model.build({
                 name: 'Jean Luc',
                 email: 'test@test.com',
+                apps: ['doom', 'half-life'],
                 user: instance2
             });
 
@@ -790,12 +794,17 @@ describe('Instance', function() {
             }));
 
             var options = {expiry: 3600};
-            var promise = instance.update({email: 'diena@test.com'}, options);
+            var data = {
+                email: 'diena@test.com',
+                apps: ['quake']
+            };
+            var promise = instance.update(data, options);
 
             return promise.should.be.fulfilled.then(function(instance) {
                 instance.should.be.an.instanceof(ODM.Instance);
                 instance.should.have.property('name', 'Dat');
                 instance.should.have.property('email', 'diena@test.com');
+                instance.should.have.property('apps').that.is.eql(['quake']);
 
                 var userRelationData = {};
                 userRelationData[idPropName] = instance2.getKey().toString();
@@ -808,6 +817,7 @@ describe('Instance', function() {
                 var expectedData = originalData;
                 expectedData.email = 'diena@test.com';
                 expectedData.name = 'Jean Luc';
+                expectedData.apps = ['quake'];
                 expectedData.user = userRelationData;
                 expectedData[idPropName] = instance.$original[idPropName];
                 expectedData.created_at = instance.$original.created_at;
@@ -822,6 +832,52 @@ describe('Instance', function() {
             }).catch(function(err) {
                 storageReplaceStub.restore();
                 //console.log(err.stack);
+                throw err;
+            });
+        });
+
+        it('should support Models with primitive data structure (number/string)', function() {
+            var Model = this.buildModel('PrimitiveModel', {
+                type: DataTypes.STRING,
+            }, {
+                key: ODM.UUID4Key,
+            });
+
+            Model.$init(this.modelManager);
+
+            var instance = Model.build('initial-document-value');
+
+            //fake that the instance has been persisted to bucket
+            instance.options.isNewRecord = false;
+            instance.$original.options.isNewRecord = false;
+            var cas = '123244';
+            instance.setCAS(cas);
+            instance.$original.setCAS(cas);
+
+            var originalData = instance.$original.cloneData();
+
+            var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
+                cas: '12312412'
+            }));
+
+            var data = 'updated-document-value';
+            var promise = instance.update(data);
+
+            return promise.should.be.fulfilled.then(function(instance) {
+                instance.should.be.an.instanceof(ODM.Instance);
+                instance.getData().should.be.equal(data);
+
+                instance.$original.getKey().isGenerated().should.be.equal(true, "Instance key should be generated. But it's NOT");
+                storageReplaceStub.should.have.been.calledOnce;
+
+                storageReplaceStub.should.have.been.calledWith(
+                        instance.$original.getKey(),
+                        data,
+                        _.merge({}, {cas: instance.getCAS()})
+                );
+                storageReplaceStub.restore();
+            }).catch(function(err) {
+                storageReplaceStub.restore();
                 throw err;
             });
         });

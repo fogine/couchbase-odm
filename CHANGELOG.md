@@ -4,6 +4,7 @@
 * [ADDED] new `key` option  to `Model.create` method which can be an `Key` object or `id` string value
 * [ADDED] new `Model.exists` method
 * [ADDED] new `indexed` option to `Model.getMulti` method which if false, causes method to return an Array instead of Object (default=true)
+* [BUGFIX] - Model's `update` instance method did recursive merge with provided data on data being updated, now,  object's properties are overridden by assignment. Also the `update` method works on Models with primitive data structures
 
 ## v1.0.1
 
