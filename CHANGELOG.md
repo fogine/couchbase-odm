@@ -1,3 +1,7 @@
+## FUTURE
+
+* [BUGFIX] - Model's `update` instance method did recursive merge with provided data on data being updated, now,  object's properties are overridden by assignment. Also the `update` method works on Models with primitive data structures
+
 ## v1.0.1
 
 * [BUGFIX] - Default values of an object type should be cloned before they are assigned to an `Instance`
