@@ -9,8 +9,11 @@ Installation
 -------------------
 `npm install kouchbase-odm`
 
+Contributing
+-------------------
 Please, fill a bug report at [issues](https://github.com/fogine/couchbase-odm/issues) page if you find any.  
-Also, feedback and suggestions are more than welcome.
+Also, feedback, suggestions and pull requests are more than welcome!
+Make sure to discuss the issue with the community before implementing a solution.
 
 Features
 -------------------
