@@ -1,21 +1,24 @@
-var sinon          = require('sinon');
-var chai           = require('chai');
-var sinonChai      = require("sinon-chai");
-var sanitizer      = require('../../lib/sanitizer.js');
-var DataTypes      = require('../../lib/dataType.js').types;
-var ComplexDataType= require('../../lib/dataType.js').Complex;
-var ValidationError= require("../../lib/error/validationError.js");
-var couchbase      = require('couchbase').Mock;
-var ODM            = require('../../index.js');
-var DataTypes      = ODM.DataTypes;
+var sinon     = require('sinon');
+var chai      = require('chai');
+var sinonChai = require("sinon-chai");
+var couchbase = require('couchbase').Mock;
+
+var Report           = require('../../lib/sanitizer/report.js');
+var dataSanitizer    = require('../../lib/sanitizer/data.js');
+var schemaSanitizer  = require('../../lib/sanitizer/schema.js');
+var DataTypes        = require('../../lib/dataType.js').types;
+var ComplexDataType  = require('../../lib/dataType.js').Complex;
+var ValidationError  = require("../../lib/error/validationError.js");
+var ODM              = require('../../index.js');
+
 
 chai.use(sinonChai);
 chai.should();
 
-var sanitizers     = sanitizer.sanitizers;
-var Report         = sanitizer.Report;
-var assert         = sinon.assert;
-var expect         = chai.expect;
+var DataTypes  = ODM.DataTypes;
+var sanitizers = dataSanitizer.sanitizers;
+var assert     = sinon.assert;
+var expect     = chai.expect;
 
 describe("Sanitizer", function() {
     before(function() {
@@ -348,7 +351,7 @@ describe("Sanitizer", function() {
             this.date     = sinon.stub(sanitizers, DataTypes.DATE, validatorFn);
 
             // explicitly bind context object of the sanitizerData method
-            sanitizer.sanitizeData = sanitizer.sanitizeData.bind({
+            dataSanitizer.sanitize = dataSanitizer.sanitize.bind({
                 $modelManager: this.odm.modelManager
             });
 
@@ -409,7 +412,7 @@ describe("Sanitizer", function() {
                 created_at: new Date()
             };
 
-            var result = sanitizer.sanitizeData(this.schema, data);
+            var result = dataSanitizer.sanitize(this.schema, data);
             expect(result).to.deep.equal(data);
         });
 
@@ -422,7 +425,7 @@ describe("Sanitizer", function() {
                 created_at: new Date()
             };
 
-            var result = sanitizer.sanitizeData(this.schema, data);
+            var result = dataSanitizer.sanitize(this.schema, data);
             expect(result).to.have.property('username', this.schema.schema.username.default);
             expect(result.address).to.be.eql(this.schema.schema.address.default);
 
@@ -445,7 +448,7 @@ describe("Sanitizer", function() {
                 created_at: new Date()
             };
 
-            expect(sanitizer.sanitizeData.bind(sanitizer.sanitizeData, this.schema, data))
+            expect(dataSanitizer.sanitize.bind(dataSanitizer.sanitize, this.schema, data))
                 .to.throw(ValidationError);
         });
 
@@ -465,7 +468,7 @@ describe("Sanitizer", function() {
                 }
             };
 
-            var result = sanitizer.sanitizeData(this.schema, data);
+            var result = dataSanitizer.sanitize(this.schema, data);
             expect(result).to.not.have.property("country");
             expect(result).to.not.have.property("anotherproperty");
         });
@@ -486,7 +489,7 @@ describe("Sanitizer", function() {
                 }
             };
 
-            var result = sanitizer.sanitizeData(this.schema, data, {includeUnlisted: true});
+            var result = dataSanitizer.sanitize(this.schema, data, {includeUnlisted: true});
             expect(result).to.have.property("country");
             expect(result).to.have.property("anotherproperty");
         });
@@ -514,7 +517,7 @@ describe("Sanitizer", function() {
                 }
             };
 
-            var report = sanitizer.sanitizeSchema(schema);
+            var report = schemaSanitizer.sanitize(schema);
 
             report.should.be.an.instanceof(Report);
             report.getRelations().should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
@@ -533,9 +536,9 @@ describe("Sanitizer", function() {
                 }
             };
 
-            var complexValSpy = sinon .spy(sanitizers, ComplexDataType.toString());
+            var complexValSpy = sinon.spy(sanitizers, ComplexDataType.toString());
 
-            var report = sanitizer.sanitizeSchema(schema, this.odm.modelManager);
+            var report = schemaSanitizer.sanitize(schema, this.odm.modelManager);
 
             report.should.be.an.instanceof(Report);
             report.getRelations().should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
@@ -555,7 +558,7 @@ describe("Sanitizer", function() {
                 type: DataTypes.COMPLEX('User'),
             };
 
-            var report = sanitizer.sanitizeSchema(schema);
+            var report = schemaSanitizer.sanitize(schema);
 
             report.should.be.an.instanceof(Report);
             report.getRelations().should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
@@ -563,7 +566,7 @@ describe("Sanitizer", function() {
         });
 
         it('should fail if schema definition is not defined (or is not hash table)', function() {
-            var sanitize = sanitizer.sanitizeSchema;
+            var sanitize = schemaSanitizer.sanitize;
             expect(sanitize.bind(sanitize, null)).to.throw(ValidationError);
             expect(sanitize.bind(sanitize, new Date)).to.throw(ValidationError);
             expect(sanitize.bind(sanitize, undefined)).to.throw(ValidationError);
@@ -571,7 +574,7 @@ describe("Sanitizer", function() {
         });
 
         it('should fail if schema contains property of type `DataTypes.ENUM` and has not defined enumerated collection `schema.enum`', function() {
-            var sanitize = sanitizer.sanitizeSchema;
+            var sanitize = schemaSanitizer.sanitize;
 
             var schema = {
                 type: DataTypes.ENUM
@@ -581,7 +584,7 @@ describe("Sanitizer", function() {
         });
 
         it('should call correct sanitizer function for every `default` value option of property definition in schema', function() {
-            var sanitize = sanitizer.sanitizeSchema;
+            var sanitize = schemaSanitizer.sanitize;
 
             var intSpy = sinon.spy(sanitizers, DataTypes.INT);
             var objSpy = sinon.spy(sanitizers, DataTypes.HASH_TABLE);
@@ -624,7 +627,7 @@ describe("Sanitizer", function() {
 
         it('should fail when `DataTypes.COMPLEX` function value is set as property `type` instead of `DataTypes.COMPLEX("name")` object', function() {
 
-            var sanitize = sanitizer.sanitizeSchema;
+            var sanitize = schemaSanitizer.sanitize;
             var schema = {
                 type: DataTypes.COMPLEX
             };
@@ -634,7 +637,7 @@ describe("Sanitizer", function() {
 
         it('should fail when nested `schema` definition is defined as anything else than Object (Hash table) ', function() {
 
-            var sanitize = sanitizer.sanitizeSchema;
+            var sanitize = schemaSanitizer.sanitize;
             var schema = {
                 type: DataTypes.HASH_TABLE,
                 schema: null
@@ -645,7 +648,7 @@ describe("Sanitizer", function() {
 
         it('should fail when invalid item `type` of `ARRAY` type is set', function() {
 
-            var sanitize = sanitizer.sanitizeSchema;
+            var sanitize = schemaSanitizer.sanitize;
             var schema = {
                 type: DataTypes.ARRAY,
                 schema: {

@@ -127,7 +127,7 @@ describe('Model', function() {
                 type: DataTypes.HASH_TABLE
             }, {});
 
-            var stub = sinon.stub(ODM.Sanitizer, 'sanitizeSchema').returns(new ODM.Sanitizer.Report);
+            var stub = sinon.stub(ODM.SchemaSanitizer, 'sanitize').returns(new ODM.SchemaSanitizerReport);
             model.$init(this.modelManager);
 
             stub.should.have.been.calledOnce;

@@ -11,20 +11,22 @@ var ModelManagerError       = require("./lib/error/modelManagerError.js");
 var ModelNotFoundError      = require("./lib/error/modelNotFoundError.js");
 
 
-var RefDocKey      = require("./lib/key/refDocKey.js");
-var IncrementalKey = require("./lib/key/incrementalKey.js");
-var UUID4Key       = require("./lib/key/uuid4Key.js");
-var Key            = require("./lib/key/key.js");
+var RefDocKey             = require("./lib/key/refDocKey.js");
+var IncrementalKey        = require("./lib/key/incrementalKey.js");
+var UUID4Key              = require("./lib/key/uuid4Key.js");
+var Key                   = require("./lib/key/key.js");
 
-var Operation      = require("./lib/operation.js");
-var DataTypes      = require("./lib/dataType.js").types;
-var Instance       = require("./lib/instance.js");
-var Document       = require("./lib/document.js");
-var Model          = require("./lib/model.js");
-var ModelManager   = require("./lib/modelManager.js");
-var Sanitizer      = require("./lib/sanitizer.js");
-var StorageAdapter = require("./lib/storageAdapter.js");
-var Hook           = require("./lib/hook.js");
+var Operation             = require("./lib/operation.js");
+var DataTypes             = require("./lib/dataType.js").types;
+var Instance              = require("./lib/instance.js");
+var Document              = require("./lib/document.js");
+var Model                 = require("./lib/model.js");
+var ModelManager          = require("./lib/modelManager.js");
+var SchemaSanitizer       = require("./lib/sanitizer/schema.js");
+var DataSanitizer         = require("./lib/sanitizer/data.js");
+var SchemaSanitizerReport = require("./lib/sanitizer/report.js");
+var StorageAdapter        = require("./lib/storageAdapter.js");
+var Hook                  = require("./lib/hook.js");
 
 /**
  * CouchbaseODM
@@ -175,19 +177,21 @@ CouchbaseODM.errors = CouchbaseODM.prototype.errors = {
     CouchbaseError    : StorageAdapter.CouchbaseError
 };
 
-CouchbaseODM.Key            = CouchbaseODM.prototype.Key            = Key;
-CouchbaseODM.UUID4Key       = CouchbaseODM.prototype.UUID4Key       = UUID4Key;
-CouchbaseODM.IncrementalKey = CouchbaseODM.prototype.IncrementalKey = IncrementalKey;
-CouchbaseODM.RefDocKey      = CouchbaseODM.prototype.RefDocKey      = RefDocKey;
-CouchbaseODM.DataTypes      = CouchbaseODM.prototype.DataTypes      = DataTypes;
-CouchbaseODM.Operation      = CouchbaseODM.prototype.Operation      = Operation;
-CouchbaseODM.Instance       = CouchbaseODM.prototype.Instance       = Instance;
-CouchbaseODM.Document       = CouchbaseODM.prototype.Document       = Document;
-CouchbaseODM.Model          = CouchbaseODM.prototype.Model          = Model;
-CouchbaseODM.ModelManager   = CouchbaseODM.prototype.ModelManager   = ModelManager;
-CouchbaseODM.Sanitizer      = CouchbaseODM.prototype.Sanitizer      = Sanitizer;
-CouchbaseODM.StorageAdapter = CouchbaseODM.prototype.StorageAdapter = StorageAdapter;
-CouchbaseODM.Hook           = CouchbaseODM.prototype.Hook           = Hook;
+CouchbaseODM.Key                   = CouchbaseODM.prototype.Key                   = Key;
+CouchbaseODM.UUID4Key              = CouchbaseODM.prototype.UUID4Key              = UUID4Key;
+CouchbaseODM.IncrementalKey        = CouchbaseODM.prototype.IncrementalKey        = IncrementalKey;
+CouchbaseODM.RefDocKey             = CouchbaseODM.prototype.RefDocKey             = RefDocKey;
+CouchbaseODM.DataTypes             = CouchbaseODM.prototype.DataTypes             = DataTypes;
+CouchbaseODM.Operation             = CouchbaseODM.prototype.Operation             = Operation;
+CouchbaseODM.Instance              = CouchbaseODM.prototype.Instance              = Instance;
+CouchbaseODM.Document              = CouchbaseODM.prototype.Document              = Document;
+CouchbaseODM.Model                 = CouchbaseODM.prototype.Model                 = Model;
+CouchbaseODM.ModelManager          = CouchbaseODM.prototype.ModelManager          = ModelManager;
+CouchbaseODM.SchemaSanitizer       = CouchbaseODM.prototype.SchemaSanitizer       = SchemaSanitizer;
+CouchbaseODM.SchemaSanitizerReport = CouchbaseODM.prototype.SchemaSanitizerReport = SchemaSanitizerReport;
+CouchbaseODM.DataSanitizer         = CouchbaseODM.prototype.DataSanitizer         = DataSanitizer;
+CouchbaseODM.StorageAdapter        = CouchbaseODM.prototype.StorageAdapter        = StorageAdapter;
+CouchbaseODM.Hook                  = CouchbaseODM.prototype.Hook                  = Hook;
 
 module.exports = CouchbaseODM;
 

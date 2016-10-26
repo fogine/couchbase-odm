@@ -61,7 +61,7 @@ describe('Instance', function() {
 
         it('should call defined `beforeValidate` and `afterValidate` hooks', function() {
             var runHooksSpy = sinon.spy(this.model, 'runHooks');
-            var sanitizerStub = sinon.stub(ODM.Sanitizer, 'sanitizeData', function() {
+            var sanitizerStub = sinon.stub(ODM.DataSanitizer, 'sanitize', function() {
                 runHooksSpy.should.have.callCount(1);
             });
 
@@ -75,8 +75,8 @@ describe('Instance', function() {
             sanitizerStub.restore();
         });
 
-        it('should call `sanitizer.sanitizeData`', function() {
-            var sanitizerSpy = sinon.spy(ODM.Sanitizer, 'sanitizeData');
+        it('should call `dataSanitizer.sanitize`', function() {
+            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
             var instance = this.model.build({username: 'fogine'});
 
@@ -98,7 +98,7 @@ describe('Instance', function() {
             });
             model.$init(this.modelManager);
 
-            var sanitizerSpy = sinon.spy(ODM.Sanitizer, 'sanitizeData');
+            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
             var instance = model.build({username: 'fogine'});
 
