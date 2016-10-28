@@ -137,7 +137,7 @@ describe("Sanitizer", function() {
                     .to.be.equal("test");
             });
 
-            it("should NOT pass validation when `isNullable` options is set to `false` and `null` input value is provided", function() {
+            it("should NOT pass validation when `null` input value is provided", function() {
                 var stringVal = this.stringVal;
 
                 expect(stringVal.bind(stringVal, null, {propPath: 'testprop'}))
@@ -198,7 +198,7 @@ describe("Sanitizer", function() {
                     .to.be.a('string');
             });
 
-            it("should NOT pass validation when `isNullable` options is set to `false` and `null` input value is provided", function() {
+            it("should NOT pass validation when `null` input value is provided", function() {
                 var dateVal = this.dateVal;
 
                 expect(dateVal.bind(dateVal, null, {propPath: 'testprop'}))
@@ -295,7 +295,6 @@ describe("Sanitizer", function() {
                 var options = {
                     propPath: 'testprop',
                     schema: {
-                        isNullable: false,
                         schema: {
                             type: DataTypes.BOOLEAN
                         }
