@@ -304,7 +304,7 @@ describe('Model', function() {
             this.model = this.buildModel('RefDocTestModel', modelSchema, modelOptinos);
             this.modelWithCustomRefDocKey = this.buildModel(
                     'RefDocTestModelWithCustomKey',
-                    modelSchema,
+                    _.cloneDeep(modelSchema),
                     _.assign({refDocKey: CustomRefDocKey}, modelOptinos)
             );
 

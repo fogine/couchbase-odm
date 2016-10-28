@@ -31,12 +31,12 @@ describe("Sanitizer", function() {
         this.model = odm.define('Test', {
             type: DataTypes.HASH_TABLE,
             default: {}, // should support setting default root empty value
-                     schema: {
-                         prop: {
-                             type: DataTypes.STRING,
-                             default: 'test'
-                         }
-                     }
+             schema: {
+                 prop: {
+                     type: DataTypes.STRING,
+                     default: 'test'
+                 }
+             }
         }, {timestamps: true});
 
         this.odm = odm;
@@ -64,8 +64,9 @@ describe("Sanitizer", function() {
                 var values = [{}, [], new Date, new Object];
 
                 values.forEach(function(val) {
-                    expect(numVal.bind(numVal,'testprop', val))
-                        .to.throw(ValidationError);
+                    expect(numVal.bind(numVal, val, {
+                        propPath: 'testprop'
+                    })).to.throw(ValidationError);
                 });
             });
 
@@ -75,10 +76,10 @@ describe("Sanitizer", function() {
                 var validInt = 4;
                 var validFloat = 0.5;
 
-                expect(numVal('testprop', validInt))
+                expect(numVal(validInt, {propPath: 'testprop'}))
                     .to.be.equal(validInt);
 
-                expect(numVal('testprop', validFloat))
+                expect(numVal(validFloat, {propPath:'testprop'}))
                     .to.be.equal(validFloat);
             });
 
@@ -88,10 +89,10 @@ describe("Sanitizer", function() {
                 var validStringInt = "65";
                 var validStringFloat = "34.2";
 
-                expect(numVal('testprop', validStringInt))
+                expect(numVal(validStringInt, {propPath: 'testprop'}))
                     .to.be.equal(parseInt(validStringInt));
 
-                expect(numVal('testprop', validStringFloat))
+                expect(numVal(validStringFloat, {propPath: 'testprop'}))
                     .to.be.equal(parseFloat(validStringFloat));
             });
         });
@@ -103,7 +104,7 @@ describe("Sanitizer", function() {
                 var values = ['3a', '1.0', 1.2, '2.9'];
 
                 values.forEach(function(val) {
-                    expect(intVal.bind(intVal,'testprop', val))
+                    expect(intVal.bind(intVal, val, {propPath: 'testprop'}))
                         .to.throw(ValidationError);
                 });
             });
@@ -115,7 +116,7 @@ describe("Sanitizer", function() {
                 var expected = [4, 10, 5, 1];
 
                 values.forEach(function(val, index) {
-                    expect(intVal('testprop', val))
+                    expect(intVal(val, {propPath: 'testprop'}))
                         .to.be.equal(expected[index]);
                 });
             });
@@ -126,20 +127,20 @@ describe("Sanitizer", function() {
             it('should throw an error if input is not instance of String or is not of type `string`', function() {
                 var stringVal = this.stringVal;
 
-                expect(stringVal.bind(stringVal,'testprop', new Object))
+                expect(stringVal.bind(stringVal, new Object, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(stringVal.bind(stringVal,'testprop', 3))
+                expect(stringVal.bind(stringVal, 3, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(stringVal('testprop', new String("test")))
+                expect(stringVal(new String("test"), {propPath: 'testprop'}))
                     .to.be.equal("test");
             });
 
             it("should NOT pass validation when `isNullable` options is set to `false` and `null` input value is provided", function() {
                 var stringVal = this.stringVal;
 
-                expect(stringVal.bind(stringVal, 'testprop', null, {isNullable: false}))
+                expect(stringVal.bind(stringVal, null, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
             });
         });
@@ -148,19 +149,19 @@ describe("Sanitizer", function() {
             it('should throw an error if input can not be parsed as boolean or is not boolean-integer value (0,1)', function() {
                 var booleanVal = this.booleanVal;
 
-                expect(booleanVal.bind(booleanVal,'testprop', "true"))
+                expect(booleanVal.bind(booleanVal, "true", {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(booleanVal.bind(booleanVal,'testprop', {}))
+                expect(booleanVal.bind(booleanVal, {}, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(booleanVal.bind(booleanVal,'testprop', []))
+                expect(booleanVal.bind(booleanVal, [], {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(booleanVal.bind(booleanVal,'testprop', new Object))
+                expect(booleanVal.bind(booleanVal, new Object, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(booleanVal.bind(booleanVal, 'testprop', 2))
+                expect(booleanVal.bind(booleanVal, 2, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
             });
 
@@ -168,10 +169,10 @@ describe("Sanitizer", function() {
 
                 var booleanVal = this.booleanVal;
 
-                expect(booleanVal('testprop', 1))
+                expect(booleanVal(1, {propPath: 'testprop'}))
                     .to.be.equal(true);
 
-                expect(booleanVal('testprop', 0))
+                expect(booleanVal(0, {propPath: 'testprop'}))
                     .to.be.equal(false);
             });
         });
@@ -181,26 +182,26 @@ describe("Sanitizer", function() {
             it('should throw an error if input is not valid date or date/date-time string or is not valid instance of Date', function() {
                 var dateVal = this.dateVal;
 
-                expect(dateVal.bind(dateVal,'testprop', ""))
+                expect(dateVal.bind(dateVal, "", {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(dateVal.bind(dateVal,'testprop', undefined))
+                expect(dateVal.bind(dateVal, undefined, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(dateVal.bind(dateVal,'testprop', null))
+                expect(dateVal.bind(dateVal, null, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(dateVal.bind(dateVal,'testprop', 'invalid date value'))
+                expect(dateVal.bind(dateVal, 'invalid date value', {propPath: 'testprop'}))
                     .to.throw(ValidationError);
 
-                expect(dateVal('testprop', new String("Thu Mar 24 2016 13:40:30 GMT+0100")))
+                expect(dateVal(new String("Thu Mar 24 2016 13:40:30 GMT+0100"), {propPath: 'testprop'}))
                     .to.be.a('string');
             });
 
             it("should NOT pass validation when `isNullable` options is set to `false` and `null` input value is provided", function() {
                 var dateVal = this.dateVal;
 
-                expect(dateVal.bind(dateVal, 'testprop', null, {isNullable: false}))
+                expect(dateVal.bind(dateVal, null, {propPath: 'testprop'}))
                     .to.throw(ValidationError);
             });
         });
@@ -212,11 +213,15 @@ describe("Sanitizer", function() {
                     enum: [1]
                 };
 
-                expect(enumVal.bind(enumVal,'testprop', 4, schema))
-                    .to.throw(ValidationError);
+                expect(enumVal.bind(enumVal, 4, {
+                    propPath: 'testprop',
+                    schema: schema
+                })).to.throw(ValidationError);
 
-                expect(enumVal.bind(enumVal,'testprop', null, schema))
-                    .to.throw(ValidationError);
+                expect(enumVal.bind(enumVal, null, {
+                    propPath: 'testprop',
+                    schema: schema
+                })).to.throw(ValidationError);
             });
 
             it('should pass the validation if input value is present in enumerated collection', function() {
@@ -225,10 +230,25 @@ describe("Sanitizer", function() {
                     enum: [1,null,undefined, 'false']
                 };
 
-                expect(enumVal('testprop', 1, schema)).to.be.equal(1);
-                expect(enumVal('testprop', null, schema)).to.be.equal(null);
-                expect(enumVal('testprop', undefined, schema)).to.be.equal(undefined);
-                expect(enumVal('testprop', 'false', schema)).to.be.equal('false');
+                expect(enumVal(1, {
+                    propPath: 'testprop',
+                    schema: schema
+                })).to.be.equal(1);
+
+                expect(enumVal(null, {
+                    propPath: 'testprop',
+                    schema: schema
+                })).to.be.equal(null);
+
+                expect(enumVal(undefined, {
+                    propPath: 'testprop',
+                    schema: schema
+                })).to.be.equal(undefined);
+
+                expect(enumVal('false', {
+                    propPath: 'testprop',
+                    schema: schema
+                })).to.be.equal('false');
             });
 
         });
@@ -254,33 +274,44 @@ describe("Sanitizer", function() {
                 };
                 var data = [1,0,false];
 
-                arrayVal.apply(sanitizers, [propName, data.slice(0), schema]);
+                arrayVal.apply(sanitizers, [data.slice(0), {
+                    propPath: propName,
+                    schema: schema
+                }]);
 
-                this.booleanValSpy.should.have.been.calledWith(propName, data[0], schema.schema);
-                this.booleanValSpy.should.have.been.calledWith(propName, data[1], schema.schema);
-                this.booleanValSpy.should.have.been.calledWith(propName, data[2], schema.schema);
+                var optMatcher = sinon.match(function(val) {
+                    return val && val.propPath === propName && val.schema === schema.schema;
+                });
+
+                this.booleanValSpy.should.have.been.calledWith( data[0], optMatcher);
+
+                this.booleanValSpy.should.have.been.calledWith(data[1], optMatcher);
+
+                this.booleanValSpy.should.have.been.calledWith(data[2], optMatcher);
             });
 
             it("should NOT pass validation when value is not an array and `property` being validated is not nullable and `default` option value is not defined", function() {
                 var arrayVal = this.arrayVal;
-                var propName = 'testprop';
                 var options = {
-                    isNullable: false,
+                    propPath: 'testprop',
                     schema: {
-                        type: DataTypes.BOOLEAN
+                        isNullable: false,
+                        schema: {
+                            type: DataTypes.BOOLEAN
+                        }
                     }
                 };
 
-                expect(arrayVal.bind(sanitizers, propName, null, options))
+                expect(arrayVal.bind(sanitizers, null, options))
                     .to.throw(ValidationError);
 
-                expect(arrayVal.bind(sanitizers, propName, undefined, options))
+                expect(arrayVal.bind(sanitizers, undefined, options))
                     .to.throw(ValidationError);
 
-                expect(arrayVal.bind(sanitizers, propName, {}, options))
+                expect(arrayVal.bind(sanitizers, {}, options))
                     .to.throw(ValidationError);
 
-                expect(arrayVal.bind(sanitizers, propName, "", options))
+                expect(arrayVal.bind(sanitizers, "", options))
                     .to.throw(ValidationError);
             });
         });
@@ -318,11 +349,17 @@ describe("Sanitizer", function() {
                 };
                 var modelManager = new this.ModelManagerMock;
 
-                expect(complexVal.bind(complexVal,'testprop', new Object, schema, modelManager))
-                    .to.throw(ValidationError);
+                expect(complexVal.bind(complexVal, new Object, {
+                    propPath: 'testprop',
+                    schema: schema,
+                    modelManager: modelManager
+                })).to.throw(ValidationError);
 
-                expect(complexVal.bind(complexVal,'testprop', new Date, schema, modelManager))
-                    .to.throw(ValidationError);
+                expect(complexVal.bind(complexVal, new Date, {
+                    propPath: 'testprop',
+                    schema: schema,
+                    modelManager: modelManager
+                })).to.throw(ValidationError);
             });
 
             it('should pass the validation if input value is instance of `Model.Instance`', function() {
@@ -332,8 +369,11 @@ describe("Sanitizer", function() {
                 };
                 var modelManager = new this.ModelManagerMock;
 
-                expect(complexVal('testprop', new this.Model.Instance, schema, modelManager))
-                    .to.be.an.instanceof(this.InstanceMock);
+                expect(complexVal(new this.Model.Instance, {
+                    propPath: 'testprop',
+                    schema: schema,
+                    modelManager: modelManager
+                })).to.be.an.instanceof(this.InstanceMock);
             });
 
         });
@@ -342,13 +382,13 @@ describe("Sanitizer", function() {
     describe("Data sanitizer", function() {
         before(function() {
 
-            var validatorFn = function(name, val, options){
+            var validatorFn = function(val, options){
                 return val;
             }
 
-            this.string   = sinon.stub(sanitizers, DataTypes.STRING, validatorFn);
-            this.number   = sinon.stub(sanitizers, DataTypes.NUMBER, validatorFn);
-            this.date     = sinon.stub(sanitizers, DataTypes.DATE, validatorFn);
+            this.string = sinon.stub(sanitizers, DataTypes.STRING, validatorFn);
+            this.number = sinon.stub(sanitizers, DataTypes.NUMBER, validatorFn);
+            this.date   = sinon.stub(sanitizers, DataTypes.DATE, validatorFn);
 
             // explicitly bind context object of the sanitizerData method
             dataSanitizer.sanitize = dataSanitizer.sanitize.bind({
@@ -525,6 +565,64 @@ describe("Sanitizer", function() {
             report.getRelations().should.have.deep.property('[1].path', 'connections.friends');
         });
 
+        //it('should return instance of `Report` with gathered default schema property values', function() {
+            //var schema = {
+                //type: DataTypes.HASH_TABLE,
+                //schema: {
+                    //name: {
+                        //type: DataTypes.STRING,
+                        //default: 'John'
+                    //},
+                    //connections: {
+                        //type: DataTypes.HASH_TABLE,
+                        //schema: {
+                            //test: {
+                                //type: DataTypes.COMPLEX('Test'),
+                                //default: this.model.build({})
+                            //}
+                        //}
+                    //}
+                //}
+            //};
+
+            //var report = schemaSanitizer.sanitize(schema);
+
+            //report.should.be.an.instanceof(Report);
+
+            //report.getSchemaDefaults().should.be.eql({
+                //name: schema.schema.name.default,
+                //connections: {
+                    //test: schema.schema.connections.schema.test.default
+                //}
+            //});
+        //});
+
+        //it('should return instance of `Report` with gathered default schema property values (case 2)', function() {
+            //var schema = {
+                //type: DataTypes.ARRAY,
+                //default: ['some', 'values']
+            //};
+
+            //var report = schemaSanitizer.sanitize(schema);
+
+            //report.should.be.an.instanceof(Report);
+
+            //report.getSchemaDefaults().should.be.equal(schema.default);
+        //});
+
+        //it('should return instance of `Report` with gathered default schema property values (case 3)', function() {
+            //var schema = {
+                //type: DataTypes.STRING,
+                //default: 'test'
+            //};
+
+            //var report = schemaSanitizer.sanitize(schema);
+
+            //report.should.be.an.instanceof(Report);
+
+            //report.getSchemaDefaults().should.be.equal(schema.default);
+        //});
+
         it('should allow to define default value for `DataType.COMPLEX()` data type', function() {
             var schema = {
                 type: DataTypes.HASH_TABLE,
@@ -545,10 +643,12 @@ describe("Sanitizer", function() {
             report.getRelations().should.have.deep.property('[0].path', 'test');
             complexValSpy.should.have.been.calledOnce;
             complexValSpy.should.have.been.calledWith(
-                    'test.default',
                     schema.schema.test.default,
-                    schema.schema.test,
-                    this.odm.modelManager
+                    {
+                        propPath: 'test.default',
+                        schema: schema.schema.test,
+                        modelManager: this.odm.modelManager
+                    }
             );
             complexValSpy.restore();
         });
@@ -611,14 +711,20 @@ describe("Sanitizer", function() {
             sanitize(schema);
 
             intSpy.should.have.been.calledWith(
-                    'age.default',
                     schema.schema.age.default,
-                    schema.schema.age
+                    {
+                        propPath: 'age.default',
+                        schema: schema.schema.age,
+                        modelManager: undefined
+                    }
             );
             objSpy.should.have.been.calledWith(
-                    'dimensions.metric.default',
                     schema.schema.dimensions.schema.metric.default,
-                    schema.schema.dimensions.schema.metric
+                    {
+                        propPath:'dimensions.metric.default',
+                        schema: schema.schema.dimensions.schema.metric,
+                        modelManager: undefined
+                    }
             );
 
             intSpy.restore();
