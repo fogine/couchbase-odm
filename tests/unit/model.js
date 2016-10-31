@@ -127,11 +127,11 @@ describe('Model', function() {
                 type: DataTypes.HASH_TABLE
             }, {});
 
-            var stub = sinon.stub(ODM.SchemaSanitizer, 'sanitize').returns(new ODM.SchemaSanitizerReport);
+            var stub = sinon.stub(ODM.SchemaSanitizer, 'sanitize');
             model.$init(this.modelManager);
 
             stub.should.have.been.calledOnce;
-            stub.should.have.been.calledWith(model.options.schema, model.$modelManager);
+            stub.should.have.been.calledWith(model.options.schema);
             stub.restore();//important!
         });
 
@@ -367,7 +367,9 @@ describe('Model', function() {
             var instance = this.model.build('somedatastrng', {
                 sanitize: true
             });
-            var instance2 = this.model.build('somedatastrng');
+            var instance2 = this.model.build('somedatastrng', {
+                sanitize: false
+            });
 
             instance.should.be.an.instanceof(this.model.Instance);
             instance2.should.be.an.instanceof(this.model.Instance);

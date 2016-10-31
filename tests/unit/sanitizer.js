@@ -3,7 +3,6 @@ var chai      = require('chai');
 var sinonChai = require("sinon-chai");
 var couchbase = require('couchbase').Mock;
 
-var Report           = require('../../lib/sanitizer/report.js');
 var dataSanitizer    = require('../../lib/sanitizer/data.js');
 var schemaSanitizer  = require('../../lib/sanitizer/schema.js');
 var DataTypes        = require('../../lib/dataType.js').types;
@@ -31,12 +30,12 @@ describe("Sanitizer", function() {
         this.model = odm.define('Test', {
             type: DataTypes.HASH_TABLE,
             default: {}, // should support setting default root empty value
-             schema: {
-                 prop: {
-                     type: DataTypes.STRING,
-                     default: 'test'
-                 }
-             }
+            schema: {
+                prop: {
+                    type: DataTypes.STRING,
+                    default: 'test'
+                }
+            }
         }, {timestamps: true});
 
         this.odm = odm;
@@ -46,7 +45,7 @@ describe("Sanitizer", function() {
         before(function() {
             this.numVal     = sanitizers[DataTypes.NUMBER];
             this.intVal     = sanitizers[DataTypes.INT];
-            this.floatVal     = sanitizers[DataTypes.FLOAT];
+            this.floatVal   = sanitizers[DataTypes.FLOAT];
             this.booleanVal = sanitizers[DataTypes.BOOLEAN];
             this.stringVal  = sanitizers[DataTypes.STRING];
             this.arrayVal   = sanitizers[DataTypes.ARRAY];
@@ -61,7 +60,7 @@ describe("Sanitizer", function() {
 
 
                 //"3a" => value would be parsed by `parseFloat` to float as "3", but it's INVALID number thus it should throw
-                var values = [{}, [], new Date, new Object];
+                var values = ['3a', {}, [], new Date, new Object];
 
                 values.forEach(function(val) {
                     expect(numVal.bind(numVal, val, {
@@ -317,62 +316,43 @@ describe("Sanitizer", function() {
 
         describe('Complex', function() {
             before(function() {
-                function InstanceMock() {}
+                this.model = this.odm.define('Test_Complex_sanitizer', {
+                    type: DataTypes.HASH_TABLE,
+                });
 
-                function ModelMock() {
-                    this.Instance = function() {
-                        InstanceMock.call(this);
-                    }
-                    this.Instance.prototype = new InstanceMock();
-                    this.Instance.prototype.constructor = this.Instance.constructor;
-                }
-                ModelMock.prototype.name = 'UserTestModel';
-
-                var model = new ModelMock;
-
-                function ModelManagerMock() {
-                    this.get = function() {
-                        return model;
-                    }
-                }
-
-                this.InstanceMock     = InstanceMock;
-                this.ModelManagerMock = ModelManagerMock;
-                this.Model            = model;
+                this.schema = {
+                    type: DataTypes.COMPLEX(this.model.name)
+                };
             });
 
             it('should fail if input value is not instance of `Model.Instance`', function() {
                 var complexVal = this.complexVal;
-                var schema = {
-                    type: DataTypes.COMPLEX(this.Model.name)
-                };
-                var modelManager = new this.ModelManagerMock;
 
                 expect(complexVal.bind(complexVal, new Object, {
                     propPath: 'testprop',
-                    schema: schema,
-                    modelManager: modelManager
+                    schema: this.schema,
+                    model: this.model
                 })).to.throw(ValidationError);
 
                 expect(complexVal.bind(complexVal, new Date, {
                     propPath: 'testprop',
-                    schema: schema,
-                    modelManager: modelManager
+                    schema: this.schema,
+                    model: this.model
                 })).to.throw(ValidationError);
             });
 
             it('should pass the validation if input value is instance of `Model.Instance`', function() {
                 var complexVal = this.complexVal;
-                var schema = {
-                    type: DataTypes.COMPLEX(this.Model.name)
-                };
-                var modelManager = new this.ModelManagerMock;
+                var instance = new this.model.Instance({}, {
+                    isNewRecord:true,
+                    key: this.model.buildKey()
+                });
 
-                expect(complexVal(new this.Model.Instance, {
+                expect(complexVal(instance, {
                     propPath: 'testprop',
-                    schema: schema,
-                    modelManager: modelManager
-                })).to.be.an.instanceof(this.InstanceMock);
+                    schema: this.schema,
+                    model: this.model
+                })).to.be.an.instanceof(this.model.Instance);
             });
 
         });
@@ -389,27 +369,16 @@ describe("Sanitizer", function() {
             this.number = sinon.stub(sanitizers, DataTypes.NUMBER, validatorFn);
             this.date   = sinon.stub(sanitizers, DataTypes.DATE, validatorFn);
 
-            // explicitly bind context object of the sanitizerData method
-            dataSanitizer.sanitize = dataSanitizer.sanitize.bind({
-                $modelManager: this.odm.modelManager
-            });
-
-            // sanitizer schema definition
-            this.schema = {
+            this.model = this.odm.define('DataSanitizerModel', {
                 type: DataTypes.HASH_TABLE,
                 schema: {
                     username: {
                         type: DataTypes.STRING,
                         allowEmptyValue: true,
-                        default: "default_username"
                     },
                     address: {
                         type: DataTypes.HASH_TABLE,
                         allowEmptyValue: true,
-                        default: {
-                            street: "some name",
-                            zip: "123Z"
-                        },
                         schema: {
                             street: {
                                 type: DataTypes.STRING
@@ -419,10 +388,6 @@ describe("Sanitizer", function() {
                             }
                         }
                     },
-                    association: {
-                        type: DataTypes.COMPLEX('Test'),
-                        default: this.model.build()
-                    },
                     age: {
                         type: DataTypes.NUMBER
                     },
@@ -430,7 +395,10 @@ describe("Sanitizer", function() {
                         type: DataTypes.DATE
                     }
                 }
-            };
+            }, {timestamps: true});
+
+            // sanitizer schema definition
+            this.schema = this.model.options.schema;
         });
 
         after(function() {
@@ -451,32 +419,32 @@ describe("Sanitizer", function() {
                 created_at: new Date()
             };
 
-            var result = dataSanitizer.sanitize(this.schema, data);
+            var result = dataSanitizer.sanitize.call(this.model, this.schema, data);
             expect(result).to.deep.equal(data);
         });
 
-        it("should assign defined `default` value to a data if the data are empty (null/undefined)", function() {
+        //it("should assign defined `default` value to a data if the data are empty (null/undefined)", function() {
 
-            var data = {
-                username: null,
-                address: undefined,
-                age: 15,
-                created_at: new Date()
-            };
+            //var data = {
+                //username: null,
+                //address: undefined,
+                //age: 15,
+                //created_at: new Date()
+            //};
 
-            var result = dataSanitizer.sanitize(this.schema, data);
-            expect(result).to.have.property('username', this.schema.schema.username.default);
-            expect(result.address).to.be.eql(this.schema.schema.address.default);
+            //var result = dataSanitizer.sanitize(this.schema, data);
+            //expect(result).to.have.property('username', this.schema.schema.username.default);
+            //expect(result.address).to.be.eql(this.schema.schema.address.default);
 
-            // the default value must be cloned
-            // before assigned to validated data object
-            expect(result.address).to.not.be.equal(this.schema.schema.address.default);
+            //// the default value must be cloned
+            //// before assigned to validated data object
+            //expect(result.address).to.not.be.equal(this.schema.schema.address.default);
 
-            // Make sure that default association Instance object
-            // are cloned before they are assigned
-            expect(result.association).to.be.an.instanceof(this.model.Instance);
-            expect(result.association).to.not.be.equal(this.schema.schema.association.default);
-        });
+            //// Make sure that default association Instance object
+            //// are cloned before they are assigned
+            //expect(result.association).to.be.an.instanceof(this.model.Instance);
+            //expect(result.association).to.not.be.equal(this.schema.schema.association.default);
+        //});
 
         it("should fail the validation if `property` is empty (null/undefined) and `allowEmptyValue` options is NOT set", function() {
 
@@ -487,7 +455,7 @@ describe("Sanitizer", function() {
                 created_at: new Date()
             };
 
-            expect(dataSanitizer.sanitize.bind(dataSanitizer.sanitize, this.schema, data))
+            expect(dataSanitizer.sanitize.bind(this.model, this.schema, data))
                 .to.throw(ValidationError);
         });
 
@@ -507,7 +475,7 @@ describe("Sanitizer", function() {
                 }
             };
 
-            var result = dataSanitizer.sanitize(this.schema, data);
+            var result = dataSanitizer.sanitize.call(this.model, this.schema, data);
             expect(result).to.not.have.property("country");
             expect(result).to.not.have.property("anotherproperty");
         });
@@ -528,141 +496,59 @@ describe("Sanitizer", function() {
                 }
             };
 
-            var result = dataSanitizer.sanitize(this.schema, data, {includeUnlisted: true});
+            var result = dataSanitizer.sanitize.call(this.model, this.schema, data, {includeUnlisted: true});
             expect(result).to.have.property("country");
             expect(result).to.have.property("anotherproperty");
+        });
+
+        it('should respect `skipInternalProperties=true` option', function() {
+            var data = {
+                username: 'test',
+                address: {
+                    street: "St. Patrick",
+                    zip: "1124"
+                },
+                age: 15,
+            };
+
+            var result = dataSanitizer.sanitize.call(
+                    this.model,
+                    this.schema,
+                    data,
+                    {
+                        skipInternalProperties: true
+                    }
+            );
+            expect(result).to.deep.equal(data);
+        });
+
+        it('should respect `skipInternalProperties=false` option', function() {
+            var self = this;
+
+            var data = {
+                username: 'test',
+                address: {
+                    street: "St. Patrick",
+                    zip: "1124"
+                },
+                age: 15,
+            };
+
+            function test() {
+                var result = dataSanitizer.sanitize.call(
+                        self.model,
+                        self.schema,
+                        data,
+                        {
+                            skipInternalProperties: false
+                        }
+                );
+            }
+            expect(test).to.throw(ValidationError);
         });
     });
 
     describe('Schema Sanitizer', function() {
-        it('should return instance of `Report` with gathered information about Model`s relations/associations', function() {
-            var schema = {
-                type: DataTypes.HASH_TABLE,
-                schema: {
-                    user: {
-                        type: DataTypes.COMPLEX('User'),
-                    },
-                    connections: {
-                        type: DataTypes.HASH_TABLE,
-                        schema: {
-                            friends: {
-                                type: DataTypes.ARRAY,
-                                schema: {
-                                    type: DataTypes.COMPLEX('User')
-                                }
-                            }
-                        }
-                    }
-                }
-            };
-
-            var report = schemaSanitizer.sanitize(schema);
-
-            report.should.be.an.instanceof(Report);
-            report.getRelations().should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
-            report.getRelations().should.have.deep.property('[0].path', 'user');
-            report.getRelations().should.have.deep.property('[1].path', 'connections.friends');
-        });
-
-        //it('should return instance of `Report` with gathered default schema property values', function() {
-            //var schema = {
-                //type: DataTypes.HASH_TABLE,
-                //schema: {
-                    //name: {
-                        //type: DataTypes.STRING,
-                        //default: 'John'
-                    //},
-                    //connections: {
-                        //type: DataTypes.HASH_TABLE,
-                        //schema: {
-                            //test: {
-                                //type: DataTypes.COMPLEX('Test'),
-                                //default: this.model.build({})
-                            //}
-                        //}
-                    //}
-                //}
-            //};
-
-            //var report = schemaSanitizer.sanitize(schema);
-
-            //report.should.be.an.instanceof(Report);
-
-            //report.getSchemaDefaults().should.be.eql({
-                //name: schema.schema.name.default,
-                //connections: {
-                    //test: schema.schema.connections.schema.test.default
-                //}
-            //});
-        //});
-
-        //it('should return instance of `Report` with gathered default schema property values (case 2)', function() {
-            //var schema = {
-                //type: DataTypes.ARRAY,
-                //default: ['some', 'values']
-            //};
-
-            //var report = schemaSanitizer.sanitize(schema);
-
-            //report.should.be.an.instanceof(Report);
-
-            //report.getSchemaDefaults().should.be.equal(schema.default);
-        //});
-
-        //it('should return instance of `Report` with gathered default schema property values (case 3)', function() {
-            //var schema = {
-                //type: DataTypes.STRING,
-                //default: 'test'
-            //};
-
-            //var report = schemaSanitizer.sanitize(schema);
-
-            //report.should.be.an.instanceof(Report);
-
-            //report.getSchemaDefaults().should.be.equal(schema.default);
-        //});
-
-        it('should allow to define default value for `DataType.COMPLEX()` data type', function() {
-            var schema = {
-                type: DataTypes.HASH_TABLE,
-                schema: {
-                    test: {
-                        type: DataTypes.COMPLEX('Test'),
-                        default: this.model.build({})
-                    }
-                }
-            };
-
-            var complexValSpy = sinon.spy(sanitizers, ComplexDataType.toString());
-
-            var report = schemaSanitizer.sanitize(schema, this.odm.modelManager);
-
-            report.should.be.an.instanceof(Report);
-            report.getRelations().should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
-            report.getRelations().should.have.deep.property('[0].path', 'test');
-            complexValSpy.should.have.been.calledOnce;
-            complexValSpy.should.have.been.calledWith(
-                    schema.schema.test.default,
-                    {
-                        propPath: 'test.default',
-                        schema: schema.schema.test,
-                        modelManager: this.odm.modelManager
-                    }
-            );
-            complexValSpy.restore();
-        });
-
-        it('should allow to define `DataType.COMPLEX()` as root data type', function() {
-            var schema = {
-                type: DataTypes.COMPLEX('User'),
-            };
-
-            var report = schemaSanitizer.sanitize(schema);
-
-            report.should.be.an.instanceof(Report);
-            report.getRelations().should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
-            report.getRelations().should.have.deep.property('[0].path', null);
-        });
 
         it('should fail if schema definition is not defined (or is not hash table)', function() {
             var sanitize = schemaSanitizer.sanitize;
@@ -707,14 +593,15 @@ describe("Sanitizer", function() {
                 }
             };
 
-            sanitize(schema);
+            sanitize.call(this.model, schema);
 
             intSpy.should.have.been.calledWith(
                     schema.schema.age.default,
                     {
                         propPath: 'age.default',
                         schema: schema.schema.age,
-                        modelManager: undefined
+                        model: this.model,
+                        skipInternalProperties: true
                     }
             );
             objSpy.should.have.been.calledWith(
@@ -722,7 +609,8 @@ describe("Sanitizer", function() {
                     {
                         propPath:'dimensions.metric.default',
                         schema: schema.schema.dimensions.schema.metric,
-                        modelManager: undefined
+                        model: this.model,
+                        skipInternalProperties: true
                     }
             );
 

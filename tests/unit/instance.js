@@ -61,24 +61,31 @@ describe('Instance', function() {
 
         it('should call defined `beforeValidate` and `afterValidate` hooks', function() {
             var runHooksSpy = sinon.spy(this.model, 'runHooks');
-            var sanitizerStub = sinon.stub(ODM.DataSanitizer, 'sanitize', function() {
-                runHooksSpy.should.have.callCount(1);
-            });
+            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
             var instance = this.model.build({username: 'fogine'});
 
+            //reset spies because data can be sanitized when building new Instance
+            //via this.model.build
+            sanitizerSpy.reset();
+            runHooksSpy.reset();
+
             instance.sanitize();
             runHooksSpy.firstCall.should.have.been.calledWith(ODM.Hook.types.beforeValidate);
+            sanitizerSpy.should.have.been.calledBefore(runHooksSpy.secondCall);
             runHooksSpy.secondCall.should.have.been.calledWith(ODM.Hook.types.afterValidate);
             runHooksSpy.should.have.been.calledTwice;
             runHooksSpy.restore();
-            sanitizerStub.restore();
+            sanitizerSpy.restore();
         });
 
         it('should call `dataSanitizer.sanitize`', function() {
             var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
             var instance = this.model.build({username: 'fogine'});
+            //reset spy because data can be sanitized when building new Instance
+            //via this.model.build
+            sanitizerSpy.reset();
 
             instance.$touchTimestamps();
             instance.sanitize();
@@ -87,7 +94,10 @@ describe('Instance', function() {
             sanitizerSpy.should.have.been.calledWith(
                     this.model.options.schema,
                     instance.getData(),
-                    {includeUnlisted: false}
+                    {
+                        includeUnlisted: false,
+                        skipInternalProperties: true
+                    }
             );
             sanitizerSpy.restore();
         });
@@ -102,6 +112,10 @@ describe('Instance', function() {
 
             var instance = model.build({username: 'fogine'});
 
+            //reset spy because data can be sanitized when building new Instance
+            //via this.model.build
+            sanitizerSpy.reset();
+
             instance.$touchTimestamps();
             instance.sanitize();
 
@@ -109,7 +123,32 @@ describe('Instance', function() {
             sanitizerSpy.should.have.been.calledWith(
                     model.options.schema,
                     instance.getData(),
-                    {includeUnlisted: true}
+                    {
+                        includeUnlisted: true,
+                        skipInternalProperties: true
+                    }
+            );
+            sanitizerSpy.restore();
+        });
+
+        it('should accept `skipInternalProperties` option', function() {
+            var model = this.buildModel('User', {
+                type: DataTypes.HASH_TABLE
+            }, {timestamps: false});
+            model.$init(this.modelManager);
+
+            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
+
+            var instance = model.build({username: 'fogine'});
+
+            instance.sanitize({skipInternalProperties: false});
+
+            sanitizerSpy.should.have.been.calledWith(
+                    model.options.schema,
+                    instance.getData(),
+                    sinon.match(function(opt) {
+                        return opt.skipInternalProperties === false;
+                    })
             );
             sanitizerSpy.restore();
         });
@@ -324,7 +363,7 @@ describe('Instance', function() {
 
             var getByIdStub = sinon.stub(Model, 'getById').returns(Promise.resolve(dataResponse));
 
-            var instance = Model.build({}, {
+            var instance = Model.build({test: 'test'}, {
                 key: Model.buildKey("7ffa1518-7156-4fe3-b0ee-23ba9c228ad7")
             });
 
@@ -357,6 +396,7 @@ describe('Instance', function() {
                     },
                     username: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     },
                     address: {
                         type: DataTypes.HASH_TABLE,
@@ -365,7 +405,8 @@ describe('Instance', function() {
                                 type: DataTypes.INT
                             },
                             street: {
-                                type: DataTypes.STRING
+                                type: DataTypes.STRING,
+                                allowEmptyValue: true
                             },
                         }
                     }
@@ -488,9 +529,11 @@ describe('Instance', function() {
                 schema: {
                     name: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     },
                     username: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     }
                 }
             }, {
@@ -729,9 +772,11 @@ describe('Instance', function() {
                     },
                     email: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     },
                     apps: {
-                        type: DataTypes.ARRAY
+                        type: DataTypes.ARRAY,
+                        allowEmptyValue: true
                     },
                     user: {
                         type: DataTypes.COMPLEX('Model'),
