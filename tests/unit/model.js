@@ -462,7 +462,7 @@ describe('Model', function() {
                 this.modelManager.models = {};
             });
 
-            it('should assign default values to empty properties', function() {
+            it('should assign default values to properties with undefined values', function() {
                 var instance = this.model.build();
                 var data = instance.getData();
 
@@ -477,8 +477,22 @@ describe('Model', function() {
                 data.should.have.property('owner').that.is.instanceof(this.ownerModel.Instance);
             });
 
+            it('should assign default values to properties with null values', function() {
+                var instance = this.model.build({
+                    color: null,
+                    dimensions: null,
+                });
+                var data = instance.getData();
+
+                data.should.have.property('color', 'black');
+                data.should.have.property('dimensions').that.is.eql({
+                    height: 170,
+                    width: 300
+                });
+            });
+
             it('should assign cloned default owner instance object', function() {
-                var instance = this.model.build({});
+                var instance = this.model.build();
                 var data = instance.getData();
 
                 data.should.have.property('owner').that.is.not.equal(this.model.defaults.owner);
