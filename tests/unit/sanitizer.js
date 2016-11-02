@@ -423,29 +423,6 @@ describe("Sanitizer", function() {
             expect(result).to.deep.equal(data);
         });
 
-        //it("should assign defined `default` value to a data if the data are empty (null/undefined)", function() {
-
-            //var data = {
-                //username: null,
-                //address: undefined,
-                //age: 15,
-                //created_at: new Date()
-            //};
-
-            //var result = dataSanitizer.sanitize(this.schema, data);
-            //expect(result).to.have.property('username', this.schema.schema.username.default);
-            //expect(result.address).to.be.eql(this.schema.schema.address.default);
-
-            //// the default value must be cloned
-            //// before assigned to validated data object
-            //expect(result.address).to.not.be.equal(this.schema.schema.address.default);
-
-            //// Make sure that default association Instance object
-            //// are cloned before they are assigned
-            //expect(result.association).to.be.an.instanceof(this.model.Instance);
-            //expect(result.association).to.not.be.equal(this.schema.schema.association.default);
-        //});
-
         it("should fail the validation if `property` is empty (null/undefined) and `allowEmptyValue` options is NOT set", function() {
 
             var data = {
