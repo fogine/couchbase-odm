@@ -1,5 +1,10 @@
 ## FUTURE
 
+* [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
+* [BUGFIX] Model.build method should initialize instance's associations before data sanitization/validation
+* [CHANGED] the `sanitize` Model.build method option which defaults to `true` instead of `false`
+* [ADDED] new `skipInternalProperties` option to the Instance.sanitize method
+
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
 * [ADDED] new `key` option  to `Model.create` method which can be an `Key` object or `id` string value
 * [ADDED] new `Model.exists` method
