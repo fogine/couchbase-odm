@@ -355,27 +355,155 @@ describe('Model', function() {
 
     describe('build', function() {
 
-        before(function() {
-            this.model = this.buildModel('Test9', {
+        it("should return new model's Instance object", function() {
+            var model = this.buildModel('BuildInstanceTestModelName', {
                 type: DataTypes.BOOLEAN
             });
-            this.model.$init(this.modelManager);
+            model.$init(this.modelManager);
+
+            var instance = model.build(true);
+
+            instance.should.be.an.instanceof(model.Instance);
         });
 
-        it('should call `instance.sanitize()` if method`s `options.sanitize` === true ', function() {
-            var sanitizeStub = sinon.stub(this.model.Instance.prototype, 'sanitize');
-            var instance = this.model.build('somedatastrng', {
-                sanitize: true
-            });
-            var instance2 = this.model.build('somedatastrng', {
-                sanitize: false
+        describe('`sanitize` option', function() {
+            before(function() {
+                this.model = this.buildModel('Test9', {
+                    type: DataTypes.BOOLEAN
+                });
+                this.model.$init(this.modelManager);
+
+                this.sanitizeSpy = sinon.spy(this.model.Instance.prototype, 'sanitize');
             });
 
-            instance.should.be.an.instanceof(this.model.Instance);
-            instance2.should.be.an.instanceof(this.model.Instance);
+            beforeEach(function() {
+                this.sanitizeSpy.reset();
+            });
 
-            sanitizeStub.should.have.been.calledOnce;
-            sanitizeStub.restore();
+            after(function() {
+                this.sanitizeSpy.restore();
+            });
+
+            it('should call `instance.sanitize()` if method`s `options.sanitize` === true ', function() {
+                this.model.build(true, {
+                    sanitize: true
+                });
+
+                this.sanitizeSpy.should.have.been.calledOnce;
+            });
+
+            it("should NOT call `instance.sanitize()` if method's options.sanitize === false", function() {
+                this.model.build(true, {
+                    sanitize: false
+                });
+
+                this.sanitizeSpy.should.have.callCount(0);
+            });
+
+            it('should sanitize builded data insatnce by default', function() {
+                this.model.build(true);
+
+                this.sanitizeSpy.should.have.been.calledOnce;
+            });
+        });
+
+        describe('default Instance values', function() {
+            before(function() {
+                this.ownerModel = this.buildModel('Owner', {
+                    type: DataTypes.STRING
+                });
+                this.modelManager.add(this.ownerModel);
+                this.ownerModel.$init(this.modelManager);
+
+                this.model = this.buildModel('Car', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        color: {
+                            type: DataTypes.STRING,
+                            default: 'black'
+                        },
+                        brand: {
+                            type: DataTypes.STRING,
+                            allowEmptyValue: true
+                        },
+                        owner: {
+                            type: DataTypes.COMPLEX('Owner'),
+                            default: this.ownerModel.build('David')
+                        },
+                        dimensions: {
+                            type: DataTypes.HASH_TABLE,
+                            schema: {
+                                height: {
+                                    type: DataTypes.INT,
+                                    default: 170
+                                },
+                                width: {
+                                    type: DataTypes.INT,
+                                    default: 300
+                                },
+                                length: {
+                                    type: DataTypes.INT,
+                                    allowEmptyValue: true
+                                },
+                            }
+                        },
+                        accessTypes: {
+                            type: DataTypes.ARRAY,
+                            default: ['ground', 'air', 'space']
+                        }
+                    }
+                });
+
+                this.modelManager.add(this.model);
+                this.model.$init(this.modelManager);
+            });
+
+            after(function() {
+                this.modelManager.models = {};
+            });
+
+            it('should assign default values to empty properties', function() {
+                var instance = this.model.build();
+                var data = instance.getData();
+
+                data.should.have.property('color', 'black');
+                data.should.have.property('dimensions').that.is.eql({
+                    height: 170,
+                    width: 300
+                });
+                data.should.have.property('accessTypes').that.is.eql([
+                        'ground', 'air', 'space'
+                ]);
+                data.should.have.property('owner').that.is.instanceof(this.ownerModel.Instance);
+            });
+
+            it('should assign cloned default owner instance object', function() {
+                var instance = this.model.build({});
+                var data = instance.getData();
+
+                data.should.have.property('owner').that.is.not.equal(this.model.defaults.owner);
+                data.owner.getData().should.be.equal(this.model.defaults.owner.getData());
+            });
+
+            it('(default values) should not overwrite provided instance data values', function() {
+                var instance = this.model.build({
+                    accessTypes: ['ground'],
+                    dimensions: {
+                        length: 350,
+                        width: 250
+                    },
+                    color: 'red'
+                });
+                var data = instance.getData();
+
+                data.should.have.property('color', 'red');
+                data.should.have.property('dimensions').that.is.eql({
+                    length: 350,
+                    width: 250,
+                    height: 170
+                });
+                data.should.have.property('accessTypes').that.is.eql(['ground']);
+            });
         });
     });
 
