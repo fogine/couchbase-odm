@@ -568,154 +568,191 @@ describe('Model', function() {
     });
 
     describe('getById', function() {
-        before(function() {
-            this.model = this.buildModel('Test10', {
-                type: DataTypes.HASH_TABLE
-            }, {
-                indexes: {
-                    refDocs: {
-                        getByEmail: {
-                            keys: ['email']
+        describe('returns resolved document data', function() {
+
+            before(function() {
+                this.model = this.buildModel('Test10', {
+                    type: DataTypes.HASH_TABLE
+                }, {
+                    indexes: {
+                        refDocs: {
+                            getByEmail: {
+                                keys: ['email']
+                            }
                         }
                     }
+                });
+                this.model.$init(this.modelManager);
+            });
+
+            after(function() {
+                delete this.model;
+            });
+
+            beforeEach(function() {
+                var doc = {
+                    cas: '12312312',
+                    value: {
+                        _id: '3e5d622e-5786-4d79-9062-b4e2b48ce541',
+                        email: 'test@test.com',
+                        name: 'test'
+                    }
                 }
-            });
-            this.model.$init(this.modelManager);
-        });
 
-        beforeEach(function() {
-            var doc = {
-                cas: '12312312',
-                value: {
-                    _id: '3e5d622e-5786-4d79-9062-b4e2b48ce541',
-                    email: 'test@test.com',
-                    name: 'test'
-                }
-            }
-
-            this.getStub = sinon.stub(this.model.storage, 'get').returns(Promise.resolve(doc));
-            this.getAndLockStub = sinon.stub(this.model.storage, 'getAndLock').returns(Promise.resolve(doc));
-            this.getAndTouchStub = sinon.stub(this.model.storage, 'getAndTouch').returns(Promise.resolve(doc));
-            this.touchStub = sinon.stub(this.model.storage, 'touch').returns(Promise.resolve(doc));
-        });
-
-        afterEach(function() {
-            this.getStub.restore();
-            this.getAndLockStub.restore();
-            this.getAndTouchStub.restore();
-            this.touchStub.restore();
-        });
-
-        after(function() {
-            delete this.model;
-        });
-
-        it('should accept instance of `Key` in place of `id` string (dynamic part of key)', function() {
-            var self = this;
-            var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-            var promise = this.model.getById(key);
-
-            return promise.should.be.fulfilled.then(function(){
-                self.getStub.should.have.been.calledOnce;
-                self.getStub.should.have.been.calledWith(key);
-            });
-        });
-
-        it('should return resolved Promise with raw data from bucket if method`s `options.plain` option is set', function() {
-            var self = this;
-            var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
-                plain:true
+                this.getStub = sinon.stub(this.model.storage, 'get').returns(Promise.resolve(doc));
+                this.getAndLockStub = sinon.stub(this.model.storage, 'getAndLock').returns(Promise.resolve(doc));
+                this.getAndTouchStub = sinon.stub(this.model.storage, 'getAndTouch').returns(Promise.resolve(doc));
+                this.touchStub = sinon.stub(this.model.storage, 'touch').returns(Promise.resolve(doc));
             });
 
-            return promise.should.be.fulfilled.then(function(doc){
-                doc.should.not.be.an.instanceof(self.model.Instance);
-                doc.should.have.property('cas');
-                doc.should.have.property('value');
-            });
-        });
-
-        it('should run defined `beforeGet` and `afterGet` hooks before and after `get` operation', function() {
-            var self = this;
-
-            var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
-
-            var options = {
-                hooks: true,
-                paranoid: false
-            };
-            var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', options);
-
-            return promise.should.be.fulfilled.then(function(doc){
-                self.getStub.should.have.been.calledOnce;
-                hookStub.firstCall.should.have.been.calledWith(ODM.Hook.types.beforeGet, doc.getKey(), options);
-                //does not work for some misterious reason.. probably bug
-                //expect(hookStub.firstCall).to.have.been.calledBefore(self.getStub);
-                hookStub.secondCall.should.have.been.calledWith(ODM.Hook.types.afterGet, doc, options);
-                hookStub.should.have.been.calledTwice;
-                hookStub.restore();
-            });
-        });
-
-        it('should call `getAndLock` instead of `get` if `options.lockTime` is set', function() {
-            var self = this;
-            var opt = { lockTime: 15 };
-            var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-            var promise = this.model.getById(key, opt);
-
-            return promise.should.be.fulfilled.then(function(doc){
-                self.getStub.should.have.callCount(0);
-                self.getAndLockStub.should.have.been.calledOnce;
-                self.getAndLockStub.should.have.been.calledWith(key, opt);
-            });
-        });
-
-        it('should call `touch` method for every ref docs if `options.expiry` option is set', function() {
-            var self = this;
-            var opt = { expiry: 3600 };
-            var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', opt);
-
-            return promise.should.be.fulfilled.then(function(doc){
-                self.getStub.should.have.callCount(0);
-                self.touchStub.should.have.been.calledOnce;
-                expect(self.touchStub.args[0]).to.have.deep.property('[1]', opt.expiry);
-            });
-        });
-
-        it('should call `getAndTouch` method on instance if `options.expiry` options is set', function() {
-            var self = this;
-            var opt = { expiry: 31 };
-            var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-            var promise = this.model.getById(key, opt);
-
-            return promise.should.be.fulfilled.then(function(doc){
-                self.getStub.should.have.callCount(0);
-                self.getAndTouchStub.should.have.been.calledOnce;
-                self.getAndTouchStub.should.have.been.calledWith(key, opt.expiry);
-            });
-        });
-
-        it('should NOT run hooks if `options.hooks` is false', function() {
-            var self = this;
-
-            var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
-
-            var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
-                hooks: false
+            afterEach(function() {
+                this.getStub.restore();
+                this.getAndLockStub.restore();
+                this.getAndTouchStub.restore();
+                this.touchStub.restore();
             });
 
-            return promise.should.be.fulfilled.then(function(doc){
-                hookStub.should.have.callCount(0);
-                hookStub.restore();
+            it('should accept instance of `Key` in place of `id` string (dynamic part of key)', function() {
+                var self = this;
+                var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
+                var promise = this.model.getById(key);
+
+                return promise.should.be.fulfilled.then(function(){
+                    self.getStub.should.have.been.calledOnce;
+                    self.getStub.should.have.been.calledWith(key);
+                });
+            });
+
+            it('should return resolved Promise with raw data from bucket if method`s `options.plain` option is set', function() {
+                var self = this;
+                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
+                    plain:true
+                });
+
+                return promise.should.be.fulfilled.then(function(doc){
+                    doc.should.not.be.an.instanceof(self.model.Instance);
+                    doc.should.have.property('cas');
+                    doc.should.have.property('value');
+                });
+            });
+
+            it('should run defined `beforeGet` and `afterGet` hooks before and after `get` operation', function() {
+                var self = this;
+
+                var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
+
+                var options = {
+                    hooks: true,
+                    paranoid: false
+                };
+                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', options);
+
+                return promise.should.be.fulfilled.then(function(doc){
+                    self.getStub.should.have.been.calledOnce;
+                    hookStub.firstCall.should.have.been.calledWith(ODM.Hook.types.beforeGet, doc.getKey(), options);
+                    //does not work for some misterious reason.. probably bug
+                    //expect(hookStub.firstCall).to.have.been.calledBefore(self.getStub);
+                    hookStub.secondCall.should.have.been.calledWith(ODM.Hook.types.afterGet, doc, options);
+                    hookStub.should.have.been.calledTwice;
+                    hookStub.restore();
+                });
+            });
+
+            it('should call `getAndLock` instead of `get` if `options.lockTime` is set', function() {
+                var self = this;
+                var opt = { lockTime: 15 };
+                var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
+                var promise = this.model.getById(key, opt);
+
+                return promise.should.be.fulfilled.then(function(doc){
+                    self.getStub.should.have.callCount(0);
+                    self.getAndLockStub.should.have.been.calledOnce;
+                    self.getAndLockStub.should.have.been.calledWith(key, opt);
+                });
+            });
+
+            it('should call `touch` method for every ref docs if `options.expiry` option is set', function() {
+                var self = this;
+                var opt = { expiry: 3600 };
+                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', opt);
+
+                return promise.should.be.fulfilled.then(function(doc){
+                    self.getStub.should.have.callCount(0);
+                    self.touchStub.should.have.been.calledOnce;
+                    expect(self.touchStub.args[0]).to.have.deep.property('[1]', opt.expiry);
+                });
+            });
+
+            it('should call `getAndTouch` method on instance if `options.expiry` options is set', function() {
+                var self = this;
+                var opt = { expiry: 31 };
+                var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
+                var promise = this.model.getById(key, opt);
+
+                return promise.should.be.fulfilled.then(function(doc){
+                    self.getStub.should.have.callCount(0);
+                    self.getAndTouchStub.should.have.been.calledOnce;
+                    self.getAndTouchStub.should.have.been.calledWith(key, opt.expiry);
+                });
+            });
+
+            it('should NOT run hooks if `options.hooks` is false', function() {
+                var self = this;
+
+                var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
+
+                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
+                    hooks: false
+                });
+
+                return promise.should.be.fulfilled.then(function(doc){
+                    hookStub.should.have.callCount(0);
+                    hookStub.restore();
+                });
             });
         });
 
-        it('TODO should return rejected promise with "storage not found error" if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
-            //TODO
-        })
+        describe('performs queries to mocked couchbase version', function() {
 
-        it('TODO should return fulfilled promise with soft-deleted document if `getById` method\'s `options.paranoid===false`', function() {
-            //TODO
-        })
+            before(function() {
+                var self = this;
+
+                this.model = this.buildModel('Test20', {
+                    type: DataTypes.HASH_TABLE
+                }, {
+                    paranoid:true,
+                    timestamps: true,
+                });
+                this.model.$init(this.modelManager);
+
+                return this.model.create({some: 'data'}).then(function(doc) {
+                    self.doc = doc;
+                    return doc.destroy();
+                });
+            });
+
+            after(function() {
+                delete this.model;
+                delete this.doc;
+            });
+
+            it('should return resolved promise with `null` if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
+                return this.model.getById(this.doc.getKey()).should.become(null);
+            });
+
+            it('should return fulfilled promise with soft-deleted document if `getById` method\'s `options.paranoid===false`', function() {
+                var self = this;
+
+                return this.model.getById(this.doc.getKey(), {paranoid:false})
+                    .should.be.fulfilled.then(function(doc) {
+                        doc.getData().should.be.eql(self.doc.getData());
+                    });
+            });
+
+            it('should return resolved promise with `null` value if keyNotFound error occurs', function() {
+                return this.model.getById('c72714e3-f540-499b-be1c-9d1ab8c991b0').should.become(null);
+            });
+        });
     });
 
     describe('getMulti', function() {
@@ -778,20 +815,26 @@ describe('Model', function() {
 
         });
 
-        it('should return rejected promise with `StorageMultiError` when no `key`/`id` is found', function() {
+        it('should include catched errors in place of otherwise resolved values in resolved map object', function() {
             var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
             var id = '35854458-4b27-4433-8a38-df2ea405e067';
 
-            this.getStub.returns(Promise.reject(new ODM.errors.StorageError('')));
+            var keyNotFoundErr = new ODM.errors.StorageError('Key was not found ');
+            keyNotFoundErr.code = ODM.StorageAdapter.errorCodes.keyNotFound;
+
+            var networkErr = new ODM.errors.StorageError('Network error');
+            networkErr.code = ODM.StorageAdapter.errorCodes.networkError;
+
+            this.getStub.onFirstCall().returns(Promise.reject(keyNotFoundErr));
+            this.getStub.onSecondCall().returns(Promise.reject(networkErr));
             var pool = [key, id];
             var promise = this.model.getMulti(pool);
 
-            return promise.should.be.rejectedWith(ODM.errors.StorageMultiError).then(function() {
-                return promise.catch(function(err){
-                    expect(err.errors).to.have.property(key.getId());
-                    expect(err.errors).to.have.property(id);
-                });
-            });
+            var expectedOutput = {};
+            expectedOutput[key.getId()] = null;
+            expectedOutput[id] = networkErr;
+
+            return promise.should.become(expectedOutput);
         });
 
         it('should run hooks only once per `getMulti` operation if `options.individualHooks` option is not set', function() {
