@@ -4,7 +4,7 @@
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
 * [CHANGED] the `sanitize` Model.build method option which defaults to `true` instead of `false`
 * [CHANGED] the `Model.build` method does not clone data values passed to it anymore
-* [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a keyNotFound error occurs
+* [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a `keyNotFound` error occurs
 * [CHANGED] `Model.getMulti` method always returns resolved promise
 * [ADDED] new `skipInternalProperties` option to the Instance.sanitize method
 
