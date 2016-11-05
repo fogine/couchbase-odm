@@ -736,6 +736,22 @@ describe('Model', function() {
                 delete this.doc;
             });
 
+            it('should NOT call the `getAndLock` method if the `lockTime` option is set AND the relevant document IS soft-deleted', function() {
+                var getAndLockSpy = sinon.spy(this.model.storage, 'getAndLock');
+                return this.model.getById(this.doc.getKey(), {lockTime: 20}).then(function() {
+                    getAndLockSpy.should.have.callCount(0);
+                    getAndLockSpy.restore();
+                });
+            });
+
+            it('should NOT call the `getAndTouch` method if the `expiry` option is set AND the relevant document IS soft-deleted', function() {
+                var getAndTouchSpy = sinon.spy(this.model.storage, 'getAndTouch');
+                return this.model.getById(this.doc.getKey(), {expiry: 1000}).then(function() {
+                    getAndTouchSpy.should.have.callCount(0);
+                    getAndTouchSpy.restore();
+                });
+            });
+
             it('should return resolved promise with `null` if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
                 return this.model.getById(this.doc.getKey()).should.become(null);
             });
