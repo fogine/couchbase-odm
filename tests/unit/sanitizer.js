@@ -29,7 +29,6 @@ describe("Sanitizer", function() {
 
         this.model = odm.define('Test', {
             type: DataTypes.HASH_TABLE,
-            default: {}, // should support setting default root empty value
             schema: {
                 prop: {
                     type: DataTypes.STRING,
@@ -43,15 +42,16 @@ describe("Sanitizer", function() {
 
     describe("Validation", function() {
         before(function() {
-            this.numVal     = sanitizers[DataTypes.NUMBER];
-            this.intVal     = sanitizers[DataTypes.INT];
-            this.floatVal   = sanitizers[DataTypes.FLOAT];
-            this.booleanVal = sanitizers[DataTypes.BOOLEAN];
-            this.stringVal  = sanitizers[DataTypes.STRING];
-            this.arrayVal   = sanitizers[DataTypes.ARRAY];
-            this.dateVal    = sanitizers[DataTypes.DATE];
-            this.enumVal    = sanitizers[DataTypes.ENUM];
-            this.complexVal = sanitizers[ComplexDataType.toString()];
+            this.numVal       = sanitizers[DataTypes.NUMBER];
+            this.intVal       = sanitizers[DataTypes.INT];
+            this.floatVal     = sanitizers[DataTypes.FLOAT];
+            this.booleanVal   = sanitizers[DataTypes.BOOLEAN];
+            this.stringVal    = sanitizers[DataTypes.STRING];
+            this.arrayVal     = sanitizers[DataTypes.ARRAY];
+            this.dateVal      = sanitizers[DataTypes.DATE];
+            this.enumVal      = sanitizers[DataTypes.ENUM];
+            this.hashTableVal = sanitizers[DataTypes.HASH_TABLE];
+            this.complexVal   = sanitizers[ComplexDataType.toString()];
         });
 
         describe("Number & Float", function() {
@@ -314,6 +314,21 @@ describe("Sanitizer", function() {
             });
         });
 
+        describe('HASH TABLE', function() {
+            it('should throw a ValidationError when a value is not a plain object', function() {
+                var hashTableVal = this.hashTableVal;
+                var opt = {
+                    model: {
+                        name: 'Model',
+                        $getInternalProperties: sinon.stub()
+                    }
+                };
+
+                expect(hashTableVal.bind(sanitizers, [], opt))
+                    .to.throw(ValidationError);
+            });
+        });
+
         describe('Complex', function() {
             before(function() {
                 this.model = this.odm.define('Test_Complex_sanitizer', {
@@ -359,169 +374,202 @@ describe("Sanitizer", function() {
     });
 
     describe("Data sanitizer", function() {
-        before(function() {
+        describe("schema 1", function() {
+            before(function() {
 
-            var validatorFn = function(val, options){
-                return val;
-            }
-
-            this.string = sinon.stub(sanitizers, DataTypes.STRING, validatorFn);
-            this.number = sinon.stub(sanitizers, DataTypes.NUMBER, validatorFn);
-            this.date   = sinon.stub(sanitizers, DataTypes.DATE, validatorFn);
-
-            this.model = this.odm.define('DataSanitizerModel', {
-                type: DataTypes.HASH_TABLE,
-                schema: {
-                    username: {
-                        type: DataTypes.STRING,
-                        allowEmptyValue: true,
-                    },
-                    address: {
-                        type: DataTypes.HASH_TABLE,
-                        allowEmptyValue: true,
-                        schema: {
-                            street: {
-                                type: DataTypes.STRING
-                            },
-                            zip: {
-                                type: DataTypes.STRING
+                this.model = this.odm.define('DataSanitizerModel', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        username: {
+                            type: DataTypes.STRING,
+                            allowEmptyValue: true,
+                        },
+                        address: {
+                            type: DataTypes.HASH_TABLE,
+                            allowEmptyValue: true,
+                            schema: {
+                                street: {
+                                    type: DataTypes.STRING
+                                },
+                                zip: {
+                                    type: DataTypes.STRING
+                                }
                             }
+                        },
+                        age: {
+                            type: DataTypes.NUMBER
+                        },
+                        created_at: {
+                            type: DataTypes.DATE
                         }
-                    },
-                    age: {
-                        type: DataTypes.NUMBER
-                    },
-                    created_at: {
-                        type: DataTypes.DATE
                     }
-                }
-            }, {timestamps: true});
+                }, {timestamps: true});
 
-            // sanitizer schema definition
-            this.schema = this.model.options.schema;
-        });
+                // sanitizer schema definition
+                this.schema = this.model.options.schema;
+            });
 
-        after(function() {
-            this.string.restore();
-            this.number.restore();
-            this.date.restore();
-        });
+            it("should return sanitized data object", function() {
 
-        it("should return sanitized data object", function() {
+                var data = {
+                    username: 'test',
+                    address: {
+                        street: "St. Patrick",
+                        zip: "1124"
+                    },
+                    age: 15,
+                    created_at: new Date()
+                };
 
-            var data = {
-                username: 'test',
-                address: {
-                    street: "St. Patrick",
-                    zip: "1124"
-                },
-                age: 15,
-                created_at: new Date()
-            };
+                var result = dataSanitizer.sanitize.call(this.model, this.schema, data);
+                expect(result).to.deep.equal(data);
+            });
 
-            var result = dataSanitizer.sanitize.call(this.model, this.schema, data);
-            expect(result).to.deep.equal(data);
-        });
+            it("should fail the validation if `property` is empty (null/undefined) and `allowEmptyValue` options is NOT set", function() {
 
-        it("should fail the validation if `property` is empty (null/undefined) and `allowEmptyValue` options is NOT set", function() {
+                var data = {
+                    username: null,
+                    address: undefined,
+                    //age: null,//this should throw when validating
+                    created_at: new Date()
+                };
 
-            var data = {
-                username: null,
-                address: undefined,
-                //age: null,//this should throw when validating
-                created_at: new Date()
-            };
+                expect(dataSanitizer.sanitize.bind(this.model, this.schema, data))
+                    .to.throw(ValidationError);
+            });
 
-            expect(dataSanitizer.sanitize.bind(this.model, this.schema, data))
-                .to.throw(ValidationError);
-        });
-
-        it("should NOT include data which are not in schema definition if `includeUnlisted` options is NOT set", function() {
-            var data = {
-                username: 'test',
-                address: {
-                    street: "St. Patrick",
-                    zip: "1124"
-                },
-                age: 15,
-                created_at: new Date(),
-                anotherproperty: "thisshouldnotbeincluded",
-                country: {
-                    name: "United Kingdom",
-                    code: "UK"
-                }
-            };
-
-            var result = dataSanitizer.sanitize.call(this.model, this.schema, data);
-            expect(result).to.not.have.property("country");
-            expect(result).to.not.have.property("anotherproperty");
-        });
-
-        it("should include data received from bucket which are not in schema definition if `includeUnlisted` options IS set", function() {
-            var data = {
-                username: 'test',
-                address: {
-                    street: "St. Patrick",
-                    zip: "1124"
-                },
-                age: 15,
-                created_at: new Date(),
-                anotherproperty: "thisshouldnotbeincluded",
-                country: {
-                    name: "United Kingdom",
-                    code: "UK"
-                }
-            };
-
-            var result = dataSanitizer.sanitize.call(this.model, this.schema, data, {includeUnlisted: true});
-            expect(result).to.have.property("country");
-            expect(result).to.have.property("anotherproperty");
-        });
-
-        it('should respect `skipInternalProperties=true` option', function() {
-            var data = {
-                username: 'test',
-                address: {
-                    street: "St. Patrick",
-                    zip: "1124"
-                },
-                age: 15,
-            };
-
-            var result = dataSanitizer.sanitize.call(
-                    this.model,
-                    this.schema,
-                    data,
-                    {
-                        skipInternalProperties: true
+            it("should NOT include data which are not in schema definition if `includeUnlisted` options is NOT set", function() {
+                var data = {
+                    username: 'test',
+                    address: {
+                        street: "St. Patrick",
+                        zip: "1124"
+                    },
+                    age: 15,
+                    created_at: new Date(),
+                    anotherproperty: "thisshouldnotbeincluded",
+                    country: {
+                        name: "United Kingdom",
+                        code: "UK"
                     }
-            );
-            expect(result).to.deep.equal(data);
-        });
+                };
 
-        it('should respect `skipInternalProperties=false` option', function() {
-            var self = this;
+                var result = dataSanitizer.sanitize.call(this.model, this.schema, data);
+                expect(result).to.not.have.property("country");
+                expect(result).to.not.have.property("anotherproperty");
+            });
 
-            var data = {
-                username: 'test',
-                address: {
-                    street: "St. Patrick",
-                    zip: "1124"
-                },
-                age: 15,
-            };
+            it("should include data received from bucket which are not in schema definition if `includeUnlisted` options IS set", function() {
+                var data = {
+                    username: 'test',
+                    address: {
+                        street: "St. Patrick",
+                        zip: "1124"
+                    },
+                    age: 15,
+                    created_at: new Date(),
+                    anotherproperty: "thisshouldnotbeincluded",
+                    country: {
+                        name: "United Kingdom",
+                        code: "UK"
+                    }
+                };
 
-            function test() {
+                var result = dataSanitizer.sanitize.call(this.model, this.schema, data, {includeUnlisted: true});
+                expect(result).to.have.property("country");
+                expect(result).to.have.property("anotherproperty");
+            });
+
+            it('should respect `skipInternalProperties=true` option', function() {
+                var data = {
+                    username: 'test',
+                    address: {
+                        street: "St. Patrick",
+                        zip: "1124"
+                    },
+                    age: 15,
+                };
+
                 var result = dataSanitizer.sanitize.call(
-                        self.model,
-                        self.schema,
+                        this.model,
+                        this.schema,
                         data,
                         {
-                            skipInternalProperties: false
+                            skipInternalProperties: true
                         }
                 );
-            }
-            expect(test).to.throw(ValidationError);
+                expect(result).to.deep.equal(data);
+            });
+
+            it('should respect `skipInternalProperties=false` option', function() {
+                var self = this;
+
+                var data = {
+                    username: 'test',
+                    address: {
+                        street: "St. Patrick",
+                        zip: "1124"
+                    },
+                    age: 15,
+                };
+
+                function test() {
+                    var result = dataSanitizer.sanitize.call(
+                            self.model,
+                            self.schema,
+                            data,
+                            {
+                                skipInternalProperties: false
+                            }
+                    );
+                }
+                expect(test).to.throw(ValidationError);
+            });
+        });
+
+        describe('empty data received', function() {
+
+            it('should return `null` value when the sanitizer is passed `null` data value with a schema definition (with HASH_TABLE root data type) that allows it', function() {
+                var model = this.odm.define('DataSanitizerModel2', {
+                    type: DataTypes.HASH_TABLE,
+                    allowEmptyValue: true
+                });
+
+                var result = dataSanitizer.sanitize.call(
+                        model,
+                        model.options.schema,
+                        null
+                );
+                expect(result).to.be.equal(null);
+            });
+
+            it('should return `null` value when the sanitizer is passed `null` data value with a schema definition (with STRING root data type) that allows it', function() {
+                var model = this.odm.define('DataSanitizerModel4', {
+                    type: DataTypes.STRING,
+                    allowEmptyValue: true
+                });
+
+                var result = dataSanitizer.sanitize.call(
+                        model,
+                        model.options.schema,
+                        null
+                );
+                expect(result).to.be.equal(null);
+            });
+
+            it('should return `undefined` value when the sanitizer is passed `undefined` data value with a schema definition that allows it', function() {
+                var model = this.odm.define('DataSanitizerModel3', {
+                    type: DataTypes.HASH_TABLE,
+                    allowEmptyValue: true
+                });
+
+                var result = dataSanitizer.sanitize.call(
+                        model,
+                        model.options.schema,
+                        undefined
+                );
+                expect(result).to.be.equal(undefined);
+            });
         });
     });
 
@@ -593,6 +641,48 @@ describe("Sanitizer", function() {
 
             intSpy.restore();
             objSpy.restore();
+        });
+
+        it('should successfully pass validation of default schema property values considering that default value has been correctly unified', function() {
+            var self = this;
+
+            var schemaList = [
+                {
+                    type: DataTypes.HASH_TABLE,
+                    default: {},
+                    schema: {
+                        prop: {
+                            type: DataTypes.STRING,
+                            default: 'test'
+                        }
+                    }
+                },
+                //{
+                    //type: DataTypes.ARRAY,
+                    //default: [{}],
+                    //schema: {
+                        //type: DataTypes.HASH_TABLE,
+                        //schema: {
+                            //props: {
+                                //type: DataTypes.ARRAY,
+                                //default: ['test']
+                            //}
+                        //}
+                    //}
+                //}
+            ];
+
+            schemaList.forEach(function(schema, index) {
+                var model = self.odm.define(
+                        'DefaultSchemaPropSanitizationModel' + index,
+                        schema
+                );
+                function test() {
+                    schemaSanitizer.sanitize.call(model, schema);
+                }
+
+                expect(test).to.not.throw(Error, 'Dataset: ' + index);
+            });
         });
 
         it('should fail when `DataTypes.COMPLEX` function value is set as property `type` instead of `DataTypes.COMPLEX("name")` object', function() {
