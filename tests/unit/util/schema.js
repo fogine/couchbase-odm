@@ -16,10 +16,10 @@ var assert     = sinon.assert;
 var expect     = chai.expect;
 
 describe('schema utils', function() {
-    describe('extractData', function() {
+    describe('extractAssociations', function() {
 
         it('should fail if schema definition is not defined (or is not hash table)', function() {
-            var fn = schemaUtils.extractData;
+            var fn = schemaUtils.extractAssociations;
             expect(fn.bind(fn, null)).to.throw(Error);
             expect(fn.bind(fn, new Date)).to.throw(Error);
             expect(fn.bind(fn, undefined)).to.throw(Error);
@@ -48,12 +48,12 @@ describe('schema utils', function() {
                     }
                 };
 
-                var data = schemaUtils.extractData(schema);
+                var data = schemaUtils.extractAssociations(schema);
 
-                data.should.have.property('relations').that.is.an.instanceof(Array);
-                data.relations.should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
-                data.relations.should.have.deep.property('[0].path', 'user');
-                data.relations.should.have.deep.property('[1].path', 'connections.friends');
+                data.should.be.instanceof(Array);
+                data.should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
+                data.should.have.deep.property('[0].path', 'user');
+                data.should.have.deep.property('[1].path', 'connections.friends');
             });
 
             it('should allow to define `DataType.COMPLEX()` as root data type', function() {
@@ -61,71 +61,114 @@ describe('schema utils', function() {
                     type: DataTypes.COMPLEX('User'),
                 };
 
-                var data = schemaUtils.extractData(schema);
+                var data = schemaUtils.extractAssociations(schema);
 
-                data.relations.should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
-                data.relations.should.have.deep.property('[0].path', null);
+                data.should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
+                data.should.have.deep.property('[0].path', null);
             });
         });
+    });
 
-        describe("Model's defaults", function() {
-            it('should return an object with default schema property values', function() {
-                var cluster = new couchbase.Cluster();
-                var bucket = cluster.openBucket('test');
-                var odm = new ODM({bucket: bucket});
-                var model = odm.define('Test', {
-                    type: DataTypes.HASH_TABLE
-                });
+    describe('extractDefaults', function() {
 
-                var schema = {
-                    type: DataTypes.HASH_TABLE,
-                    schema: {
-                        name: {
-                            type: DataTypes.STRING,
-                            default: 'John'
-                        },
-                        connections: {
-                            type: DataTypes.HASH_TABLE,
-                            schema: {
-                                test: {
-                                    type: DataTypes.COMPLEX('Test'),
-                                    default: model.build({})
-                                }
+        it('should fail if schema definition is not defined (or is not hash table)', function() {
+            var fn = schemaUtils.extractDefaults;
+            expect(fn.bind(fn, null)).to.throw(Error);
+            expect(fn.bind(fn, new Date)).to.throw(Error);
+            expect(fn.bind(fn, undefined)).to.throw(Error);
+            expect(fn.bind(fn, '')).to.throw(Error);
+        });
+
+        it('should return an object with default schema property values', function() {
+            var cluster = new couchbase.Cluster();
+            var bucket = cluster.openBucket('test');
+            var odm = new ODM({bucket: bucket});
+            var model = odm.define('Test', {
+                type: DataTypes.HASH_TABLE
+            });
+
+            var schema = {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    name: {
+                        type: DataTypes.STRING,
+                        default: 'John'
+                    },
+                    connections: {
+                        type: DataTypes.HASH_TABLE,
+                        schema: {
+                            test: {
+                                type: DataTypes.COMPLEX('Test'),
+                                default: model.build({})
                             }
                         }
                     }
-                };
+                }
+            };
 
-                var data = schemaUtils.extractData(schema);
+            var data = schemaUtils.extractDefaults(schema);
 
-                data.defaults.should.be.eql({
-                    name: schema.schema.name.default,
-                    connections: {
-                        test: schema.schema.connections.schema.test.default
-                    }
-                });
-            });
-
-            it('should return an object with gathered map of default schema property values (case 2)', function() {
-                var schema = {
-                    type: DataTypes.ARRAY,
-                    default: ['some', 'values']
-                };
-
-                var data = schemaUtils.extractData(schema);
-                data.defaults.should.be.equal(schema.default);
-            });
-
-            it('should return an object with gathered map of default schema property values (case 3)', function() {
-                var schema = {
-                    type: DataTypes.STRING,
-                    default: 'test'
-                };
-
-                var data = schemaUtils.extractData(schema);
-                data.defaults.should.be.equal(schema.default);
+            data.should.be.eql({
+                name: schema.schema.name.default,
+                connections: {
+                    test: schema.schema.connections.schema.test.default
+                }
             });
         });
 
+        it('should return an object with gathered map of default schema property values (case 2)', function() {
+            var schema = {
+                type: DataTypes.ARRAY,
+                default: ['some', 'values']
+            };
+
+            var data = schemaUtils.extractDefaults(schema);
+            data.should.be.equal(schema.default);
+        });
+
+        it('should return an object with gathered map of default schema property values (case 3)', function() {
+            var schema = {
+                type: DataTypes.STRING,
+                default: 'test'
+            };
+
+            var data = schemaUtils.extractDefaults(schema);
+            data.should.be.equal(schema.default);
+        });
+
+        //it('should return an object with gathered default array item value', function() {
+            //var schema = {
+                //type: DataTypes.ARRAY,
+                //schema: {
+                    //type: DataTypes.HASH_TABLE,
+                    //schema: {
+                        //prop: {
+                            //type: DataTypes.STRING,
+                            //default: 'test'
+                        //},
+                        //items: {
+                            //type: DataTypes.ARRAY,
+                            //schema: {
+                                //type: DataTypes.HASH_TABLE,
+                                //schema: {
+                                    //prop: {
+                                        //type: DataTypes.STRING,
+                                        //default: 'test'
+                                    //}
+                                //}
+                            //}
+                        //}
+                    //}
+                //}
+            //};
+
+            //var data = schemaUtils.extractDefaults(schema);
+            //data.should.be.eql({
+                //prop: 'test',
+                //items: {
+                    //prop: 'test'
+                //}
+            //});
+        //});
     });
 });
