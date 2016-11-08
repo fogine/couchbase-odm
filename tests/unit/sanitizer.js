@@ -657,19 +657,26 @@ describe("Sanitizer", function() {
                         }
                     }
                 },
-                //{
-                    //type: DataTypes.ARRAY,
-                    //default: [{}],
-                    //schema: {
-                        //type: DataTypes.HASH_TABLE,
-                        //schema: {
-                            //props: {
-                                //type: DataTypes.ARRAY,
-                                //default: ['test']
-                            //}
-                        //}
-                    //}
-                //}
+                {
+                    type: DataTypes.ARRAY,
+                    default: [{}],//each collection value is going to get default array item properties
+                    schema: {
+                        type: DataTypes.HASH_TABLE,
+                        schema: {
+                            props: {
+                                type: DataTypes.ARRAY,
+                                default: ['test']
+                            }
+                        }
+                    }
+                },
+                {
+                    type: DataTypes.ARRAY,
+                    default: [{}],
+                    schema: {
+                        type: DataTypes.HASH_TABLE
+                    }
+                }
             ];
 
             schemaList.forEach(function(schema, index) {

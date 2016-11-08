@@ -123,7 +123,7 @@ describe('schema utils', function() {
             };
 
             var data = schemaUtils.extractDefaults(schema);
-            data.should.be.equal(schema.default);
+            data.should.be.eql(schema.default);
         });
 
         it('should return an object with gathered map of default schema property values (case 3)', function() {
@@ -136,39 +136,92 @@ describe('schema utils', function() {
             data.should.be.equal(schema.default);
         });
 
-        //it('should return an object with gathered default array item value', function() {
-            //var schema = {
-                //type: DataTypes.ARRAY,
-                //schema: {
-                    //type: DataTypes.HASH_TABLE,
-                    //schema: {
-                        //prop: {
-                            //type: DataTypes.STRING,
-                            //default: 'test'
-                        //},
-                        //items: {
-                            //type: DataTypes.ARRAY,
-                            //schema: {
-                                //type: DataTypes.HASH_TABLE,
-                                //schema: {
-                                    //prop: {
-                                        //type: DataTypes.STRING,
-                                        //default: 'test'
-                                    //}
-                                //}
-                            //}
-                        //}
-                    //}
-                //}
-            //};
+        it('should return an object with gathered default array item value', function() {
+            var schema = {
+                type: DataTypes.ARRAY,
+                default: [{}],
+                schema: {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        prop: {
+                            type: DataTypes.STRING,
+                            default: 'test2'
+                        },
+                        items: {
+                            type: DataTypes.ARRAY,
+                            schema: {
+                                type: DataTypes.HASH_TABLE,
+                                schema: {
+                                    prop: {
+                                        type: DataTypes.STRING,
+                                        default: 'test3'
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
 
-            //var data = schemaUtils.extractDefaults(schema);
-            //data.should.be.eql({
-                //prop: 'test',
-                //items: {
-                    //prop: 'test'
-                //}
-            //});
-        //});
+            var data = schemaUtils.extractDefaults(schema);
+
+            var exptectedItems = [];
+            exptectedItems.itemDefaults = {prop: 'test3'};
+            exptectedItems.bindedByForce = true;
+
+            var expectedData = [{}];
+            expectedData.itemDefaults = {
+                prop: 'test2',
+                items: exptectedItems
+            };
+
+            data.should.be.eql(expectedData);
+        });
+
+        it('should return an object with gathered default array item values (2)', function() {
+            var schema = {
+                type: DataTypes.ARRAY,
+                default: [[{}]],
+                schema: {
+                    type: DataTypes.ARRAY,
+                    schema: {
+                        type: DataTypes.HASH_TABLE,
+                        schema: {
+                            prop: {
+                                type: DataTypes.STRING,
+                                default: 'test'
+                            }
+                        }
+                    }
+                }
+            };
+
+            var data = schemaUtils.extractDefaults(schema);
+
+            var expectedData = [[{}]];
+            expectedData.itemDefaults = [];
+            expectedData.itemDefaults.itemDefaults = {prop: 'test'};
+            expectedData.itemDefaults.bindedByForce = true;
+
+            data.should.be.eql(expectedData);
+        });
+    });
+
+    it('should return an object with gathered default array item value (3)', function() {
+        var schema = {
+            type: DataTypes.ARRAY,
+            default: [],
+            schema: {
+                type: DataTypes.STRING,
+                default: 'test'
+            }
+        };
+
+        var data = schemaUtils.extractDefaults(schema);
+
+        var expectedData = [];
+        expectedData.itemDefaults = 'test';
+
+        data.should.be.eql(expectedData);
     });
 });

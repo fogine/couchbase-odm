@@ -450,6 +450,14 @@ describe('Model', function() {
                         accessTypes: {
                             type: DataTypes.ARRAY,
                             default: ['ground', 'air', 'space']
+                        },
+                        apps: {
+                            type: DataTypes.ARRAY,
+                            allowEmptyValue: true,
+                            schema: {
+                                type: DataTypes.STRING,
+                                default: 'app_name'
+                            }
                         }
                     }
                 });
@@ -517,6 +525,13 @@ describe('Model', function() {
                     height: 170
                 });
                 data.should.have.property('accessTypes').that.is.eql(['ground']);
+            });
+
+            it('should not assign default value to the `apps` collection', function() {
+                var instance = this.model.build({});
+                var data = instance.getData();
+
+                data.should.have.property('apps', undefined);
             });
         });
     });
