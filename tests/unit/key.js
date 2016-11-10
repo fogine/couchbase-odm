@@ -3,6 +3,7 @@ var sinon          = require('sinon');
 var chai           = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var sinonChai      = require("sinon-chai");
+var Key            = require("../../lib/key/key.js");
 var UUID4Key       = require("../../lib/key/uuid4Key.js");
 var IncrementalKey = require("../../lib/key/incrementalKey.js");
 var RefDocKey      = require("../../lib/key/refDocKey.js");
@@ -31,6 +32,36 @@ describe('Keys', function() {
     beforeEach(function beforeEachFn() {
         this.instanceMock.getStorageAdapter.reset();
         this.instanceMock.getData.reset();
+    });
+
+    describe('Key', function() {
+        it('should throw an Error when we try to directly create object of `Key` (eg.: `new Key(options)`)', function() {
+            function test() {
+                return new Key({
+                    prefix: "Test",
+                    postfix: "",
+                    delimiter: "_"
+                });
+            }
+
+            expect(test).to.throw(Error);
+        });
+
+        it('should throw an Error when we try to generate an id on an object which does not implement the `generate` method', function() {
+            function CustomKey(options) {
+                Key.call(this, options);
+            }
+            CustomKey.prototype = Object.create(Key.prototype);
+            CustomKey.prototype.constructor = CustomKey;
+
+            var key = new CustomKey({
+                prefix: "Test",
+                postfix: "",
+                delimiter: "_"
+            });
+
+            return key.generate().should.be.rejectedWith(Error);
+        });
     });
 
     describe('UUID4Key', function() {
@@ -73,6 +104,62 @@ describe('Keys', function() {
                     key.parse("Test_some-non-uid-value");
                 }
                 return expect(parse).to.throw(KeyError);
+            });
+        });
+
+        describe('inspect', function() {
+            it('should return correctly formated string', function() {
+                var key = new UUID4Key({
+                    prefix: "Test",
+                    postfix: "",
+                    delimiter: "_"
+                });
+
+                return key.generate().then(function() {
+                    key.inspect().should.be.equal(
+                        '[object UUID4Key: "Test_' + key.getId()  + '" ]'
+                    );
+                });
+            });
+        });
+
+        describe('toString', function() {
+            it('should apped `postfix` part of the key if the `postfix` option is set', function() {
+                var key = new UUID4Key({
+                    prefix: "Test",
+                    postfix: "postfix",
+                    delimiter: "_",
+                });
+
+                key.toString().should.be.equal('Test_undefined_postfix');
+            });
+
+            it("should convert it's id value to lowecase when the `caseSensitive=false`", function() {
+                var key = new UUID4Key({
+                    prefix: "Test",
+                    postfix: "postfix",
+                    delimiter: "_",
+                    caseSensitive: false
+                });
+
+                var id = '885AD3C0-47B9-4D3F-9EF0-8B025E324E47';
+                key.setId(id);
+                key.toString().should.be.equal('Test_' + id.toLowerCase() + '_postfix');
+            });
+
+            it('should NOT throw an Error when we call the method on ungenerated key object AND the `caseSensitive=false`', function() {
+                var key = new UUID4Key({
+                    prefix: "Test",
+                    postfix: "postfix",
+                    delimiter: "_",
+                    caseSensitive: false
+                });
+
+                function test() {
+                    return key.toString();
+                }
+
+                expect(test).to.not.throw(Error);
             });
         });
     });
@@ -125,12 +212,82 @@ describe('Keys', function() {
                 }
                 return expect(parse).to.throw(KeyError);
             });
+
+            it('should not throw an Error', function() {
+                var key = new IncrementalKey({
+                    prefix: "Test",
+                    postfix: "postfix",
+                    delimiter: "_"
+                });
+
+                function parse() {
+                    key.parse("Test_100_postfix");
+                }
+                return expect(parse).to.not.throw(KeyError);
+            });
         });
 
+        describe('inspect', function() {
+            it('should return correctly formated string', function() {
+                var key = new IncrementalKey({
+                    prefix: "Test",
+                    postfix: "",
+                    delimiter: "_"
+                });
+
+                key.inspect().should.be.equal(
+                    '[object IncrementalKey: "Test_' + key.getId()  + '" ]'
+                );
+            });
+        });
     });
 
     describe('RefDocKey', function() {
+        describe('setRef', function() {
+            it("should throw a KeyError when we don't provide valid property references", function() {
+                function case1() {
+                    return new RefDocKey({
+                        prefix: "Test",
+                        postfix: "",
+                        delimiter: "_",
+                    });
+                }
+
+                function case2() {
+                    return new RefDocKey({
+                        prefix: "Test",
+                        postfix: "",
+                        delimiter: "_",
+                        ref: []
+                    });
+                }
+
+                expect(case1).to.throw(KeyError);
+                expect(case2).to.throw(KeyError);
+            });
+        });
+
         describe('generate', function() {
+            it('should convert generated id value to lowercase when `caseSensitive=false`', function() {
+                var key = new RefDocKey({
+                    prefix: "Test",
+                    postfix: "",
+                    delimiter: "_",
+                    ref: ['username'],
+                    caseSensitive: false
+                });
+
+                var instanceData = {
+                    username: 'TEST'
+                };
+
+                var getDataStub = this.instanceMock.getData.returns(instanceData);
+
+                return key.generate(this.instanceMock).then(function() {
+                    key.getId().should.be.equal('test');
+                });
+            });
+
             it('should return a Promise with fulfillment value being generated `key` instance', function() {
                 var ref = [
                         'user.email',
@@ -195,6 +352,41 @@ describe('Keys', function() {
             });
         });
 
+        describe('inspect', function() {
+            it('should return correctly formated string', function() {
+                var key = new RefDocKey({
+                    prefix: "Test",
+                    postfix: "",
+                    delimiter: "_",
+                    ref: ['username']
+                });
+
+                var instanceData = {
+                    username: 'test'
+                };
+
+                var getDataStub = this.instanceMock.getData.returns(instanceData);
+
+                return key.generate(this.instanceMock).then(function() {
+                    key.inspect().should.be.equal(
+                        '[object RefDocKey: "Test_username_' + key.getId()  + '" ]'
+                    );
+                });
+            });
+        });
+
+        describe('toString', function() {
+            it('should apped `postfix` part of the key if the `postfix` option is set', function() {
+                var key = new RefDocKey({
+                    prefix: "Test",
+                    postfix: "postfix",
+                    delimiter: "_",
+                    ref: ['username']
+                });
+
+                key.toString().should.be.equal('Test_username_undefined_postfix');
+            });
+        });
     });
 });
 

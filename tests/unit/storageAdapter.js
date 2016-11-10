@@ -151,6 +151,18 @@ describe('StorageAdapter', function() {
             });
         });
 
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubGetAndTouch.reset();
+            this.stubGetAndTouch.yields(error);
+
+            return this.storageAdapter.getAndTouch('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('getAndLock', function() {
@@ -168,6 +180,18 @@ describe('StorageAdapter', function() {
             });
         });
 
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubGetAndLock.reset();
+            this.stubGetAndLock.yields(error);
+
+            return this.storageAdapter.getAndLock('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('getReplica', function() {
@@ -183,6 +207,18 @@ describe('StorageAdapter', function() {
             });
         });
 
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubGetReplica.reset();
+            this.stubGetReplica.yields(error);
+
+            return this.storageAdapter.getReplica('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('insert', function() {
@@ -269,6 +305,19 @@ describe('StorageAdapter', function() {
                 this.stubAppend.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubAppend.reset();
+            this.stubAppend.yields(error);
+
+            return this.storageAdapter.append('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('prepend', function() {
@@ -284,6 +333,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.prepend(key, data).bind(this).then(function() {
                 this.stubPrepend.should.have.been.calledWith(key, data, {});
                 this.stubPrepend.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubPrepend.reset();
+            this.stubPrepend.yields(error);
+
+            return this.storageAdapter.prepend('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -303,6 +365,19 @@ describe('StorageAdapter', function() {
                 this.stubCounter.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubCounter.reset();
+            this.stubCounter.yields(error);
+
+            return this.storageAdapter.counter('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('query', function() {
@@ -317,6 +392,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.query(query).bind(this).then(function() {
                 this.stubQuery.should.have.been.calledWith(query);
                 this.stubQuery.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubQuery.reset();
+            this.stubQuery.yields(error);
+
+            return this.storageAdapter.query('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -334,6 +422,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.remove(key, options).bind(this).then(function() {
                 this.stubRemove.should.have.been.calledWith(key, options);
                 this.stubRemove.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubRemove.reset();
+            this.stubRemove.yields(error);
+
+            return this.storageAdapter.remove('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -360,6 +461,14 @@ describe('StorageAdapter', function() {
                 removeSpy.should.have.been.calledWith(key, options);
                 removeSpy.should.have.been.calledOnce;
                 removeSpy.restore();
+            });
+        });
+
+        it('should return fulfilled promise with an array containing a StorageError when we provide an entity that is neither `Document` or `Key`', function() {
+            var entities = [{}];
+            return this.storageAdapter.bulkRemove(entities).should.be.fulfilled.then(function(results) {
+                results.should.have.lengthOf(1);
+                results[0].reason().should.be.an.instanceof(StorageError);
             });
         });
     });
@@ -392,6 +501,11 @@ describe('StorageAdapter', function() {
                 this.stub.should.have.been.calledOnce;
             });
         });
+
+        it('should return rejected promise with a StorageError when we provide an entity that is neither `Document` or `Key`', function() {
+            var entities = [{}];
+            return this.storageAdapter.bulkRemoveSync(entities).should.be.rejectedWith(StorageError);
+        });
     });
 
     describe('replace', function() {
@@ -408,6 +522,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.replace(key, data).bind(this).then(function() {
                 this.stubReplace.should.have.been.calledWith(key, data, options);
                 this.stubReplace.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubReplace.reset();
+            this.stubReplace.yields(error);
+
+            return this.storageAdapter.replace('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -428,6 +555,19 @@ describe('StorageAdapter', function() {
                 this.stubUpsert.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubUpsert.reset();
+            this.stubUpsert.yields(error);
+
+            return this.storageAdapter.upsert('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('touch', function() {
@@ -446,6 +586,19 @@ describe('StorageAdapter', function() {
                 this.stubTouch.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubTouch.reset();
+            this.stubTouch.yields(error);
+
+            return this.storageAdapter.touch('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('unlock', function() {
@@ -462,6 +615,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.unlock(key, cas, options).bind(this).then(function() {
                 this.stubUnlock.should.have.been.calledWith(key, cas, options);
                 this.stubUnlock.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubUnlock.reset();
+            this.stubUnlock.yields(error);
+
+            return this.storageAdapter.unlock('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -493,6 +659,19 @@ describe('StorageAdapter', function() {
                 result.should.be.equal(true);
                 this.stubInsert.should.have.been.calledWith(key, true, {expiry: 1});
                 this.stubInsert.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubInsert.reset();
+            this.stubInsert.yields(error);
+
+            return this.storageAdapter.exists('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });

@@ -217,7 +217,7 @@ describe('Model', function() {
             }, {
                 indexes: {
                     refDocs: {
-                        getByNameAndEmail: {
+                        nameAndEmail: {
                             keys: ['name', 'personalData.email']
                         }
                     }
@@ -591,7 +591,7 @@ describe('Model', function() {
                 }, {
                     indexes: {
                         refDocs: {
-                            getByEmail: {
+                            email: {
                                 keys: ['email']
                             }
                         }
@@ -1060,7 +1060,7 @@ describe('Model', function() {
             }, {
                 indexes: {
                     refDocs: {
-                        getByUsername: {keys: ['username']}
+                        username: {keys: ['username']}
                     }
                 }
             });

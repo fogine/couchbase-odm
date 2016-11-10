@@ -1,5 +1,7 @@
 ## FUTURE
 
+* [BUGFIX] the `toJSON` method on `Model's Instance` object was failing to throwing an `InstanceError` in case you tried to convert primitive data type to JSON
+* [BUGFIX] the `caseSensitive`option on `Key` object was being owerwritten by `true` boolean
 * [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
 * [CHANGED] the `sanitize` Model.build method option which defaults to `true` instead of `false`
@@ -7,12 +9,15 @@
 * [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a `keyNotFound` error occurs
 * [CHANGED] `Model.getMulti` method always returns resolved promise
 * [ADDED] new `skipInternalProperties` option to the Instance.sanitize method
+* [ADDED] support for defining default array item values in a schema definition
 
+* [ADDED] new `lean` option to `Model` "getByRefDoc" methods - if true, the method returns document's `Key` object instead of fetched document's data
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
 * [ADDED] new `key` option  to `Model.create` method which can be an `Key` object or `id` string value
 * [ADDED] new `Model.exists` method
 * [ADDED] new `indexed` option to `Model.getMulti` method which if false, causes method to return an Array instead of Object (default=true)
-* [BUGFIX] - Model's `update` instance method did recursive merge with provided data on data being updated, now,  object's properties are overridden by assignment. Also the `update` method works on Models with primitive data structures
+* [BUGFIX] Model's `update` instance method did recursive merge with provided data on data being updated, now,  object's properties are overridden by assignment.
+* [BUGFIX] Model's `update` method works on Models with primitive root data structures
 
 ## v1.0.1
 

@@ -5,10 +5,13 @@ var chai           = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var sinonChai      = require("sinon-chai");
 var couchbase      = require('couchbase').Mock;
-var Model          = require("../../lib/model.js");
-var ODM            = require('../../index.js');
-var DataTypes      = ODM.DataTypes;
 var moment         = require('moment');
+
+var Model         = require("../../lib/model.js");
+var ODM           = require('../../index.js');
+var InstanceError = require('../../lib/error/instanceError.js');
+
+var DataTypes = ODM.DataTypes;
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -415,14 +418,14 @@ describe('Instance', function() {
                 key: ODM.UUID4Key,
                 indexes: {
                     refDocs: {
-                        getByUsername: {
+                        username: {
                             keys: ['username'],
                             required: false
                         },
-                        getByName: {
+                        name: {
                             keys: ['name']
                         },
-                        getAddress: {
+                        address: {
                             keys: ['address.street', 'address.house_number']
                         }
                     }
@@ -540,10 +543,10 @@ describe('Instance', function() {
                 key: ODM.UUID4Key,
                 indexes: {
                     refDocs: {
-                        getByUsername: {
+                        username: {
                             keys: ['username']
                         },
-                        getByName: {
+                        name: {
                             keys: ['name'],
                             required: false
                         }
@@ -710,7 +713,7 @@ describe('Instance', function() {
                 key: ODM.UUID4Key,
                 indexes: {
                     refDocs: {
-                        getByName: {keys: ["name"], required: false}
+                        name: {keys: ["name"], required: false}
                     }
                 }
             });
@@ -788,7 +791,7 @@ describe('Instance', function() {
                 indexes: {
                     //must be here because of the #14 bug
                     refDocs: {
-                        getByName: {
+                        name: {
                             keys: ['name']
                         }
                     }
@@ -993,8 +996,8 @@ describe('Instance', function() {
                 key: ODM.UUID4Key,
                 indexes: {
                     refDocs: {
-                        getByUsername: {keys: ['username']},
-                        getByAge: {keys: ['age']}
+                        username: {keys: ['username']},
+                        age: {keys: ['age']}
                     }
                 }
             });
@@ -1872,6 +1875,23 @@ describe('Instance', function() {
             timestampsBck.should.have.property(propNames.deletedAt).that.is.an('undefined');
             data.should.have.property(propNames.deletedAt).that.is.a('string');
             data.should.have.property(propNames.deletedAt).that.is.ok;
+        });
+    });
+
+    describe('toJSON', function() {
+        it('should throw an InstanceError when we try to convert an Instance object with primitive root data structure', function() {
+            var model = this.buildModel('TOJSONTESTMODEL', {
+                type: DataTypes.STRING
+            });
+            model.$init(this.modelManager);
+
+            var instance = model.build('test string');
+
+            function test() {
+                return instance.toJSON();
+            };
+
+            expect(test).to.throw(InstanceError);
         });
     });
 });
