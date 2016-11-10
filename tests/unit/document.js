@@ -313,4 +313,29 @@ describe("Document", function() {
             });
         });
     });
+
+    describe('inspect', function() {
+        it('should return correctly formated string value', function() {
+            var doc = this.buildDoc();
+            var key = this.buildKey();
+            doc.setKey(key);
+            doc.setCAS('12345');
+
+            doc.inspect().should.be.equal(
+                    "[object CouchbaseDocument:\n    " +
+                    "key: 'Test_undefined'\n    " +
+                    "cas: 12345]"
+            );
+        });
+
+        it('should return correctly formated string value (2)', function() {
+            var doc = this.buildDoc();
+
+            doc.inspect().should.be.equal(
+                    "[object CouchbaseDocument:\n    " +
+                    "key: 'null'\n    " +
+                    "cas: null]"
+            );
+        });
+    });
 });

@@ -1893,5 +1893,42 @@ describe('Instance', function() {
 
             expect(test).to.throw(InstanceError);
         });
+
+        describe('Model with JSON root data structure', function() {
+            before(function() {
+                this.model = this.buildModel('TOJSONTESTMODEL2', {
+                    type: DataTypes.HASH_TABLE
+                });
+                this.model.$init(this.modelManager);
+
+                this.instance = this.model.build({
+                    some: 'data'
+                });
+            });
+
+            it('should return cloned data object', function() {
+                this.instance.toJSON().should.not.be.equal(this.instance.getData());
+            });
+
+            it('should not include the `_type` internal property in returned data', function() {
+                var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
+                this.instance.toJSON().should.not.have.property(typePropName);
+            });
+        });
+    });
+
+    describe('inspect', function() {
+        it('should return correctly formated string value', function() {
+            var model = this.buildModel('INSPECTMODELTEST', {
+                type: DataTypes.HASH_TABLE
+            });
+            model.$init(this.modelManager);
+
+            var instance = model.build({});
+
+            instance.inspect().should.be.equal("[object CouchbaseInstance:\n    " +
+                                                    "key: 'INSPECTMODELTEST_undefined'\n    " +
+                                                    "cas: undefined]");
+        });
     });
 });

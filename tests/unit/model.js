@@ -6,8 +6,11 @@ var chai           = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var sinonChai      = require("sinon-chai");
 var couchbase      = require('couchbase').Mock;
-var ODM            = require('../../index.js');
-var DataTypes      = ODM.DataTypes;
+
+var ODM        = require('../../index.js');
+var ModelError = require('../../lib/error/modelError.js')
+
+var DataTypes = ODM.DataTypes;
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -35,6 +38,50 @@ describe('Model', function() {
         };
     });
 
+    describe('constructor', function() {
+        it("should throw a ModelError when invalid model's name is provided", function() {
+            var self = this;
+
+            function case1() {
+                self.buildModel('', {
+                    type: DataTypes.STRING
+                });
+            }
+
+            function case2() {
+                self.buildModel({}, {
+                    type: DataTypes.STRING
+                });
+            }
+
+            expect(case1).to.throw(ModelError);
+            expect(case2).to.throw(ModelError);
+        });
+
+        it("should throw a ModelError when we don't provide valid `options.key` option", function() {
+            var self = this;
+
+            function case1() {
+                self.buildModel('name', {
+                    type: DataTypes.STRING
+                }, {
+                    key: function() {}
+                });
+            }
+
+            function case2() {
+                self.buildModel('name', {
+                    type: DataTypes.STRING
+                }, {
+                    key: {}
+                });
+            }
+
+            expect(case1).to.throw(ModelError);
+            expect(case2).to.throw(ModelError);
+        });
+    });
+
     describe('$init', function() {
         it('should add internal properties to schema if "root" data type is object and if a property is not disabled by option set', function() {
             var model1 = this.buildModel('Test1', {
@@ -43,7 +90,7 @@ describe('Model', function() {
 
             var model2 = this.buildModel('Test1a', {
                 type: DataTypes.HASH_TABLE
-            }, {paranoid: true});
+            }, {paranoid: true, timestamps:false});
 
             var model3 = this.buildModel('Test1b', {
                 type: DataTypes.HASH_TABLE
@@ -195,6 +242,78 @@ describe('Model', function() {
             instance.should.have.property('hash').that.is.a('function');
             instance.hash();
             instanceMethodSpy.should.have.been.calledOnce;
+        });
+
+        it('should allow to override already defined `classMethods`', function() {
+            var classMethodSpy = sinon.spy(function(originalMethod) {
+                originalMethod();
+            });
+
+            var model = this.buildModel('Test5', {
+                type: DataTypes.STRING
+            }, {
+                classMethods: {
+                    getById: classMethodSpy
+                }
+            });
+
+            var getByIdStub = sinon.stub(model, 'getById');
+
+            model.$init(this.modelManager);
+
+            model.should.have.property('getById').that.is.a('function');
+            model.getById();
+
+            classMethodSpy.should.be.calledOnce;
+            classMethodSpy.should.be.calledWith(getByIdStub);
+            getByIdStub.should.be.calledOnce;
+
+            getByIdStub.restore();
+        });
+
+        it('should allow to override already defined `instanceMethods`', function() {
+            var instanceMethodSpy = sinon.spy(function(originalMethod) {
+                originalMethod();
+            });
+
+            var model = this.buildModel('Test5', {
+                type: DataTypes.STRING
+            }, {
+                instanceMethods: {
+                    save: instanceMethodSpy
+                }
+            });
+
+            var saveStub = sinon.stub(ODM.Instance.prototype, 'save');
+
+            model.$init(this.modelManager);
+
+            var instance = model.build('test');
+
+            instance.should.have.property('save').that.is.a('function');
+            instance.save();
+
+            instanceMethodSpy.should.be.calledOnce;
+            instanceMethodSpy.should.be.calledWith(saveStub);
+            saveStub.should.be.calledOnce;
+
+            saveStub.reset();
+            instanceMethodSpy.reset();
+
+            //Test that when we build new Model, the instances of that Model
+            //won't have the save method overriden,
+            //it should be only Model specific
+
+            var model2 = this.buildModel('Test20', {
+                type: DataTypes.STRING
+            });
+            model2.$init(this.modelManager);
+
+            var instance2 = model2.build('test2');
+            instance2.save();
+
+            instanceMethodSpy.should.have.callCount(0);
+            saveStub.restore();
         });
 
         it('should attach `getByRefDoc` methods to the Model object according to `options.indexes.refDocs` options', function() {
@@ -1048,7 +1167,7 @@ describe('Model', function() {
     });
 
     describe('getByRefDoc', function() {
-        it("should call `Model.getById` with correct document's key and options", function() {
+        before(function() {
             var modelName = 'Test17';
             var model = this.buildModel(modelName, {
                 type: DataTypes.HASH_TABLE,
@@ -1066,31 +1185,50 @@ describe('Model', function() {
             });
 
             model.$init(this.modelManager);
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
-            var key = modelName + '_' + id;
-            var username = 'happie';
-            var expectedRefDocKey = modelName + '_username_' + username;
 
-            var getStub = sinon.stub(model.storage, 'get');
+            this.getStub = sinon.stub(model.storage, 'get');
+
+            this.modelName = modelName;
+            this.model = model;
+        });
+
+        beforeEach(function() {
+            this.getStub.reset();
+        });
+
+        after(function() {
+            delete this.model;
+            delete this.modelName;
+
+            this.getStub.restore();
+        });
+
+        it("should call `Model.getById` with correct document's key and options", function() {
+
+            var self = this;
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            var key = this.modelName + '_' + id;
+            var username = 'happie';
+            var expectedRefDocKey = this.modelName + '_username_' + username;
 
             //on first call it returns parent document key
-            getStub.onFirstCall().returns(Promise.resolve({
+            this.getStub.onFirstCall().returns(Promise.resolve({
                 value: key
             }));
             //on second call it returns parent document data
-            getStub.onSecondCall().returns(Promise.resolve({
+            this.getStub.onSecondCall().returns(Promise.resolve({
                 _id: id,
-                _type: modelName,
+                _type: this.modelName,
                 username: username
             }));
 
-            var getByIdSpy = sinon.spy(model, 'getById');
+            var getByIdSpy = sinon.spy(this.model, 'getById');
 
             var options = {
                 paranoid: false
             };
 
-            var promise = model.getByUsername(username, options);
+            var promise = this.model.getByUsername(username, options);
 
             promise.catch(function(err) {
                 console.error(err);
@@ -1099,17 +1237,43 @@ describe('Model', function() {
 
             return promise.should.have.been.fulfilled.then(function(instance) {
                 var keyArg = getByIdSpy.args[0][0];
-                getStub.should.have.been.calledTwice;
+                self.getStub.should.have.been.calledTwice;
 
-                keyArg.should.be.an.instanceof(model.Key);
+                keyArg.should.be.an.instanceof(self.model.Key);
                 keyArg.toString().should.be.equal(key);
 
                 getByIdSpy.should.have.been.calledOne;
                 getByIdSpy.should.have.been.calledWith(instance.getKey(), options);
 
                 getByIdSpy.restore();
-                getStub.restore();
-            })
+            });
         })
+
+        it("should return parent's document `Key` object instead of document's data if the `lean` option is set (true)", function() {
+            var self = this;
+            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            var key = this.modelName + '_' + id;
+
+            //on first call it returns parent document key
+            this.getStub.onFirstCall().returns(Promise.resolve({
+                value: key
+            }));
+
+            return this.model.getByUsername('happie', {lean: true}).should.be.fulfilled.then(function(key) {
+                key.should.be.instanceof(self.model.Key);
+                key.getId().should.be.equal(id);
+            })
+        });
+    });
+
+    describe('toString', function() {
+        it('should return correctly formated string', function() {
+            var model = this.buildModel('Test21', {
+                type: DataTypes.INT
+            });
+            model.$init(this.modelManager);
+
+            model.toString().should.be.equal('[object CouchbaseModel:Test21]');
+        });
     });
 });
