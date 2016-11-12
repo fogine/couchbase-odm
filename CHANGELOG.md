@@ -1,9 +1,11 @@
 ## FUTURE
 
+* [REMOVED] support for callback based hook listeners. All async hook listeners are expected to return a Promise
 * [BUGFIX] the `toJSON` method on `Model's Instance` object was failing to throwing an `InstanceError` in case you tried to convert primitive data type to JSON
 * [BUGFIX] the `caseSensitive`option on `Key` object was being owerwritten by `true` boolean
 * [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
+* [CHANGED] the `afterFailedIndexRemoval` hook type is triggered not just for `StorageError` but also for any other error that occurs while removing outdated reference document indexes
 * [CHANGED] the `sanitize` Model.build method option which defaults to `true` instead of `false`
 * [CHANGED] the `Model.build` method does not clone data values passed to it anymore
 * [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a `keyNotFound` error occurs

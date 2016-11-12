@@ -39,6 +39,23 @@ describe('Instance', function() {
         };
     });
 
+    describe('constructor', function() {
+        it("should throw an InstanceError when we don't provide valid `options.key` value", function() {
+            var model = this.buildModel('InstanceConstructorTestModel', {
+                type: DataTypes.STRING
+            });
+            model.$init(this.modelManager);
+
+            function test() {
+                var instance = new model.Instance('data string', {
+                    key: null
+                });
+            }
+
+            expect(test).to.throw(InstanceError);
+        });
+    });
+
     describe('sanitize', function() {
 
         before(function() {
@@ -635,6 +652,40 @@ describe('Instance', function() {
                 refDocs.old.should.have.lengthOf(0);
             });
         });
+
+        it('should return fulfilled promise with the `name` legacy refDoc index marked for removal', function() {
+            var instanceData = {
+                username: 'happie'
+            };
+
+            var instance = this.Model.build(instanceData);
+
+            instance.$original.setData('name', 'James');
+
+            var promise = instance.$getDirtyRefDocs();
+            return promise.should.be.fulfilled.then(function(refDocs) {
+                refDocs.should.have.property('old').that.is.an.instanceof(Array);
+
+                refDocs.old.should.have.lengthOf(1);
+                refDocs.old.pop().getKey().getId().should.be.equal('James');
+            });
+        });
+
+        it("should return rejected promise with a KeyError when a required key (oldKey) of currently persisted document can't be generated", function() {
+            var instanceData = {
+                username: 'happie'
+            };
+
+            var instance = this.Model.build(instanceData);
+
+            instance.$original.setData('username', undefined);
+
+            var promise = instance.$getDirtyRefDocs();
+            return promise.should.be.rejected.then(function(error) {
+                error.should.be.instanceof(ODM.errors.KeyError);
+            });
+        });
+
         it('should return rejected promise if a key of refDoc fails generation process and the refDoc has `required` option set', function() {
             var instanceData = {
                 name: 'Petr',
@@ -645,6 +696,94 @@ describe('Instance', function() {
 
             var promise = instance.$getDirtyRefDocs();
             return promise.should.be.rejectedWith(ODM.errors.KeyError);
+        });
+
+        it('should return rejected promise with an Error if an old refDoc key generation process fails unexpectedly', function() {
+            var error = new Error('getDirtyRefDocs testing errror');
+            var keyGenerateStub = sinon.stub(this.Model.RefDocKey.prototype, 'generate')
+                .returns(Promise.reject(error));
+
+            var instanceData = {
+                name: 'Anonymous',
+                username: 'test'
+            };
+            var instance = this.Model.build(instanceData);
+            instance.username = 'anonym';
+
+            //$getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
+            var promise = instance.$getDirtyRefDocs();
+
+            return promise.should.be.rejected.then(function(err) {
+                err.should.be.equal(error);
+                keyGenerateStub.restore();
+            });
+        });
+
+        it('should return rejected promise with an Error if a new refDoc key generation process fails unexpectedly', function() {
+            var self = this;
+            var error = new Error('getDirtyRefDocs testing errror');
+
+            var instanceData = {
+                name: 'Anonymous',
+                username: 'test'
+            };
+            var instance = this.Model.build(instanceData);
+            instance.username = 'anonym';
+
+            var getGeneratedKeyStub;
+            var buildRefDocumentStub = sinon.stub(instance, '$buildRefDocument', function() {
+                var promise = self.Model.Instance.prototype.$buildRefDocument.apply(this, arguments);
+                return promise.then(function(doc) {
+                    getGeneratedKeyStub = sinon.stub(doc, 'getGeneratedKey');
+                    getGeneratedKeyStub.returns(Promise.reject(error));
+
+                    return doc;
+                });
+            });
+
+            //$getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
+            var promise = instance.$getDirtyRefDocs();
+
+            return promise.should.be.rejected.then(function(err) {
+                err.should.be.equal(error);
+                buildRefDocumentStub.restore();
+                getGeneratedKeyStub.restore();
+            });
+        });
+    });
+
+    describe('setData', function() {
+        before(function() {
+            this.data = {};
+            this.model = this.buildModel('InstanceSetDataTestModel', {
+                type: DataTypes.HASH_TABLE
+            });
+            this.model.$init(this.modelManager);
+            this.instance = this.model.build(this.data);
+        });
+
+        it('should set specified data under specified property', function() {
+            this.instance.setData('some', 'data');
+            this.instance.getData().should.be.equal(this.data);
+            this.instance.getData().should.have.property('some', 'data');
+        });
+
+        it('should set instance data object so that original data object reference is preserved', function() {
+            var idPropName = this.model.options.schemaSettings.doc.idPropertyName;
+            var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
+
+            var data = {another: 'data'};
+            this.instance.setData(data);
+            this.instance.getData().should.be.equal(this.data);
+            this.instance.getData().should.have.property('another', 'data');
+            this.instance.getData().should.have.property('some', 'data');
+            this.instance.getData().should.have.property(idPropName);
+            this.instance.getData().should.have.property(typePropName);
+        });
+
+        it('should return self (the document object)', function() {
+            this.instance.setData({}).should.be.equal(this.instance);
+            this.instance.setData('some', 'prop').should.be.equal(this.instance);
         });
     });
 
@@ -957,12 +1096,16 @@ describe('Instance', function() {
             var instanceOriginalSaveStub = sinon.stub(instance.$original, 'save')
                 .returns(Promise.reject(new ODM.errors.StorageError('test err')));
 
-            var promise = instance.update({email: 'diena@test.com'});
+            var promise = instance.update({
+                email: 'diena@test.com',
+                apps: ['appName'] // important! (it should be removed on rollback from original data object)
+            });
 
             return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
                 instance.$original.getData().should.have.property('email', 'test@test.com');
                 instance.$original.should.have.property('email', 'test@test.com');
                 instance.$original.should.have.property('user').that.is.an.instanceof(instance.Model.Instance);
+                instance.$original.getData().should.be.eql(originalData);
             });
         });
     });
@@ -994,6 +1137,7 @@ describe('Instance', function() {
                 }
             }, {
                 key: ODM.UUID4Key,
+                timestamps: true,
                 indexes: {
                     refDocs: {
                         username: {keys: ['username']},
@@ -1022,7 +1166,9 @@ describe('Instance', function() {
                 age: '26',
                 friends: [this.friend],
                 sex: 'male',
-                born_at: new Date
+                born_at: new Date,
+                created_at: "2016-08-29T11:36:46Z",
+                updated_at: "2016-08-29T11:36:46Z"
             }, {
                 isNewRecord: false
             });
@@ -1381,6 +1527,23 @@ describe('Instance', function() {
                 });
             });
 
+            it('should restore timestamp values if a validation error occurs', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+
+                this.user.setData('username', undefined);
+                var promise = this.user.insert();
+
+                return promise.should.be.rejected.then(function() {
+                    var createdAt = self.user.$original.getData('created_at');
+                    var updatedAt = self.user.$original.getData('updated_at');
+
+                    self.user.getData('created_at').should.be.equal(createdAt);
+                    self.user.getData('updated_at').should.be.equal(updatedAt);
+                });
+            });
+
             it('should try to remove already inserted reference documents if insert operation fails on a refDoc or the main document', function() {
                 var self = this;
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
@@ -1647,7 +1810,7 @@ describe('Instance', function() {
             it('should try to destroy already inserted reference documents if some "bucket" operation fails during replace process', function() {
             });
 
-            it('should trigger defined `afterFailedIndexRemoval` hooks if a remove operation of outdated refDoc indexes fails during replace process', function() {
+            it('should trigger defined `afterFailedIndexRemoval` hooks if a remove operation of outdated refDoc indexes fails during replace process and there is an `afterFailedIndexRemoval` listener registered', function() {
                 var self = this;
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
@@ -1667,9 +1830,25 @@ describe('Instance', function() {
                     afterFailedIndexRemovalSpy.should.have.been.calledOnce;
                     afterFailedIndexRemovalSpy.should.have.been.calledWith(storageErr);
                     storageErr.should.have.property('doc').that.is.an.instanceof(ODM.Document);
+                    self.user.Model.removeHook('afterFailedIndexRemoval', 'testhook');
                 });
             });
 
+            it('should return rejected promise with an Error if unexpected Error occurs while trying to remove outdated reference document indexes and there is NO `afterFailedIndexRemoval` listener registered', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                //on first call it deletes the outdated reference document
+                var storageErr = new ODM.errors.StorageError('test');
+                this.removeStub.onFirstCall().returns(Promise.reject(storageErr));
+
+                this.user.username = 'happiecat';
+                var promise = this.user.replace();
+
+                return promise.should.be.rejectedWith(storageErr);
+            });
 
             it('should trigger defined `beforeRollback` and `afterRollback` hooks if performing rollback operation', function() {
                 var self = this;
@@ -1758,6 +1937,46 @@ describe('Instance', function() {
 
                         self.user.Model.removeHook('afterFailedRollback', 'testhook');
                     });
+                });
+            });
+
+            it('should restore timestamp values after failed `replace` operation', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                //on first call it deletes the outdated reference document
+                var storageErr = new ODM.errors.StorageError('test');
+                this.removeStub.onFirstCall().returns(Promise.reject(storageErr));
+
+                this.user.username = 'happiecat';
+                var promise = this.user.replace();
+
+                return promise.should.be.rejected.then(function() {
+                    var createdAt = self.user.$original.getData('created_at');
+                    var updatedAt = self.user.$original.getData('updated_at');
+
+                    self.user.getData('created_at').should.be.equal(createdAt);
+                    self.user.getData('updated_at').should.be.equal(updatedAt);
+                });
+            });
+
+            it('should restore timestamp values if a validation error occurs', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                this.user.setData('username', undefined);
+                var promise = this.user.replace();
+
+                return promise.should.be.rejected.then(function() {
+                    var createdAt = self.user.$original.getData('created_at');
+                    var updatedAt = self.user.$original.getData('updated_at');
+
+                    self.user.getData('created_at').should.be.equal(createdAt);
+                    self.user.getData('updated_at').should.be.equal(updatedAt);
                 });
             });
         });
