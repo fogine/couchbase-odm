@@ -17,4 +17,10 @@ describe('Complex TYPE', function() {
             complex.inspect().should.be.equal('[object ComplexType: "User" ]');
         });
     });
+
+    describe('exists', function() {
+        it('should return false if we provide invalid Complex data type', function() {
+            dataType.exists('COMPLEX').should.be.equal(false);
+        });
+    });
 });
