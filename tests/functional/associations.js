@@ -191,7 +191,7 @@ describe('Model associations', function() {
             });
         });
 
-        it("should be possible to destroy unloaded file document with it's reference document", function() {
+        it("should destroy unloaded file document with it's reference document", function() {
             return this.User.getById(this.user.getKey())
             .bind(this)
             .should.be.fulfilled
