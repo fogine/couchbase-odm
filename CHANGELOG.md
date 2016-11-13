@@ -1,7 +1,8 @@
 ## FUTURE
 
 * [REMOVED] support for callback based hook listeners. All async hook listeners are expected to return a Promise
-* [BUGFIX] the `toJSON` method on `Model's Instance` object was failing to throwing an `InstanceError` in case you tried to convert primitive data type to JSON
+* [BUGFIX] corner case with Model definition which has Model association defined as it's root data type - association data was being incorrectly serialized when saving to a bucket
+* [BUGFIX] the `toJSON` method on `Model's Instance` object was failing to throw an `InstanceError` in case you tried to convert primitive data type to JSON
 * [BUGFIX] the `caseSensitive`option on `Key` object was being owerwritten by `true` boolean
 * [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
