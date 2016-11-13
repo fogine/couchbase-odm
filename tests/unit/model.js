@@ -1264,6 +1264,16 @@ describe('Model', function() {
                 key.getId().should.be.equal(id);
             })
         });
+
+        it('should return rejected promise with an Error if unexpected Error (other than keyNotFound err) occurs while getting a refDoc document', function() {
+            var self = this;
+            var error = new Error('test error');
+
+            //on first call it returns parent document key
+            this.getStub.onFirstCall().returns(Promise.reject(error));
+
+            return this.model.getByUsername('happie').should.be.rejectedWith(error);
+        });
     });
 
     describe('toString', function() {
