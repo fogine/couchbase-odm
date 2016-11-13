@@ -754,37 +754,57 @@ describe('Instance', function() {
 
     describe('setData', function() {
         before(function() {
-            this.data = {};
             this.model = this.buildModel('InstanceSetDataTestModel', {
                 type: DataTypes.HASH_TABLE
             });
             this.model.$init(this.modelManager);
-            this.instance = this.model.build(this.data);
         });
 
-        it('should set specified data under specified property', function() {
-            this.instance.setData('some', 'data');
-            this.instance.getData().should.be.equal(this.data);
-            this.instance.getData().should.have.property('some', 'data');
+        describe("with new Instance object that's never been persisted yet", function() {
+            before(function() {
+                this.data = {};
+                this.instance = this.model.build(this.data);
+            });
+
+            it('should set specified data under specified property', function() {
+                this.instance.setData('some', 'data');
+                this.instance.getData().should.be.equal(this.data);
+                this.instance.getData().should.have.property('some', 'data');
+            });
+
+            it('should set instance data object so that original data object reference is preserved', function() {
+                var idPropName = this.model.options.schemaSettings.doc.idPropertyName;
+                var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
+
+                var data = {another: 'data'};
+                this.instance.setData(data);
+                this.instance.getData().should.be.equal(this.data);
+                this.instance.getData().should.have.property('another', 'data');
+                this.instance.getData().should.have.property('some', 'data');
+                this.instance.getData().should.have.property(idPropName);
+                this.instance.getData().should.have.property(typePropName);
+            });
+
+            it('should return self (the document object)', function() {
+                this.instance.setData({}).should.be.equal(this.instance);
+                this.instance.setData('some', 'prop').should.be.equal(this.instance);
+            });
         });
 
-        it('should set instance data object so that original data object reference is preserved', function() {
-            var idPropName = this.model.options.schemaSettings.doc.idPropertyName;
-            var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
+        describe('with an Instance that is NOT fully loaded from a bucket ', function() {
+            before(function() {
+                this.data = {};
+                this.instance = this.model.build(this.data, {
+                    isNewRecord: false,
+                    sanitize: false
+                });
+            });
 
-            var data = {another: 'data'};
-            this.instance.setData(data);
-            this.instance.getData().should.be.equal(this.data);
-            this.instance.getData().should.have.property('another', 'data');
-            this.instance.getData().should.have.property('some', 'data');
-            this.instance.getData().should.have.property(idPropName);
-            this.instance.getData().should.have.property(typePropName);
+            it('should throw a DocumentError when we try to `seData` on document object that is not fully loaded from a bucket', function() {
+                expect(this.instance.setData.bind(this.instance, {})).to.throw(InstanceError);
+            });
         });
 
-        it('should return self (the document object)', function() {
-            this.instance.setData({}).should.be.equal(this.instance);
-            this.instance.setData('some', 'prop').should.be.equal(this.instance);
-        });
     });
 
     describe('save', function() {
@@ -1158,7 +1178,8 @@ describe('Instance', function() {
                 sex: 'female',
                 born_at: new Date
             }, {
-                isNewRecord: false
+                isNewRecord: false,
+                cas: '1234'
             });
 
             this.user = this.Model.build({
@@ -1170,7 +1191,8 @@ describe('Instance', function() {
                 created_at: "2016-08-29T11:36:46Z",
                 updated_at: "2016-08-29T11:36:46Z"
             }, {
-                isNewRecord: false
+                isNewRecord: false,
+                cas: '1234'
             });
 
             this.user.setCAS('23901742395713000');
@@ -1325,8 +1347,12 @@ describe('Instance', function() {
                 }, {paranoid: true});
 
                 model.$init(this.modelManager);
-                var instance = model.build({somedata: 'datastring'}, {isNewRecord: false});
-                instance.setCAS('23901742395713000');
+                var instance = model.build({
+                    somedata: 'datastring'
+                }, {
+                    isNewRecord: false,
+                    cas: '23901742395713000'
+                });
 
                 var casBck = instance.getCAS();
                 self.removeStub.withArgs(instance.getKey());

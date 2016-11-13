@@ -1,3 +1,4 @@
+var _              = require('lodash');
 var Promise        = require('bluebird');
 var sinon          = require('sinon');
 var chai           = require('chai');
@@ -47,11 +48,11 @@ describe("Document", function() {
             var key = new UUID4Key(opt);
             return key;
         };
-        this.buildDoc = function(data) {
-            var doc = new Document({
+        this.buildDoc = function(data, options) {
+            var doc = new Document(_.assign(options, {
                 storage: storageAdapter,
                 data: data
-            });
+            }));
             return doc;
         };
     });
@@ -115,26 +116,46 @@ describe("Document", function() {
     });
 
     describe('setData', function() {
-        before(function() {
-            this.data = {};
-            this.doc = this.buildDoc(this.data);
+        describe("with new Document that's never been persisted to a bucket yet", function() {
+            before(function() {
+                this.data = {};
+                this.doc = this.buildDoc(this.data);
+            });
+
+            it('should set specified data under specified property', function() {
+                this.doc.setData('some', 'data');
+                this.doc.getData().should.be.equal(this.data);
+                this.doc.getData().should.have.property('some', 'data');
+            });
+
+            it('should set specified data by owerwriting current data', function() {
+                var data = {some: 'data'};
+                this.doc.setData(data);
+                this.doc.getData().should.not.be.equal(this.data);
+                this.doc.getData().should.be.equal(data);
+            });
+
+            it('should return self (the document object)', function() {
+                this.doc.setData({}).should.be.equal(this.doc);
+            });
+
+            it('should throw a DocumentError when we provide invalid number of arguments', function() {
+                expect(this.doc.setData.bind(this.doc, 'key', 'value', 'unexpected third arg'))
+                    .to.throw(DocumentError);
+            });
         });
 
-        it('should set specified data under specified property', function() {
-            this.doc.setData('some', 'data');
-            this.doc.getData().should.be.equal(this.data);
-            this.doc.getData().should.have.property('some', 'data');
-        });
+        describe('with a Document that is NOT fully loaded from a bucket ', function() {
+            before(function() {
+                this.data = {};
+                this.doc = this.buildDoc(this.data, {
+                    isNewRecord: false
+                });
+            });
 
-        it('should set specified data by owerwriting current data', function() {
-            var data = {some: 'data'};
-            this.doc.setData(data);
-            this.doc.getData().should.not.be.equal(this.data);
-            this.doc.getData().should.be.equal(data);
-        });
-
-        it('should return self (the document object)', function() {
-            this.doc.setData({}).should.be.equal(this.doc);
+            it('should throw a DocumentError when we try to `seData` on document object that is not fully loaded from a bucket', function() {
+                expect(this.doc.setData.bind(this.doc, {})).to.throw(DocumentError);
+            });
         });
     });
 
