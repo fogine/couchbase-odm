@@ -1,30 +1,30 @@
 var _            = require("lodash");
 
-var InstanceError           = require("./lib/error/instanceError.js");
-var DocumentError           = require("./lib/error/documentError.js");
-var KeyError                = require("./lib/error/keyError.js");
-var ModelError              = require("./lib/error/modelError.js");
-var StorageError            = require("./lib/error/storageError.js");
-var ValidationError         = require("./lib/error/validationError.js");
-var ModelManagerError       = require("./lib/error/modelManagerError.js");
-var ModelNotFoundError      = require("./lib/error/modelNotFoundError.js");
+var InstanceError      = require("./lib/error/instanceError.js");
+var DocumentError      = require("./lib/error/documentError.js");
+var KeyError           = require("./lib/error/keyError.js");
+var ModelError         = require("./lib/error/modelError.js");
+var StorageError       = require("./lib/error/storageError.js");
+var ValidationError    = require("./lib/error/validationError.js");
+var ModelManagerError  = require("./lib/error/modelManagerError.js");
+var ModelNotFoundError = require("./lib/error/modelNotFoundError.js");
 
 
-var RefDocKey             = require("./lib/key/refDocKey.js");
-var IncrementalKey        = require("./lib/key/incrementalKey.js");
-var UUID4Key              = require("./lib/key/uuid4Key.js");
-var Key                   = require("./lib/key/key.js");
+var RefDocKey      = require("./lib/key/refDocKey.js");
+var IncrementalKey = require("./lib/key/incrementalKey.js");
+var UUID4Key       = require("./lib/key/uuid4Key.js");
+var Key            = require("./lib/key/key.js");
 
-var Operation             = require("./lib/operation.js");
-var DataTypes             = require("./lib/dataType.js").types;
-var Instance              = require("./lib/instance.js");
-var Document              = require("./lib/document.js");
-var Model                 = require("./lib/model.js");
-var ModelManager          = require("./lib/modelManager.js");
-var SchemaSanitizer       = require("./lib/sanitizer/schema.js");
-var DataSanitizer         = require("./lib/sanitizer/data.js");
-var StorageAdapter        = require("./lib/storageAdapter.js");
-var Hook                  = require("./lib/hook.js");
+var Operation       = require("./lib/operation.js");
+var DataTypes       = require("./lib/dataType.js").types;
+var Instance        = require("./lib/instance.js");
+var Document        = require("./lib/document.js");
+var Model           = require("./lib/model.js");
+var ModelManager    = require("./lib/modelManager.js");
+var SchemaSanitizer = require("./lib/sanitizer/schema.js");
+var DataSanitizer   = require("./lib/sanitizer/data.js");
+var StorageAdapter  = require("./lib/storageAdapter.js");
+var Hook            = require("./lib/hook.js");
 
 /**
  * CouchbaseODM
@@ -187,6 +187,7 @@ CouchbaseODM.SchemaSanitizer = CouchbaseODM.prototype.SchemaSanitizer = SchemaSa
 CouchbaseODM.DataSanitizer   = CouchbaseODM.prototype.DataSanitizer   = DataSanitizer;
 CouchbaseODM.StorageAdapter  = CouchbaseODM.prototype.StorageAdapter  = StorageAdapter;
 CouchbaseODM.Hook            = CouchbaseODM.prototype.Hook            = Hook;
+CouchbaseODM.CouchbaseODM    = CouchbaseODM.prototype.CouchbaseODM    = CouchbaseODM;
 
 module.exports = CouchbaseODM;
 
@@ -324,3 +325,7 @@ module.exports = CouchbaseODM;
  * @type Hook
  */
 
+/**
+ * @name CouchbaseODM.CouchbaseODM
+ * @type CouchbaseODM
+ */
