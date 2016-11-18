@@ -10,10 +10,12 @@
 * [CHANGED] the `afterFailedIndexRemoval` hook type is triggered not just for `StorageError` but also for any other error that occurs while removing outdated reference document indexes
 * [CHANGED] the `sanitize` Model.build method option which defaults to `true` instead of `false`
 * [CHANGED] the `Model.build` method does not clone data values passed to it anymore
-* [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a `keyNotFound` error occurs
+* [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a document is not found in a bucket
 * [CHANGED] `Model.getMulti` method always returns resolved promise
 * [ADDED] new `skipInternalProperties` option to the Instance.sanitize method
 * [ADDED] support for defining default array item values in a schema definition
+* [ADDED] new `Instance.populate` method - handles loading of Model's associations
+* [ADDED] new `Model.getByIdOrFail` which returns rejected promise with `StorageError` when a document is not found in a bucket
 
 * [ADDED] new `lean` option to `Model` "getByRefDoc" methods - if true, the method returns document's `Key` object instead of fetched document's data
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys

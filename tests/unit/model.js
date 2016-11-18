@@ -701,7 +701,7 @@ describe('Model', function() {
         });
     });
 
-    describe('getById', function() {
+    describe('getByIdOrFail', function() {
         describe('returns resolved document data', function() {
 
             before(function() {
@@ -749,7 +749,7 @@ describe('Model', function() {
             it('should accept instance of `Key` in place of `id` string (dynamic part of key)', function() {
                 var self = this;
                 var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-                var promise = this.model.getById(key);
+                var promise = this.model.getByIdOrFail(key);
 
                 return promise.should.be.fulfilled.then(function(){
                     self.getStub.should.have.been.calledOnce;
@@ -759,7 +759,7 @@ describe('Model', function() {
 
             it('should return resolved Promise with raw data from bucket if method`s `options.plain` option is set', function() {
                 var self = this;
-                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
+                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
                     plain:true
                 });
 
@@ -784,7 +784,7 @@ describe('Model', function() {
                     return opt.hooks === true && opt.paranoid === false;
                 });
 
-                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', options);
+                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', options);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.been.calledOnce;
@@ -809,7 +809,7 @@ describe('Model', function() {
                 var self = this;
                 var opt = { lockTime: 15 };
                 var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-                var promise = this.model.getById(key, opt);
+                var promise = this.model.getByIdOrFail(key, opt);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.callCount(0);
@@ -821,7 +821,7 @@ describe('Model', function() {
             it('should call `touch` method for every ref docs if `options.expiry` option is set', function() {
                 var self = this;
                 var opt = { expiry: 3600 };
-                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', opt);
+                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', opt);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.callCount(0);
@@ -834,7 +834,7 @@ describe('Model', function() {
                 var self = this;
                 var opt = { expiry: 31 };
                 var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-                var promise = this.model.getById(key, opt);
+                var promise = this.model.getByIdOrFail(key, opt);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.callCount(0);
@@ -848,7 +848,7 @@ describe('Model', function() {
 
                 var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
 
-                var promise = this.model.getById('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
+                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
                     hooks: false
                 });
 
@@ -885,36 +885,78 @@ describe('Model', function() {
 
             it('should NOT call the `getAndLock` method if the `lockTime` option is set AND the relevant document IS soft-deleted', function() {
                 var getAndLockSpy = sinon.spy(this.model.storage, 'getAndLock');
-                return this.model.getById(this.doc.getKey(), {lockTime: 20}).then(function() {
-                    getAndLockSpy.should.have.callCount(0);
-                    getAndLockSpy.restore();
-                });
+                return this.model.getByIdOrFail(this.doc.getKey(), {lockTime: 20})
+                    .should.be.rejected.then(function() {
+                        getAndLockSpy.should.have.callCount(0);
+                        getAndLockSpy.restore();
+                    });
             });
 
             it('should NOT call the `getAndTouch` method if the `expiry` option is set AND the relevant document IS soft-deleted', function() {
                 var getAndTouchSpy = sinon.spy(this.model.storage, 'getAndTouch');
-                return this.model.getById(this.doc.getKey(), {expiry: 1000}).then(function() {
-                    getAndTouchSpy.should.have.callCount(0);
-                    getAndTouchSpy.restore();
-                });
+                return this.model.getByIdOrFail(this.doc.getKey(), {expiry: 1000})
+                    .should.be.rejected.then(function() {
+                        getAndTouchSpy.should.have.callCount(0);
+                        getAndTouchSpy.restore();
+                    });
             });
 
-            it('should return resolved promise with `null` if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
-                return this.model.getById(this.doc.getKey()).should.become(null);
+            it('should return rejected promise with a StorageError (keyNotFound) if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
+                return this.model.getByIdOrFail(this.doc.getKey())
+                    .should.be.rejected.then(function(error) {
+                        error.should.be.instanceof(ODM.errors.StorageError);
+                        error.code.should.be.equal(ODM.StorageAdapter.errorCodes.keyNotFound);
+                    });
             });
 
-            it('should return fulfilled promise with soft-deleted document if `getById` method\'s `options.paranoid===false`', function() {
+            it('should return fulfilled promise with soft-deleted document if `getByIdOrFail` method\'s `options.paranoid===false`', function() {
                 var self = this;
 
-                return this.model.getById(this.doc.getKey(), {paranoid:false})
+                return this.model.getByIdOrFail(this.doc.getKey(), {paranoid:false})
                     .should.be.fulfilled.then(function(doc) {
                         doc.getData().should.be.eql(self.doc.getData());
                     });
             });
 
-            it('should return resolved promise with `null` value if keyNotFound error occurs', function() {
-                return this.model.getById('c72714e3-f540-499b-be1c-9d1ab8c991b0').should.become(null);
+            it('should return rejected promise with a StorageError code if keyNotFound error occurs', function() {
+                return this.model.getByIdOrFail('c72714e3-f540-499b-be1c-9d1ab8c991b0')
+                .should.be.rejected.then(function(error) {
+                    error.should.be.instanceof(ODM.errors.StorageError);
+                    error.code.should.be.equal(ODM.StorageAdapter.errorCodes.keyNotFound);
+                });
             });
+        });
+    });
+
+    describe('getById', function() {
+        before(function() {
+            var self = this;
+
+            this.model = this.buildModel('Test20', {
+                type: DataTypes.HASH_TABLE
+            }, {
+                paranoid:true,
+                timestamps: true,
+            });
+            this.model.$init(this.modelManager);
+
+            return this.model.create({some: 'data'}).then(function(doc) {
+                self.doc = doc;
+                return doc.destroy();
+            });
+        });
+
+        after(function() {
+            delete this.model;
+            delete this.doc;
+        });
+
+        it('should return resolved promise with `null` if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
+            return this.model.getById(this.doc.getKey()).should.become(null);
+        });
+
+        it('should return resolved promise with `null` value if keyNotFound error occurs', function() {
+            return this.model.getById('c72714e3-f540-499b-be1c-9d1ab8c991b0').should.become(null);
         });
     });
 
