@@ -122,93 +122,111 @@ describe('Model associations', function() {
             });
         });
 
-        it("should successfully load file with it's data", function() {
-            return this.File.getById(this.file.getKey())
-            .bind(this)
-            .should.be.fulfilled
-            .then(function(file) {
-                file.data.should.be.an.instanceof(this.FileData.Instance);
-                return file.data.refresh();
-            }).then(function(fileData) {
-                fileData.getData().should.be.eql(this.fileData.getData());
-            }).should.be.fulfilled;
-        });
+        describe('`populate`', function() {
+            it("should successfully load file with it's 'data' association", function() {
+                return this.File.getById(this.file.getKey())
+                .bind(this)
+                .should.be.fulfilled
+                .then(function(file) {
+                    return file.populate('data');
+                }).then(function(file) {
+                    file.data.should.be.an.instanceof(this.FileData.Instance);
+                    file.data.getData().should.be.eql(this.fileData.getData());
+                });
+            });
 
-        it('should successfully load file link', function() {
-            return this.FileLink.getById(this.fileLink.getKey())
-            .bind(this)
-            .should.be.fulfilled
-            .then(function(fileLink) {
-                fileLink.getData().should.be.an.instanceof(this.File.Instance);
-                return fileLink.getData().refresh();
-            }).then(function(file) {
-                _.omit(file.getData(), ['data']).should.be.eql(
-                        _.omit(this.file.getData(), ['data'])
-                );
-                return file.data.refresh();
-            }).then(function(fileData) {
-                fileData.getData().should.be.equal(this.file.data.getData());
+            it('should recursively load associations of the fileLink document', function() {
+                return this.FileLink.getById(this.fileLink.getKey())
+                .bind(this)
+                .should.be.fulfilled
+                .then(function(fileLink) {
+                    return fileLink.populate({
+                        path: '',
+                        populate: {
+                            path: 'data'
+                        }
+                    });
+                }).then(function(fileLink) {
+                    var file = fileLink.getData();
+                    file.should.be.an.instanceof(this.File.Instance);
+                    _.omit(file.getData(), ['data']).should.be.eql(
+                            _.omit(this.file.getData(), ['data'])
+                    );
+                    file.data.getData().should.be.equal(this.file.data.getData());
+                });
+            });
+
+            it('should load file associations of the user document', function() {
+                return this.User.getById(this.user.getKey())
+                .bind(this)
+                .should.be.fulfilled
+                .then(function(user) {
+                    return user.populate('files');
+                }).then(function(user) {
+                    user.getData().should.be.eql(this.user.getData());
+                    user.files.pop().getData().should.be.eql(this.file.getData());
+                });
+            });
+
+            it("should recursivelly load all associations of the 'admins' document", function() {
+                return this.Admins.getById(this.admins.getKey())
+                .bind(this)
+                .should.be.fulfilled
+                .then(function(admins) {
+
+                    admins.getData().should.be.an.instanceof(Array);
+                    admins.getData().should.have.lengthOf(1);
+                    admins.getData()[0].should.be.instanceof(this.User.Instance);
+
+                    return admins.populate({
+                        path: null,
+                        populate: {
+                            path: 'files',
+                            populate: 'data'
+                        }
+                    });
+                }).then(function(admins) {
+                    admins.getData().should.be.eql(this.admins.getData());
+                });
+            });
+
+            it('should load user associations of the "admins" document', function() {
+                return this.Admins.getById(this.admins.getKey())
+                .bind(this)
+                .should.be.fulfilled
+                .then(function(admins) {
+
+                    return admins.populate();
+                }).then(function(admins) {
+                    _.omit(admins.getData().pop().getData(), ['files']).should.be.eql(
+                            _.omit(this.admins.getData().pop().getData(), ['files'])
+                    );
+                });
             });
         });
 
-        it('should successfully load user document', function() {
-            var userInstance;
-
-            return this.User.getById(this.user.getKey())
-            .bind(this)
-            .should.be.fulfilled
-            .then(function(user) {
-                userInstance = user;
-                user.files.should.be.an.instanceof(Array);
-                return Promise.map(user.files, function(file) {
-                    return file.refresh();
+        describe('destroy partialy loaded associations', function() {
+            it("should destroy partialy loaded file document with it's reference document", function() {
+                return this.User.getById(this.user.getKey())
+                .bind(this)
+                .should.be.fulfilled
+                .then(function(user) {
+                    return Promise.map(user.files, function(file) {
+                        return file.destroy();
+                    });
+                }).map(function(file) {
+                    return Promise.all([
+                            //searches for the document
+                            this.File.getById(file.getKey()),
+                            //searches for reference document
+                            this.File.getByName(file.name, {lean:true})
+                    ]);
+                }).each(function(fileOperations) {
+                    fileOperations.should.be.an.instanceof(Array);
+                    fileOperations.should.have.lengthOf(2);
+                    expect(fileOperations[0]).to.be.equal(null);
+                    expect(fileOperations[1]).to.be.equal(null);
                 });
-            }).then(function() {
-                userInstance.getData().should.be.eql(this.user.getData());
-                userInstance.files.pop().getData().should.be.eql(this.file.getData());
-            });
-        });
-
-        it('should successfully load admin documents', function() {
-            var adminsInstance;
-
-            return this.Admins.getById(this.admins.getKey())
-            .bind(this)
-            .should.be.fulfilled
-            .then(function(admins) {
-                adminsInstance = admins;
-
-                admins.getData().should.be.an.instanceof(Array);
-                admins.getData().should.have.lengthOf(1);
-                admins.getData()[0].should.be.instanceof(this.User.Instance);
-
-                return Promise.map(admins.getData(), function(user) {
-                    return user.refresh();
-                });
-            }).then(function(users) {
-                //TODO
-                //users.should.be.eql(this.admins.getData());
-            });
-        });
-
-        it("should destroy unloaded file document with it's reference document", function() {
-            return this.User.getById(this.user.getKey())
-            .bind(this)
-            .should.be.fulfilled
-            .then(function(user) {
-                return Promise.map(user.files, function(file) {
-                    return file.destroy();
-                });
-            }).map(function(file) {
-                return Promise.all([
-                        this.File.getById(file.getKey()),
-                        this.File.getByName(file.name, {lean:true})
-                ]);
-            }).each(function(fileOperations) {
-                fileOperations.should.be.an.instanceof(Array);
-                fileOperations.should.have.lengthOf(2);
-                expect(fileOperations[0]).to.be.equal(null);
-                expect(fileOperations[1]).to.be.equal(null);
             });
         });
     });

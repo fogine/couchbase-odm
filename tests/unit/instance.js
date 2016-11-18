@@ -1130,6 +1130,130 @@ describe('Instance', function() {
         });
     });
 
+    describe('populate', function() {
+        before(function() {
+            this.Model = this.buildModel('Model', {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    name: {
+                        type: DataTypes.STRING
+                    },
+                    subinstance: {
+                        type: DataTypes.COMPLEX('Model'),
+                        allowEmptyValue: true
+                    }
+                }
+            }, {
+                key: ODM.UUID4Key,
+            });
+
+            this.Model.$init(this.modelManager);
+            this.modelManager.add(this.Model);
+
+            this.instanceRefreshStub = sinon.stub(this.Model.Instance.prototype, 'refresh');
+        });
+
+        beforeEach(function() {
+            this.instanceRefreshStub.reset();
+        });
+
+        after(function() {
+            this.instanceRefreshStub.restore();
+        });
+
+        it('should return rejected promise with an InstanceError when invalid `include` parameter is provided', function() {
+            var instance = this.Model.build({name: 'instance'});
+            var subinstance = this.Model.build({name: 'subinstance'});
+
+            instance.subinstance = subinstance;
+
+            var promise = instance.populate([{
+                path: {}
+            }]);
+
+            return promise.should.be.rejectedWith(InstanceError);
+        });
+
+        it('should return rejected promise with an InstanceError when destination path does not hold `Instance` object', function() {
+            var instance = this.Model.build({name: 'instance'});
+
+            var promise = instance.populate('subinstance');
+
+            return promise.should.be.rejectedWith(InstanceError);
+        });
+
+        describe('with `skipPopulated` option', function() {
+            it('should not load `Instance` objects which are considered already populated if the `options.skipPopulated=true`', function() {
+                var self = this;
+
+                var instance = this.Model.build({name: 'instance'});
+                var subinstance = this.Model.build({name: 'subinstance'}, {
+                    isNewRecord: false,
+                    cas: '124'
+                });
+
+                instance.subinstance = subinstance;
+
+                this.instanceRefreshStub.returns(Promise.resolve(subinstance));
+
+                var promise = instance.populate('subinstance', {skipPopulated: true});
+
+                return promise.should.be.fulfilled.then(function(result) {
+                    result.should.be.equal(instance);
+                    self.instanceRefreshStub.should.have.callCount(0);
+                });
+            });
+        });
+
+        describe('with `getOrFail` option', function() {
+            it('should return fulfilled promise and skip population of those Instance objects on which the process fails with the StorageError with keyNotFound code', function() {
+                var self = this;
+
+                var error = new ODM.errors.StorageError(
+                        'test error',
+                        ODM.StorageAdapter.errorCodes.keyNotFound
+                );
+                var instance = this.Model.build({name: 'instance'});
+                var subinstance = this.Model.build({name: 'subinstance'});
+
+                instance.subinstance = subinstance;
+
+                this.instanceRefreshStub.returns(Promise.reject(error));
+
+                var promise = instance.populate('subinstance', {getOrFail: false});
+
+                return promise.should.be.fulfilled.then(function(result) {
+                    self.instanceRefreshStub.should.have.callCount(1);
+                    result.should.be.equal(instance);
+                    result.subinstance.should.be.equal(subinstance);
+                });
+            });
+
+            it('should return rejected promise with the StorageError with keyNotFound code when an association is not found in a bucket ', function() {
+                var self = this;
+
+                var error = new ODM.errors.StorageError(
+                        'test error',
+                        ODM.StorageAdapter.errorCodes.keyNotFound
+                );
+                var instance = this.Model.build({name: 'instance'});
+                var subinstance = this.Model.build({name: 'subinstance'});
+
+                instance.subinstance = subinstance;
+
+                this.instanceRefreshStub.returns(Promise.reject(error));
+
+                var promise = instance.populate('subinstance', {getOrFail: true});
+
+                return promise.should.be.rejected.then(function(err) {
+                    self.instanceRefreshStub.should.have.callCount(1);
+                    err.should.be.equal(error);
+                    instance.subinstance.should.be.equal(subinstance);
+                });
+            });
+        });
+    });
+
     describe('Storage methods', function() {
         before(function() {
             this.Model = this.buildModel('User', {
