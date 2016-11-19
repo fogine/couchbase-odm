@@ -393,7 +393,7 @@ describe('Model', function() {
         });
     });
 
-    describe('$buildRefDocKey', function() {
+    describe('buildRefDocKey', function() {
 
         before(function() {
 
@@ -415,7 +415,7 @@ describe('Model', function() {
             var modelOptinos = {
                 indexes: {
                     refDocs: {
-                        getByName: {keys: ["name"]}
+                        name: {keys: ["name"]}
                     }
                 }
             };
@@ -446,7 +446,9 @@ describe('Model', function() {
         });
 
         it("should return new instance of Model.RefDocKey object with correct initialization values assigned", function() {
-            var refDocKey = this.model.$buildRefDocKey(this.options);
+            var refDocKey = this.model.buildRefDocKey(null, {
+                index: 'name'
+            });
 
             refDocKey.should.be.an.instanceof(this.model.RefDocKey);
 
@@ -458,17 +460,37 @@ describe('Model', function() {
         });
 
         it("should always return new refDocKey object which includes generic RefDocKey & Key prototypes in it's prototype chain", function() {
-            var refDocKey = this.model.$buildRefDocKey(this.options);
+            var refDocKey = this.model.buildRefDocKey(null, {index: 'name'});
 
             refDocKey.should.be.an.instanceof(ODM.RefDocKey);
             refDocKey.should.be.an.instanceof(ODM.Key);
         });
 
         it("should respect the refDocKey option (set on a Model) which allows to change default prototype object", function() {
-            var refDocKey = this.modelWithCustomRefDocKey.$buildRefDocKey(this.options);
+            var refDocKey = this.modelWithCustomRefDocKey.buildRefDocKey(null, {
+                index: 'name'
+            });
 
             refDocKey.should.be.an.instanceof(this.CustomRefDocKey);
             refDocKey.should.be.an.instanceof(ODM.RefDocKey);
+        });
+
+        it('should set provided id argument on key object', function() {
+            var refDocKey = this.modelWithCustomRefDocKey.buildRefDocKey('john', {
+                index: 'name'
+            });
+
+            refDocKey.getId().should.be.equal('john');
+        });
+
+        it('should accept whole reference document key string instead just an id', function() {
+            var key = 'RefDocTestModel_name_john';
+            var refDocKey = this.model.buildRefDocKey(key, {
+                index: 'name',
+                isWholeKey: true
+            });
+
+            refDocKey.getId().should.be.equal('john');
         });
     });
 

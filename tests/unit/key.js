@@ -62,6 +62,17 @@ describe('Keys', function() {
 
             return key.generate().should.be.rejectedWith(Error);
         });
+
+        describe('parse', function() {
+            it('should throw an Error when we provide `key` argument which is not a string', function() {
+                var context = {};
+                function test() {
+                    Key.prototype.parse.call(context, null);
+                }
+
+                expect(test).to.throw(Error, /Expected `key` to be a string but got/);
+            });
+        });
     });
 
     describe('UUID4Key', function() {
@@ -243,7 +254,7 @@ describe('Keys', function() {
     });
 
     describe('RefDocKey', function() {
-        describe('setRef', function() {
+        describe('$setRef', function() {
             it("should throw a KeyError when we don't provide valid property references", function() {
                 function case1() {
                     return new RefDocKey({
@@ -264,6 +275,60 @@ describe('Keys', function() {
 
                 expect(case1).to.throw(KeyError);
                 expect(case2).to.throw(KeyError);
+            });
+        });
+
+        describe('getOptions', function() {
+            it("should return cloned key's options", function() {
+                var key = new RefDocKey({
+                    caseSensitive: false,
+                    prefix: "Test",
+                    postfix: "postfix",
+                    ref: ['name'],
+                    delimiter: "_"
+                });
+
+                var options = key.getOptions();
+                options.should.be.eql({
+                    caseSensitive: false,
+                    prefix: "Test",
+                    postfix: "postfix",
+                    ref: ['name'],
+                    delimiter: "_",
+                    id: undefined
+                });
+
+                options.ref.should.not.be.equal(key.ref);
+            });
+        });
+
+        describe('parse', function() {
+
+            it('should throw an Error when we provide `key` argument value which is not a string', function() {
+                var key = new RefDocKey({
+                    prefix: "Test",
+                    postfix: "postfix",
+                    ref: ['name'],
+                    delimiter: "_"
+                });
+
+                function test() {
+                    key.parse(null);
+                }
+
+                expect(test).to.throw(Error);
+            });
+
+            it('should correctly parse key string', function() {
+                var key = new RefDocKey({
+                    prefix: "Test",
+                    postfix: "postfix",
+                    ref: ['name'],
+                    delimiter: "_"
+                });
+
+                key.parse("Test_name_john_postfix");
+                key.getId().should.be.equal('john');
             });
         });
 
