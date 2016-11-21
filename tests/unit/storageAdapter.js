@@ -3,11 +3,13 @@ var sinon          = require('sinon');
 var chai           = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var sinonChai      = require("sinon-chai");
-var UUID4Key       = require('../../lib/key/uuid4Key.js');
 var couchbase      = require('couchbase').Mock;
 var BucketManager  = require('couchbase/lib/mock/bucketmgr.js');
-var Document       = require('../../lib/document.js');
-var StorageError   = require("../../lib/error/storageError.js");
+
+var UUID4Key                = require('../../lib/key/uuid4Key.js');
+var Document                = require('../../lib/document.js');
+var StorageError            = require("../../lib/error/storageError.js");
+var StorageKeyNotFoundError = require("../../lib/error/storageKeyNotFoundError.js");
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -112,11 +114,40 @@ describe('StorageAdapter', function() {
         it('should return a Promise', function() {
             this.storageAdapter.get('key').should.be.an.instanceof(Promise);
         });
+
         it('should call `bucket.get` with given arguments', function() {
             var key = 'key';
             return this.storageAdapter.get(key).bind(this).then(function() {
                 this.stubGet.should.have.been.calledWith(key, {});
                 this.stubGet.should.have.been.calledOnce;
+            });
+        });
+
+        it('should return rejected promise with `StorageError` when a document with given key is not found', function() {
+            var key = 'key';
+            var error = new Error('test get error');
+            error.code = couchbase.errors.keyNotFound;
+            this.stubGet.yields(error);
+
+            return this.storageAdapter.get(key).should.be.rejected.then(function(error) {
+                error.should.be.instanceof(StorageError);
+            });
+        });
+
+        it('should return rejected promise with `StorageError` when a document is soft-deleted and `options.paranoid=true`', function() {
+            var key = 'key';
+            this.stubGet.yields(null, {
+                cas: '1234',
+                value: {
+                    deleted_at: '2016-08-29T11:36:46Z'
+                }
+            });
+
+            return this.storageAdapter.get(key, {
+                paranoid: true,
+                deletedAtPropName: 'deleted_at'
+            }).should.be.rejected.then(function(error) {
+                error.should.be.instanceof(StorageError);
             });
         });
     });
