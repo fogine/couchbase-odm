@@ -4,12 +4,12 @@ var chai           = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var sinonChai      = require("sinon-chai");
 var couchbase      = require('couchbase').Mock;
+var CouchbaseError = require('couchbase').Error;
 var BucketManager  = require('couchbase/lib/mock/bucketmgr.js');
 
-var UUID4Key                = require('../../lib/key/uuid4Key.js');
-var Document                = require('../../lib/document.js');
-var StorageError            = require("../../lib/error/storageError.js");
-var StorageKeyNotFoundError = require("../../lib/error/storageKeyNotFoundError.js");
+var UUID4Key     = require('../../lib/key/uuid4Key.js');
+var Document     = require('../../lib/document.js');
+var StorageError = require("../../lib/error/storageError.js");
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -148,6 +148,7 @@ describe('StorageAdapter', function() {
                 deletedAtPropName: 'deleted_at'
             }).should.be.rejected.then(function(error) {
                 error.should.be.instanceof(StorageError);
+                error.should.be.instanceof(CouchbaseError);
             });
         });
     });
