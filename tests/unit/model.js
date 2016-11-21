@@ -1008,7 +1008,7 @@ describe('Model', function() {
             delete this.model;
         });
 
-        it('should return fulfilled promise with id/key indexed list of results (indexed=true)', function() {
+        it("should return fulfilled promise with data object containing indexed list of results by document's id (indexed=true)", function() {
             var self = this;
             var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
             var id = '35854458-4b27-4433-8a38-df2ea405e067';
@@ -1018,13 +1018,18 @@ describe('Model', function() {
 
             return promise.should.be.fulfilled.then(function(results) {
                 self.getStub.should.have.been.calledTwice;
-                expect(results).to.have.property(key.getId()).that.is.an.instanceof(self.model.Instance);
-                expect(results).to.have.property(id).that.is.an.instanceof(self.model.Instance);
+                expect(results.data).to.have.property(key.getId()).that.is.an.instanceof(self.model.Instance);
+                expect(results.data).to.have.property(id).that.is.an.instanceof(self.model.Instance);
+                results.failed.should.be.eql([]);
+                results.resolved.should.be.eql([
+                        results.data[key.getId()],
+                        results.data[id]
+                ]);
             });
 
         });
 
-        it('should return fulfilled promise with collection of results (indexed=false)', function() {
+        it('should return fulfilled promise with data object containing collection of results (indexed=false)', function() {
             var self = this;
             var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
             var id = '35854458-4b27-4433-8a38-df2ea405e067';
@@ -1034,10 +1039,15 @@ describe('Model', function() {
 
             return promise.should.be.fulfilled.then(function(results) {
                 self.getStub.should.have.been.calledTwice;
-                results.should.be.an.instanceof(Array);
-                results.should.have.lengthOf(2);
-                results[0].getKey().getId().should.be.equal(key.getId());
-                results[1].getKey().getId().should.be.equal(id);
+                results.data.should.be.an.instanceof(Array);
+                results.data.should.have.lengthOf(2);
+                results.data[0].getKey().getId().should.be.equal(key.getId());
+                results.data[1].getKey().getId().should.be.equal(id);
+                results.failed.should.be.eql([]);
+                results.resolved.should.be.eql([
+                        results.data[0],
+                        results.data[1]
+                ]);
             });
 
         });
@@ -1057,9 +1067,13 @@ describe('Model', function() {
             var pool = [key, id];
             var promise = this.model.getMulti(pool);
 
-            var expectedOutput = {};
-            expectedOutput[key.getId()] = null;
-            expectedOutput[id] = networkErr;
+            var expectedOutput = {
+                data: {},
+                failed: [key.getId(), id],
+                resolved: []
+            };
+            expectedOutput.data[key.getId()] = keyNotFoundErr;
+            expectedOutput.data[id] = networkErr;
 
             return promise.should.become(expectedOutput);
         });
