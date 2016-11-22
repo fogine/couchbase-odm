@@ -385,7 +385,7 @@ describe('Model', function() {
             var stub = sinon.stub(ODM.UUID4Key.prototype, 'parse');
 
             var keyString = 'Test8_3e5d622e-5786-4d79-9062-b4e2b48ce541';
-            var key = model.buildKey(keyString, true);
+            var key = model.buildKey(keyString, {parse: true});
             key.should.be.an.instanceof(model.Key);
             stub.should.have.been.calledOnce;
             stub.should.have.been.calledWith(keyString);
