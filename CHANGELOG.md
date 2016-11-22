@@ -8,7 +8,6 @@
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
 * [CHANGED] the `Instance.setData` method throws `InstanceError` when there is an attempt to set data on a document that has not been fully loaded from a bucket (related to Model's associations)
 * [CHANGED] the `afterFailedIndexRemoval` hook type is triggered not just for `StorageError` but also for any other error that occurs while removing outdated reference document indexes
-* [CHANGED] the `sanitize` Model.build method option which defaults to `true` instead of `false`
 * [CHANGED] the `Model.build` method does not clone data values passed to it anymore
 * [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a document is not found in a bucket
 * [CHANGED] `Model.getMulti` method always returns resolved promise

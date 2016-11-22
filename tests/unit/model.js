@@ -541,10 +541,10 @@ describe('Model', function() {
                 this.sanitizeSpy.should.have.callCount(0);
             });
 
-            it('should sanitize builded data insatnce by default', function() {
+            it('should NOT sanitize data when building new insatnce by default', function() {
                 this.model.build(true);
 
-                this.sanitizeSpy.should.have.been.calledOnce;
+                this.sanitizeSpy.should.have.callCount(0);
             });
         });
 
