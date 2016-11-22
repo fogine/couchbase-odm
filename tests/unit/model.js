@@ -980,6 +980,20 @@ describe('Model', function() {
         it('should return resolved promise with `null` value if keyNotFound error occurs', function() {
             return this.model.getById('c72714e3-f540-499b-be1c-9d1ab8c991b0').should.become(null);
         });
+
+        it('should return rejected promise with a `StorageError`', function() {
+            var error = new ODM.errors.StorageError('getById test error');
+            error.code = ODM.StorageAdapter.errorCodes.connectError;
+
+            var getStub = sinon.stub(ODM.StorageAdapter.prototype, 'get');
+            getStub.returns(Promise.reject(error));
+
+            return this.model.getById('c72714e3-f540-499b-be1c-9d1ab8c991b0')
+                .should.be.rejected.then(function(error) {
+                    error.should.be.equal(error);
+                    getStub.restore();
+                });
+        });
     });
 
     describe('getMulti', function() {
