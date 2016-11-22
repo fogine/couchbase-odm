@@ -205,12 +205,14 @@ describe('Model associations', function() {
             });
         });
 
-        describe('destroy partialy loaded associations', function() {
-            it("should destroy partialy loaded file document with it's reference document", function() {
+        describe('destroy', function() {
+            it("should destroy loaded file associations with it's reference documents", function() {
                 return this.User.getById(this.user.getKey())
                 .bind(this)
                 .should.be.fulfilled
                 .then(function(user) {
+                    return user.populate('files');
+                }).then(function(user) {
                     return Promise.map(user.files, function(file) {
                         return file.destroy();
                     });

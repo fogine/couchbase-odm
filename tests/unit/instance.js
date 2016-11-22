@@ -1566,6 +1566,18 @@ describe('Instance', function() {
                     });
                 });
             });
+
+            it('should return rejected promise with an InstanceError when we try to call the method on an instance object which does not have `cas` value set', function() {
+                var self = this;
+
+                this.user.setCAS(null);
+                var promise = this.user.destroy();
+
+                return promise.should.be.rejected.then(function(error) {
+                    error.should.be.instanceof(InstanceError);
+                    self.removeStub.should.have.callCount(0);
+                });
+            });
         });
 
         describe('insert', function() {
@@ -2127,6 +2139,18 @@ describe('Instance', function() {
 
                     self.user.getData('created_at').should.be.equal(createdAt);
                     self.user.getData('updated_at').should.be.equal(updatedAt);
+                });
+            });
+
+            it('should return rejected promise with an InstanceError when we try to call the method on an instance object which does not have `cas` value set', function() {
+                var self = this;
+
+                this.user.setCAS(null);
+                var promise = this.user.replace();
+
+                return promise.should.be.rejected.then(function(error) {
+                    error.should.be.instanceof(InstanceError);
+                    self.replaceStub.should.have.callCount(0);
                 });
             });
         });
