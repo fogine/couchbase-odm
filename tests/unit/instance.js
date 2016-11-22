@@ -381,7 +381,7 @@ describe('Instance', function() {
             };
             dataResponse.value[idPropName] = '7ffa1518-7156-4fe3-b0ee-23ba9c228ad7';
 
-            var getByIdStub = sinon.stub(Model, 'getById').returns(Promise.resolve(dataResponse));
+            var getByIdStub = sinon.stub(Model, 'getByIdOrFail').returns(Promise.resolve(dataResponse));
 
             var instance = Model.build({test: 'test'}, {
                 key: Model.buildKey("7ffa1518-7156-4fe3-b0ee-23ba9c228ad7")
