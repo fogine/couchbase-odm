@@ -487,7 +487,7 @@ describe('Model', function() {
             var key = 'RefDocTestModel_name_john';
             var refDocKey = this.model.buildRefDocKey(key, {
                 index: 'name',
-                isWholeKey: true
+                parse: true
             });
 
             refDocKey.getId().should.be.equal('john');
