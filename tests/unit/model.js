@@ -1112,27 +1112,50 @@ describe('Model', function() {
     });
 
     describe('remove', function() {
-        it('should find a document which should be removed and then call `destroy` method on the instance object', function() {
-            var model = this.buildModel('Test12', {
+        before(function() {
+            this.model = this.buildModel('Test12', {
                 type: DataTypes.INT
             });
-            model.$init(this.modelManager);
+            this.model.$init(this.modelManager);
 
-            var instance = model.build(5);
+            this.getByIdStub = sinon.stub(ODM.Model.prototype, 'getByIdOrFail');
+        });
+
+        beforeEach(function() {
+            this.getByIdStub.reset();
+        });
+
+        after(function() {
+            this.getByIdStub.restore();
+        });
+
+        it('should find a document which should be removed and then call `destroy` method on the instance object', function() {
+
+            var self = this;
+            var instance = this.model.build(5);
             var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
 
-            var getByIdStub = sinon.stub(ODM.Model.prototype, 'getById').returns(Promise.resolve(instance));
-            var destroyStub = sinon.stub(model.Instance.prototype, 'destroy').returns(instance);
+            this.getByIdStub.returns(Promise.resolve(instance));
+            var destroyStub = sinon.stub(this.model.Instance.prototype, 'destroy').returns(instance);
 
-            var promise = model.remove(id);
+            var promise = this.model.remove(id);
 
             return promise.should.have.been.fulfilled.then(function(instanceObject) {
-                getByIdStub.should.have.been.calledWith(id);
+                self.getByIdStub.should.have.been.calledWith(id);
                 destroyStub.should.have.been.calledOnce;
                 instanceObject.should.be.equal(instance);
-                getByIdStub.restore();
                 destroyStub.restore();
             });
+        });
+
+        it('should return rejected promise with a `StorageError` when there is no such document in a bucket', function() {
+            var keyNotFoundErr = new ODM.errors.StorageError('key not found test error');
+            keyNotFoundErr.code = ODM.StorageAdapter.errorCodes.keyNotFound;
+
+            this.getByIdStub.returns(Promise.reject(keyNotFoundErr));
+            var promise = this.model.remove('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+
+            return promise.should.be.rejectedWith(keyNotFoundErr);
         });
     });
 
