@@ -119,8 +119,6 @@ describe('Model associations', function() {
                 }).then(function() {
                     return this.user.save();
                 }).then(function() {
-                    //console.log('*****************BUCKET**************');
-                    //console.log(this.bucket.storage.items[this.file.getKey().toString()][this.file.getKey().toString()].value.toString());
                     return this.admins.save();
                 });
             }
