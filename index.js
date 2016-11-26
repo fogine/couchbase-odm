@@ -17,6 +17,7 @@ var Key            = require("./lib/key/key.js");
 
 var Operation       = require("./lib/operation.js");
 var DataTypes       = require("./lib/dataType.js").types;
+var RelationTypes   = require("./lib/relationType.js");
 var Instance        = require("./lib/instance.js");
 var Document        = require("./lib/document.js");
 var Model           = require("./lib/model.js");
@@ -154,6 +155,7 @@ CouchbaseODM.prototype.define = function(name, schema, options) {
 
 /**
  * @name CouchbaseODM.prototype.errors
+ * @instance
  * @type {ErrorList}
  */
 
@@ -178,6 +180,7 @@ CouchbaseODM.UUID4Key        = CouchbaseODM.prototype.UUID4Key        = UUID4Key
 CouchbaseODM.IncrementalKey  = CouchbaseODM.prototype.IncrementalKey  = IncrementalKey;
 CouchbaseODM.RefDocKey       = CouchbaseODM.prototype.RefDocKey       = RefDocKey;
 CouchbaseODM.DataTypes       = CouchbaseODM.prototype.DataTypes       = DataTypes;
+CouchbaseODM.RelationTypes   = CouchbaseODM.prototype.RelationTypes   = RelationTypes;
 CouchbaseODM.Operation       = CouchbaseODM.prototype.Operation       = Operation;
 CouchbaseODM.Instance        = CouchbaseODM.prototype.Instance        = Instance;
 CouchbaseODM.Document        = CouchbaseODM.prototype.Document        = Document;
@@ -258,6 +261,11 @@ module.exports = CouchbaseODM;
  * @type Hook
  */
 
+/**
+ * @name CouchbaseODM.CouchbaseODM
+ * @type CouchbaseODM
+ */
+
 //============= INSTANCE members ==============
 
 /**
@@ -326,6 +334,6 @@ module.exports = CouchbaseODM;
  */
 
 /**
- * @name CouchbaseODM.CouchbaseODM
+ * @name CouchbaseODM.prototype.CouchbaseODM
  * @type CouchbaseODM
  */

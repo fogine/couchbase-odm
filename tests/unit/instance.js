@@ -64,20 +64,29 @@ describe('Instance', function() {
                 schema: {
                     username: {
                         type: DataTypes.STRING
+                    },
+                    friend: {
+                        allowEmptyValue: true,
+                        type: DataTypes.COMPLEX('User', {
+                            relation: ODM.RelationTypes.REF
+                        })
+                    },
+                    mother: {
+                        allowEmptyValue: true,
+                        type: DataTypes.COMPLEX('User', {
+                            relation: ODM.RelationTypes.EMBEDDED
+                        })
                     }
                 }
             });
             this.model.$init(this.modelManager);
+            this.modelManager.add(this.model);
         });
 
         after(function() {
             delete this.model;
-        });
-
-        afterEach(function() {
             this.modelManager.models = {};
         });
-
 
         it('should call defined `beforeValidate` and `afterValidate` hooks', function() {
             var runHooksSpy = sinon.spy(this.model, 'runHooks');
@@ -114,63 +123,110 @@ describe('Instance', function() {
             sanitizerSpy.should.have.been.calledWith(
                     this.model.options.schema,
                     instance.getData(),
-                    {
-                        includeUnlisted: false,
-                        skipInternalProperties: true
-                    }
+                    sinon.match({})
             );
             sanitizerSpy.restore();
         });
 
-        it('should set `includeUnlisted` option if schema definition has not defined property types (applies only for data of type `HASH_TABLE`)', function() {
-            var model = this.buildModel('User', {
-                type: DataTypes.HASH_TABLE
+        describe('`includeUnlisted` option', function() {
+            it('should set `includeUnlisted` option if schema definition has not defined property types (applies only for data of type `HASH_TABLE`)', function() {
+                var model = this.buildModel('User2', {
+                    type: DataTypes.HASH_TABLE
+                });
+                model.$init(this.modelManager);
+
+                var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
+
+                var instance = model.build({username: 'fogine'});
+
+                //reset spy because data can be sanitized when building new Instance
+                //via this.model.build
+                sanitizerSpy.reset();
+
+                instance.$touchTimestamps();
+                instance.sanitize();
+
+                sanitizerSpy.should.have.been.calledOnce;
+                sanitizerSpy.should.have.been.calledWith(
+                        model.options.schema,
+                        instance.getData(),
+                        sinon.match({includeUnlisted: true})
+                );
+                sanitizerSpy.restore();
             });
-            model.$init(this.modelManager);
-
-            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
-
-            var instance = model.build({username: 'fogine'});
-
-            //reset spy because data can be sanitized when building new Instance
-            //via this.model.build
-            sanitizerSpy.reset();
-
-            instance.$touchTimestamps();
-            instance.sanitize();
-
-            sanitizerSpy.should.have.been.calledOnce;
-            sanitizerSpy.should.have.been.calledWith(
-                    model.options.schema,
-                    instance.getData(),
-                    {
-                        includeUnlisted: true,
-                        skipInternalProperties: true
-                    }
-            );
-            sanitizerSpy.restore();
         });
 
-        it('should accept `skipInternalProperties` option', function() {
-            var model = this.buildModel('User', {
-                type: DataTypes.HASH_TABLE
-            }, {timestamps: false});
-            model.$init(this.modelManager);
+        describe('`skipInternalProperties` option', function() {
+            it('should accept `skipInternalProperties` option', function() {
+                var model = this.buildModel('User3', {
+                    type: DataTypes.HASH_TABLE
+                }, {timestamps: false});
+                model.$init(this.modelManager);
 
-            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
+                var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
-            var instance = model.build({username: 'fogine'});
+                var instance = model.build({username: 'fogine'});
 
-            instance.sanitize({skipInternalProperties: false});
+                instance.sanitize({skipInternalProperties: false});
 
-            sanitizerSpy.should.have.been.calledWith(
-                    model.options.schema,
-                    instance.getData(),
-                    sinon.match(function(opt) {
-                        return opt.skipInternalProperties === false;
-                    })
-            );
-            sanitizerSpy.restore();
+                sanitizerSpy.should.have.been.calledWith(
+                        model.options.schema,
+                        instance.getData(),
+                        sinon.match(function(opt) {
+                            return opt.skipInternalProperties === false;
+                        })
+                );
+                sanitizerSpy.restore();
+            });
+        });
+
+        describe('`associations` option', function() {
+            before(function() {
+                this.instance = this.model.build({
+                    username: 'fogine',
+                    mother: this.model.build({username: 'mother'}),
+                    friend: this.model.build({username: 'James'}),
+                });
+
+                this.userSanitizeSpy = sinon.spy(this.model.Instance.prototype, 'sanitize');
+            });
+
+            beforeEach(function() {
+                this.userSanitizeSpy.reset();
+            });
+
+            after(function() {
+                this.userSanitizeSpy.restore();
+                delete this.instance;
+            });
+
+            it("should call the `sanitize` method on all object's associations as well", function() {
+                this.instance.sanitize({
+                    associations: true
+                });
+
+                this.userSanitizeSpy.should.be.calledThrice;
+            });
+
+            it("should call the `sanitize` method on all object's associations of EMBEDDED relation type", function() {
+                this.instance.sanitize({
+                    associations: {
+                        embedded: true
+                    }
+                });
+
+                this.userSanitizeSpy.should.be.calledTwice;
+            });
+
+            it("should call the `sanitize` method on all object's associations of REFERENCE relation type", function() {
+                this.instance.sanitize({
+                    associations: {
+                        reference: true
+                    }
+                });
+
+                this.userSanitizeSpy.should.be.calledTwice;
+            });
         });
     });
 
@@ -298,59 +354,122 @@ describe('Instance', function() {
             });
         });
 
-        it('should return json object with serialized associations (Instance->plain object with id property)', function() {
-            var AppModel = this.buildModel('App', {
-                type: DataTypes.STRING
-            }, { key: ODM.UUID4Key });
+        describe('with REFERENCED association relation', function() {
+            it('should return json object with serialized associations (Instance->plain object with id property)', function() {
+                var AppModel = this.buildModel('App', {
+                    type: DataTypes.STRING
+                }, { key: ODM.UUID4Key });
 
-            var UserModel = this.buildModel('User', {
-                type: DataTypes.HASH_TABLE,
-                schema: {
-                    app: {
-                        type: DataTypes.COMPLEX('App'),
-                        allowEmptyValue: true
-                    },
-                    friends: {
-                        type: DataTypes.ARRAY,
-                        allowEmptyValue: true,
-                        default: [],
-                        schema: {
-                            type: DataTypes.COMPLEX('User')
+                var UserModel = this.buildModel('User', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        app: {
+                            type: DataTypes.COMPLEX('App'),
+                            allowEmptyValue: true
+                        },
+                        friends: {
+                            type: DataTypes.ARRAY,
+                            allowEmptyValue: true,
+                            default: [],
+                            schema: {
+                                type: DataTypes.COMPLEX('User')
+                            }
                         }
                     }
-                }
-            }, { key: ODM.UUID4Key });
+                }, { key: ODM.UUID4Key });
 
-            AppModel.$init(this.modelManager);
-            this.modelManager.add(AppModel);
+                AppModel.$init(this.modelManager);
+                this.modelManager.add(AppModel);
 
-            UserModel.$init(this.modelManager);
-            this.modelManager.add(UserModel);
+                UserModel.$init(this.modelManager);
+                this.modelManager.add(UserModel);
 
-            var appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
-            var userIdPropName = UserModel.options.schemaSettings.doc.idPropertyName;
+                var appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
+                var userIdPropName = UserModel.options.schemaSettings.doc.idPropertyName;
 
-            var keyOfJessica = UserModel.buildKey('420267e5-b9bd-4456-a253-80d67b2c79ec');
-            var keyOfDavid = UserModel.buildKey('54b201f0-eac2-40f7-bad2-eaa1cd9c4fce');
-            var keyOfApp = AppModel.buildKey('7ffa1518-7156-4fe3-b0ee-23ba9c228ad7');
+                var keyOfJessica = UserModel.buildKey('420267e5-b9bd-4456-a253-80d67b2c79ec');
+                var keyOfDavid = UserModel.buildKey('54b201f0-eac2-40f7-bad2-eaa1cd9c4fce');
+                var keyOfApp = AppModel.buildKey('7ffa1518-7156-4fe3-b0ee-23ba9c228ad7');
 
-            var jessica = UserModel.build({}, {key: keyOfJessica});
-            var david = UserModel.build({}, {key: keyOfDavid});
-            var app = AppModel.build('twitter', {key: keyOfApp});
+                var jessica = UserModel.build({}, {key: keyOfJessica});
+                var david = UserModel.build({}, {key: keyOfDavid});
+                var app = AppModel.build('twitter', {key: keyOfApp});
 
-            var user = UserModel.build({
-                app: app,
-                friends: [jessica, david]
+                var user = UserModel.build({
+                    app: app,
+                    friends: [jessica, david]
+                });
+
+                var promise = user.getSerializedData();
+
+                return promise.should.be.fulfilled.then(function(serData) {
+                    var expectedAppData = {};
+                    expectedAppData[appIdPropName] = app.getKey().toString();
+
+                    serData.should.have.property('app').that.is.not.an.instanceof(AppModel.Instance);
+                    serData.should.have.property('app').that.deep.equals(expectedAppData);
+                });
             });
+        });
 
-            var promise = user.getSerializedData();
+        describe('with EMBEDDED association relation', function() {
+            it('should not include internal "id" property of associated Model instance in returned json object', function() {
+                var AppModel = this.buildModel('App', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        name: {
+                            type: DataTypes.STRING
+                        }
+                    }
+                }, {
+                    key: ODM.UUID4Key,
+                    schemaSettings: {
+                        doc: {
+                            idPropertyName: '$id',
+                            typePropertyName: '$type'
+                        }
+                    }
+                });
 
-            return promise.should.be.fulfilled.then(function(serData) {
-                var expectedAppData = {};
-                expectedAppData[appIdPropName] = app.getKey().toString();
+                var UserModel = this.buildModel('User', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        app: {
+                            type: DataTypes.COMPLEX('App', {relation: ODM.RelationTypes.EMBEDDED})
+                        }
+                    }
+                }, { key: ODM.UUID4Key });
 
-                serData.should.have.property('app').that.is.not.an.instanceof(AppModel.Instance);
-                serData.should.have.property('app').that.deep.equals(expectedAppData);
+                AppModel.$init(this.modelManager);
+                this.modelManager.add(AppModel);
+
+                UserModel.$init(this.modelManager);
+                this.modelManager.add(UserModel);
+
+                var appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
+                var appTypePropName = AppModel.options.schemaSettings.doc.typePropertyName;
+                var userIdPropName = UserModel.options.schemaSettings.doc.idPropertyName;
+                var userTypePropName = UserModel.options.schemaSettings.doc.typePropertyName;
+
+                var keyOfApp = AppModel.buildKey('7ffa1518-7156-4fe3-b0ee-23ba9c228ad7');
+
+                var app = AppModel.build({name: 'twitter'}, {key: keyOfApp});
+                var user = UserModel.build({
+                    app: app,
+                });
+
+                var promise = user.getSerializedData();
+
+                return promise.should.be.fulfilled.then(function(serData) {
+                    var expectedAppData = app.$cloneData();
+                    expectedAppData[userIdPropName] = app.getKey().toString();
+                    expectedAppData[userTypePropName] = app[appTypePropName];
+                    delete expectedAppData[appIdPropName];
+                    delete expectedAppData[appTypePropName];
+
+                    serData.should.have.property('app').that.is.not.an.instanceof(AppModel.Instance);
+                    serData.should.have.property('app').that.deep.equals(expectedAppData);
+                });
             });
         });
     });
@@ -994,7 +1113,7 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.cloneData();
+            var originalData = instance.$original.$cloneData();
 
             var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
                 cas: '12312412'
@@ -1061,7 +1180,7 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.cloneData();
+            var originalData = instance.$original.$cloneData();
 
             var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
                 cas: '12312412'
@@ -1111,7 +1230,7 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.cloneData();
+            var originalData = instance.$original.$cloneData();
 
             var instanceOriginalSaveStub = sinon.stub(instance.$original, 'save')
                 .returns(Promise.reject(new ODM.errors.StorageError('test err')));
