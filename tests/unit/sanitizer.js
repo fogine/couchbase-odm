@@ -725,5 +725,17 @@ describe("Sanitizer", function() {
 
             expect(sanitize.bind(sanitize, schema)).to.throw(ValidationError);
         });
+
+        it('should set `$hasInternalPropsOnly` hiddien property on a schema object if the schema does not define any additional properties', function() {
+            var sanitize = schemaSanitizer.sanitize;
+            var schema = {
+                type: DataTypes.HASH_TABLE,
+                schema: {}
+            };
+
+            sanitize(schema);
+
+            schema.should.have.property('$hasInternalPropsOnly', true);
+        });
     });
 });
