@@ -316,7 +316,7 @@ describe('Model', function() {
             saveStub.restore();
         });
 
-        it('should attach `getByRefDoc` methods to the Model object according to `options.indexes.refDocs` options', function() {
+        it('should attach `getByRefDoc` && `getByRefDocOrFail` methods to the Model object according to `options.indexes.refDocs` options', function() {
 
             var model = this.buildModel('Test7', {
                 type: DataTypes.HASH_TABLE,
@@ -364,6 +364,7 @@ describe('Model', function() {
                 }
             }));
 
+            model.should.have.property('getByNameAndEmailOrFail').that.is.a('function');
             model.should.have.property('getByNameAndEmail').that.is.a('function');
             var promise = model.getByNameAndEmail(['testname', 'test@test.com']);
 
@@ -1331,76 +1332,120 @@ describe('Model', function() {
             this.getStub.restore();
         });
 
-        it("should call `Model.getById` with correct document's key and options", function() {
+        describe('getByRefDocOrFail', function() {
+            it('should return resolved promise', function() {
+                var self = this;
+                var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+                var key = this.modelName + '_' + id;
+                var username = 'happie';
+                var expectedRefDocKey = this.modelName + '_username_' + username;
 
-            var self = this;
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
-            var key = this.modelName + '_' + id;
-            var username = 'happie';
-            var expectedRefDocKey = this.modelName + '_username_' + username;
+                //on first call it returns parent document key
+                this.getStub.onFirstCall().returns(Promise.resolve({
+                    value: key
+                }));
+                //on second call it returns parent document data
+                this.getStub.onSecondCall().returns(Promise.resolve({
+                    _id: id,
+                    _type: this.modelName,
+                    username: username
+                }));
 
-            //on first call it returns parent document key
-            this.getStub.onFirstCall().returns(Promise.resolve({
-                value: key
-            }));
-            //on second call it returns parent document data
-            this.getStub.onSecondCall().returns(Promise.resolve({
-                _id: id,
-                _type: this.modelName,
-                username: username
-            }));
+                var getByIdOrFailSpy = sinon.spy(this.model, 'getByIdOrFail');
 
-            var getByIdSpy = sinon.spy(this.model, 'getById');
+                var options = {
+                    paranoid: false
+                };
 
-            var options = {
-                paranoid: false
-            };
+                var promise = this.model.getByUsernameOrFail(username, options);
 
-            var promise = this.model.getByUsername(username, options);
+                return promise.should.have.been.fulfilled.then(function(instance) {
+                    var keyArg = getByIdOrFailSpy.args[0][0];
+                    self.getStub.should.have.been.calledTwice;
 
-            promise.catch(function(err) {
-                console.error(err);
-                throw err;
-            })
+                    keyArg.should.be.an.instanceof(self.model.Key);
+                    keyArg.toString().should.be.equal(key);
 
-            return promise.should.have.been.fulfilled.then(function(instance) {
-                var keyArg = getByIdSpy.args[0][0];
-                self.getStub.should.have.been.calledTwice;
+                    getByIdOrFailSpy.should.have.been.calledOne;
+                    getByIdOrFailSpy.should.have.been.calledWith(instance.getKey(), options);
 
-                keyArg.should.be.an.instanceof(self.model.Key);
-                keyArg.toString().should.be.equal(key);
-
-                getByIdSpy.should.have.been.calledOne;
-                getByIdSpy.should.have.been.calledWith(instance.getKey(), options);
-
-                getByIdSpy.restore();
+                    getByIdOrFailSpy.restore();
+                });
             });
-        })
-
-        it("should return parent's document `Key` object instead of document's data if the `lean` option is set (true)", function() {
-            var self = this;
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
-            var key = this.modelName + '_' + id;
-
-            //on first call it returns parent document key
-            this.getStub.onFirstCall().returns(Promise.resolve({
-                value: key
-            }));
-
-            return this.model.getByUsername('happie', {lean: true}).should.be.fulfilled.then(function(key) {
-                key.should.be.instanceof(self.model.Key);
-                key.getId().should.be.equal(id);
-            })
         });
 
-        it('should return rejected promise with an Error if unexpected Error (other than keyNotFound err) occurs while getting a refDoc document', function() {
-            var self = this;
-            var error = new Error('test error');
+        describe('getByRefDoc (or null)', function() {
+            it("should call `Model.getByIdOrFail` with correct document's key and options", function() {
 
-            //on first call it returns parent document key
-            this.getStub.onFirstCall().returns(Promise.reject(error));
+                var self = this;
+                var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+                var key = this.modelName + '_' + id;
+                var username = 'happie';
+                var expectedRefDocKey = this.modelName + '_username_' + username;
 
-            return this.model.getByUsername('happie').should.be.rejectedWith(error);
+                //on first call it returns parent document key
+                this.getStub.onFirstCall().returns(Promise.resolve({
+                    value: key
+                }));
+                //on second call it returns parent document data
+                this.getStub.onSecondCall().returns(Promise.resolve({
+                    _id: id,
+                    _type: this.modelName,
+                    username: username
+                }));
+
+                var getByIdOrFailSpy = sinon.spy(this.model, 'getByIdOrFail');
+
+                var options = {
+                    paranoid: false
+                };
+
+                var promise = this.model.getByUsername(username, options);
+
+                promise.catch(function(err) {
+                    console.error(err);
+                    throw err;
+                })
+
+                return promise.should.have.been.fulfilled.then(function(instance) {
+                    var keyArg = getByIdOrFailSpy.args[0][0];
+                    self.getStub.should.have.been.calledTwice;
+
+                    keyArg.should.be.an.instanceof(self.model.Key);
+                    keyArg.toString().should.be.equal(key);
+
+                    getByIdOrFailSpy.should.have.been.calledOne;
+                    getByIdOrFailSpy.should.have.been.calledWith(instance.getKey(), options);
+
+                    getByIdOrFailSpy.restore();
+                });
+            })
+
+            it("should return parent's document `Key` object instead of document's data if the `lean` option is set (true)", function() {
+                var self = this;
+                var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+                var key = this.modelName + '_' + id;
+
+                //on first call it returns parent document key
+                this.getStub.onFirstCall().returns(Promise.resolve({
+                    value: key
+                }));
+
+                return this.model.getByUsername('happie', {lean: true}).should.be.fulfilled.then(function(key) {
+                    key.should.be.instanceof(self.model.Key);
+                    key.getId().should.be.equal(id);
+                })
+            });
+
+            it('should return rejected promise with an Error if unexpected Error (other than keyNotFound err) occurs while getting a refDoc document', function() {
+                var self = this;
+                var error = new Error('test error');
+
+                //on first call it returns parent document key
+                this.getStub.onFirstCall().returns(Promise.reject(error));
+
+                return this.model.getByUsername('happie').should.be.rejectedWith(error);
+            });
         });
     });
 

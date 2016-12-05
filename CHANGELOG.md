@@ -2,7 +2,7 @@
 
 * [REMOVED] support for callback based hook listeners. All async hook listeners are expected to return a Promise
 * [BUGFIX] corner case with Model definition which has Model association defined as it's root data type - association data was being incorrectly serialized when saving to a bucket
-* [BUGFIX] the `toJSON` method on `Model's Instance` object was failing to throw an `InstanceError` in case you tried to convert primitive data type to JSON
+* [BUGFIX] the `toJSON` method on `Model's Instance` object was failing to throw an `InstanceError` in case you tried to convert model with primitive root data type to JSON
 * [BUGFIX] the `caseSensitive`option on `Key` object was being owerwritten by `true` boolean
 * [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
@@ -20,6 +20,7 @@
 * [ADDED] new `Instance.populate` method - handles loading of Model's associations
 * [ADDED] new `Model.getByIdOrFail` which returns rejected promise with `StorageError` when a document is not found in a bucket
 * [ADDED] new `Model.buildRefDocKey` method (Model's private method `$buildRefDocKey` has been updated and made public)
+* [ADDED] new `getByRefDocOrFail` method for every defined refDoc index. The method returns rejected promise with `StorageError` when a document is not found in a bucket
 
 * [ADDED] new `lean` option to `Model` "getByRefDoc" methods - if true, the method returns document's `Key` object instead of fetched document's data
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
