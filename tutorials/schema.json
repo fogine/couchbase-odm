@@ -33,5 +33,13 @@
      },
      "7.customizingDocumentsKey": {
          "title": "Customizing Document's Key"
-     }
+     },
+    "8.upgrade-guides": {
+        "title": "Upgrade Guides",
+        "children": {
+            "8.1.0-to-2.0": {
+                "title": "Upgrading 1.0 to 2.0"
+            }
+        }
+    }
  }
