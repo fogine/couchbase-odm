@@ -36,7 +36,7 @@ Resources
 * [Public API Reference](https://fogine.github.io/couchbase-odm/CouchbaseODM.html)
 * [Changelog](./CHANGELOG.md)
 * [Gitter chat room](https://gitter.im/couchbase-odm/couchbase-odm)
-* [Upgrade Guides](https://fogine.github.io/couchbase-odm/tutorial-8.upgrage-guides.html)
+* [Upgrade Guides](https://fogine.github.io/couchbase-odm/tutorial-8.upgrade-guides.html)
 
 Tests
 -------------------
