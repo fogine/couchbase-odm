@@ -877,53 +877,34 @@ describe('Instance', function() {
                 type: DataTypes.HASH_TABLE
             });
             this.model.$init(this.modelManager);
+
+            this.data = {};
+            this.instance = this.model.build(this.data);
         });
 
-        describe("with new Instance object that's never been persisted yet", function() {
-            before(function() {
-                this.data = {};
-                this.instance = this.model.build(this.data);
-            });
-
-            it('should set specified data under specified property', function() {
-                this.instance.setData('some', 'data');
-                this.instance.getData().should.be.equal(this.data);
-                this.instance.getData().should.have.property('some', 'data');
-            });
-
-            it('should set instance data object so that original data object reference is preserved', function() {
-                var idPropName = this.model.options.schemaSettings.doc.idPropertyName;
-                var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
-
-                var data = {another: 'data'};
-                this.instance.setData(data);
-                this.instance.getData().should.be.equal(this.data);
-                this.instance.getData().should.have.property('another', 'data');
-                this.instance.getData().should.have.property('some', 'data');
-                this.instance.getData().should.have.property(idPropName);
-                this.instance.getData().should.have.property(typePropName);
-            });
-
-            it('should return self (the document object)', function() {
-                this.instance.setData({}).should.be.equal(this.instance);
-                this.instance.setData('some', 'prop').should.be.equal(this.instance);
-            });
+        it('should set specified data under specified property', function() {
+            this.instance.setData('some', 'data');
+            this.instance.getData().should.be.equal(this.data);
+            this.instance.getData().should.have.property('some', 'data');
         });
 
-        describe('with an Instance that is NOT fully loaded from a bucket ', function() {
-            before(function() {
-                this.data = {};
-                this.instance = this.model.build(this.data, {
-                    isNewRecord: false,
-                    sanitize: false
-                });
-            });
+        it('should set instance data object so that original data object reference is preserved', function() {
+            var idPropName = this.model.options.schemaSettings.doc.idPropertyName;
+            var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
 
-            it('should throw a DocumentError when we try to `seData` on document object that is not fully loaded from a bucket', function() {
-                expect(this.instance.setData.bind(this.instance, {})).to.throw(InstanceError);
-            });
+            var data = {another: 'data'};
+            this.instance.setData(data);
+            this.instance.getData().should.be.equal(this.data);
+            this.instance.getData().should.have.property('another', 'data');
+            this.instance.getData().should.have.property('some', 'data');
+            this.instance.getData().should.have.property(idPropName);
+            this.instance.getData().should.have.property(typePropName);
         });
 
+        it('should return self (the document object)', function() {
+            this.instance.setData({}).should.be.equal(this.instance);
+            this.instance.setData('some', 'prop').should.be.equal(this.instance);
+        });
     });
 
     describe('save', function() {
@@ -1697,6 +1678,17 @@ describe('Instance', function() {
                     self.removeStub.should.have.callCount(0);
                 });
             });
+
+            it('should return fulfilled promise when we try to call the method on an instance object which does not have `cas` value set and `force=true`', function() {
+                var self = this;
+
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+
+                this.user.setCAS(null);
+                var promise = this.user.destroy({force:true});
+
+                return promise.should.be.fulfilled;
+            });
         });
 
         describe('insert', function() {
@@ -2271,6 +2263,19 @@ describe('Instance', function() {
                     error.should.be.instanceof(InstanceError);
                     self.replaceStub.should.have.callCount(0);
                 });
+            });
+
+            it('should return fulfilled promise when we try to call the method on an instance object which does not have `cas` value set and `force=true`', function() {
+                var self = this;
+
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                this.user.setCAS(null);
+                var promise = this.user.replace({force:true});
+
+                return promise.should.be.fulfilled;
             });
         });
 

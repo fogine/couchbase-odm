@@ -152,10 +152,6 @@ describe("Document", function() {
                     isNewRecord: false
                 });
             });
-
-            it('should throw a DocumentError when we try to `seData` on document object that is not fully loaded from a bucket', function() {
-                expect(this.doc.setData.bind(this.doc, {})).to.throw(DocumentError);
-            });
         });
     });
 

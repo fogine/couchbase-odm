@@ -7,9 +7,8 @@
 * [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
 * [CHANGED] `Instance.cloneData` method has been made part of private (renamed to `Instance.$cloneData`)
-* [CHANGED] `Instance.destroy` & `Instance.update` methods will return rejected promise with an `InstanceError` when calling the methods on a Model instance object with no `cas` value set
+* [CHANGED] `Instance.destroy` & `Instance.update` methods will return rejected promise with an `InstanceError` when calling the methods on a Model instance object with no `cas` value set (the operation can be forced by the `force=true`)
 * [CHANGED] format of the second argument of the `Model.buildKey` method has changed. The method accepts `options` object instead of boolean argument
-* [CHANGED] the `Instance.setData` method throws `InstanceError` when there is an attempt to set data on a document that has not been fully loaded from a bucket (related to Model's associations)
 * [CHANGED] the `afterFailedIndexRemoval` hook type is triggered not just for `StorageError` but also for any other error that occurs while removing outdated reference document indexes
 * [CHANGED] defined default values are always applied when creating new Instance via `Model.build` method
 * [CHANGED] the `Model.build` method does not clone data values passed to it anymore
