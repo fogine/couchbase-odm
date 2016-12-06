@@ -23,7 +23,9 @@ function doCompile {
     cd $docpath
     cd $bckpwd
 
-    # mv $docpath/** . && rmdir $docpath && rmdir $docdir
+    mkdir -p $docversion
+    cp -a $docpath/. .
+    mv $docpath/** $docversion && rmdir $docpath && rmdir $docdir
     cd .. #set pwd to the original value
 }
 
