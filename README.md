@@ -13,7 +13,7 @@ Contributing
 -------------------
 Please, fill a bug report at [issues](https://github.com/fogine/couchbase-odm/issues) page if you find any.  
 Also, feedback, suggestions and pull requests are more than welcome!
-Make sure to discuss the issue with the community before implementing a solution.
+Make sure to discuss the issue with the community before implementing a solution for an issue.
 
 Features
 -------------------
