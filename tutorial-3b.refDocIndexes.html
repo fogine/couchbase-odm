@@ -875,7 +875,7 @@
     }, {
         indexes: {
             refDocs: {
-                getByUsername: {keys: ['username']}  //Defines refDoc with key `User_username_{username-value}` for each user document
+                username: {keys: ['username']}  //Defines refDoc with key `User_username_{username-value}` for each user document
             }
         }
     })</code></pre><p>The above refDoc definition creates <code>getByUsername</code> method on <code>User</code> model, so later on you can do:  </p>
@@ -886,7 +886,7 @@
 <pre class="prettyprint source lang-javascript"><code>    {
         indexes: {
             refDocs: {
-                getByUsername: {
+                username: {
                     keys: ['username'],
                     required: false // if insert/update process fails key generation for the refDoc, the refDoc wont be created and `User.getByUsername` returns rejected promise with storage &quot;not found&quot; error
                 }

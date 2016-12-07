@@ -860,7 +860,7 @@
 
 <article>
     <p>See <a href="Hook.html"><code>Hook</code></a> API for available hook types</p>
-<h3>Defining hooks as Model definition options</h3><pre class="prettyprint source lang-javascript"><code>    var User = couchbase.define('User', {
+<h3>Defining hooks as part of Model definition</h3><pre class="prettyprint source lang-javascript"><code>    var User = couchbase.define('User', {
         type: DataTypes.HASH_TABLE
     }, {
         hooks: {
