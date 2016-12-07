@@ -1,4 +1,4 @@
-## FUTURE
+## v2.0.0-rc.1
 
 * [REMOVED] support for callback based hook listeners. All async hook listeners are expected to return a Promise
 * [BUGFIX] corner case with Model definition which has Model association defined as it's root data type - association data was being incorrectly serialized when saving to a bucket
@@ -20,7 +20,6 @@
 * [ADDED] new `Model.getByIdOrFail` which returns rejected promise with `StorageError` when a document is not found in a bucket
 * [ADDED] new `Model.buildRefDocKey` method (Model's private method `$buildRefDocKey` has been updated and made public)
 * [ADDED] new `getByRefDocOrFail` method for every defined refDoc index. The method returns rejected promise with `StorageError` when a document is not found in a bucket
-
 * [ADDED] new `lean` option to `Model` "getByRefDoc" methods - if true, the method returns document's `Key` object instead of fetched document's data
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
 * [ADDED] new `key` option  to `Model.create` method which can be an `Key` object or `id` string value
