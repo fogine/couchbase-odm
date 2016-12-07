@@ -1,6 +1,6 @@
 {
   "name": "kouchbase-odm",
-  "version": "1.0.1",
+  "version": "2.0.0-rc.1",
   "author": "fogine <fogine@opmbx.org",
   "keywords": [
     "couchbase",
@@ -20,13 +20,16 @@
   "private": false,
   "scripts": {
     "unit-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/unit/**/*.js'",
+    "functional-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/functional/**/*.js'",
+    "tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/**/*.js'",
+    "test": "npm run tests",
     "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json -u ./tutorials --verbose",
-    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --ui bdd -R spec 'tests/unit/**/*.js' -t 5000"
+    "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --ui bdd -R spec 'tests/**/*.js' -t 5000"
   },
   "license": "MIT",
   "dependencies": {
     "bluebird": "3.3.*",
-    "couchbase": "^2.0.8",
+    "couchbase": "^2.1.8",
     "debug": "2.2.*",
     "lodash": "^4.0.0",
     "moment": "^2.13.0",

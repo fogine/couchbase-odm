@@ -3,11 +3,13 @@ var sinon          = require('sinon');
 var chai           = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var sinonChai      = require("sinon-chai");
-var UUID4Key       = require('../../lib/key/uuid4Key.js');
 var couchbase      = require('couchbase').Mock;
+var CouchbaseError = require('couchbase').Error;
 var BucketManager  = require('couchbase/lib/mock/bucketmgr.js');
-var Document       = require('../../lib/document.js');
-var StorageError   = require("../../lib/error/storageError.js");
+
+var UUID4Key     = require('../../lib/key/uuid4Key.js');
+var Document     = require('../../lib/document.js');
+var StorageError = require("../../lib/error/storageError.js");
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -112,11 +114,41 @@ describe('StorageAdapter', function() {
         it('should return a Promise', function() {
             this.storageAdapter.get('key').should.be.an.instanceof(Promise);
         });
+
         it('should call `bucket.get` with given arguments', function() {
             var key = 'key';
             return this.storageAdapter.get(key).bind(this).then(function() {
                 this.stubGet.should.have.been.calledWith(key, {});
                 this.stubGet.should.have.been.calledOnce;
+            });
+        });
+
+        it('should return rejected promise with `StorageError` when a document with given key is not found', function() {
+            var key = 'key';
+            var error = new Error('test get error');
+            error.code = couchbase.errors.keyNotFound;
+            this.stubGet.yields(error);
+
+            return this.storageAdapter.get(key).should.be.rejected.then(function(error) {
+                error.should.be.instanceof(StorageError);
+            });
+        });
+
+        it('should return rejected promise with `StorageError` when a document is soft-deleted and `options.paranoid=true`', function() {
+            var key = 'key';
+            this.stubGet.yields(null, {
+                cas: '1234',
+                value: {
+                    deleted_at: '2016-08-29T11:36:46Z'
+                }
+            });
+
+            return this.storageAdapter.get(key, {
+                paranoid: true,
+                deletedAtPropName: 'deleted_at'
+            }).should.be.rejected.then(function(error) {
+                error.should.be.instanceof(StorageError);
+                error.should.be.instanceof(CouchbaseError);
             });
         });
     });
@@ -151,6 +183,18 @@ describe('StorageAdapter', function() {
             });
         });
 
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubGetAndTouch.reset();
+            this.stubGetAndTouch.yields(error);
+
+            return this.storageAdapter.getAndTouch('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('getAndLock', function() {
@@ -168,6 +212,18 @@ describe('StorageAdapter', function() {
             });
         });
 
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubGetAndLock.reset();
+            this.stubGetAndLock.yields(error);
+
+            return this.storageAdapter.getAndLock('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('getReplica', function() {
@@ -183,6 +239,18 @@ describe('StorageAdapter', function() {
             });
         });
 
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubGetReplica.reset();
+            this.stubGetReplica.yields(error);
+
+            return this.storageAdapter.getReplica('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('insert', function() {
@@ -269,6 +337,19 @@ describe('StorageAdapter', function() {
                 this.stubAppend.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubAppend.reset();
+            this.stubAppend.yields(error);
+
+            return this.storageAdapter.append('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('prepend', function() {
@@ -284,6 +365,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.prepend(key, data).bind(this).then(function() {
                 this.stubPrepend.should.have.been.calledWith(key, data, {});
                 this.stubPrepend.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubPrepend.reset();
+            this.stubPrepend.yields(error);
+
+            return this.storageAdapter.prepend('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -303,6 +397,19 @@ describe('StorageAdapter', function() {
                 this.stubCounter.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubCounter.reset();
+            this.stubCounter.yields(error);
+
+            return this.storageAdapter.counter('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('query', function() {
@@ -317,6 +424,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.query(query).bind(this).then(function() {
                 this.stubQuery.should.have.been.calledWith(query);
                 this.stubQuery.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubQuery.reset();
+            this.stubQuery.yields(error);
+
+            return this.storageAdapter.query('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -334,6 +454,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.remove(key, options).bind(this).then(function() {
                 this.stubRemove.should.have.been.calledWith(key, options);
                 this.stubRemove.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubRemove.reset();
+            this.stubRemove.yields(error);
+
+            return this.storageAdapter.remove('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -360,6 +493,14 @@ describe('StorageAdapter', function() {
                 removeSpy.should.have.been.calledWith(key, options);
                 removeSpy.should.have.been.calledOnce;
                 removeSpy.restore();
+            });
+        });
+
+        it('should return fulfilled promise with an array containing a StorageError when we provide an entity that is neither `Document` or `Key`', function() {
+            var entities = [{}];
+            return this.storageAdapter.bulkRemove(entities).should.be.fulfilled.then(function(results) {
+                results.should.have.lengthOf(1);
+                results[0].reason().should.be.an.instanceof(StorageError);
             });
         });
     });
@@ -392,6 +533,11 @@ describe('StorageAdapter', function() {
                 this.stub.should.have.been.calledOnce;
             });
         });
+
+        it('should return rejected promise with a StorageError when we provide an entity that is neither `Document` or `Key`', function() {
+            var entities = [{}];
+            return this.storageAdapter.bulkRemoveSync(entities).should.be.rejectedWith(StorageError);
+        });
     });
 
     describe('replace', function() {
@@ -408,6 +554,19 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.replace(key, data).bind(this).then(function() {
                 this.stubReplace.should.have.been.calledWith(key, data, options);
                 this.stubReplace.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubReplace.reset();
+            this.stubReplace.yields(error);
+
+            return this.storageAdapter.replace('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });
@@ -428,6 +587,19 @@ describe('StorageAdapter', function() {
                 this.stubUpsert.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubUpsert.reset();
+            this.stubUpsert.yields(error);
+
+            return this.storageAdapter.upsert('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('touch', function() {
@@ -446,6 +618,19 @@ describe('StorageAdapter', function() {
                 this.stubTouch.should.have.been.calledOnce;
             });
         });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubTouch.reset();
+            this.stubTouch.yields(error);
+
+            return this.storageAdapter.touch('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
     });
 
     describe('unlock', function() {
@@ -462,6 +647,63 @@ describe('StorageAdapter', function() {
             return this.storageAdapter.unlock(key, cas, options).bind(this).then(function() {
                 this.stubUnlock.should.have.been.calledWith(key, cas, options);
                 this.stubUnlock.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubUnlock.reset();
+            this.stubUnlock.yields(error);
+
+            return this.storageAdapter.unlock('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
+            });
+        });
+    });
+
+    describe('exists', function() {
+
+        it('should return a Promise', function() {
+            this.storageAdapter.exists('key').should.be.an.instanceof(Promise);
+        });
+
+        it('should call `bucket.insert` with given key and return false, signalizing that the document does NOT exists', function() {
+            var key = 'key';
+
+            return this.storageAdapter.exists(key).bind(this).then(function(result) {
+                result.should.be.equal(false);
+                this.stubInsert.should.have.been.calledWith(key, true, {expiry: 1});
+                this.stubInsert.should.have.been.calledOnce;
+            });
+        });
+
+        it('should call `bucket.insert` with given key and return true, signalizing that the document exists', function() {
+            var key = 'key2';
+            var err = new Error();
+            err.code = this.StorageAdapter.errorCodes.keyAlreadyExists;
+
+            this.stubInsert.yields(err);
+
+            return this.storageAdapter.exists(key).bind(this).then(function(result) {
+                result.should.be.equal(true);
+                this.stubInsert.should.have.been.calledWith(key, true, {expiry: 1});
+                this.stubInsert.should.have.been.calledOnce;
+            });
+        });
+
+        it('should throw a StorageError if an asynchronous Error is captured', function() {
+            var error = new Error('test message');
+            error.code = 10;
+
+            this.stubInsert.reset();
+            this.stubInsert.yields(error);
+
+            return this.storageAdapter.exists('key').should.be.rejected.then(function(err) {
+                err.should.have.property('message', error.message);
+                err.should.have.property('code', error.code);
             });
         });
     });

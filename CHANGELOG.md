@@ -1,3 +1,33 @@
+## v2.0.0-rc.1
+
+* [REMOVED] support for callback based hook listeners. All async hook listeners are expected to return a Promise
+* [BUGFIX] corner case with Model definition which has Model association defined as it's root data type - association data was being incorrectly serialized when saving to a bucket
+* [BUGFIX] the `toJSON` method on `Model's Instance` object was failing to throw an `InstanceError` in case you tried to convert model with primitive root data type to JSON
+* [BUGFIX] the `caseSensitive`option on `Key` object was being owerwritten by `true` boolean
+* [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
+* [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
+* [CHANGED] `Instance.cloneData` method has been made part of private (renamed to `Instance.$cloneData`)
+* [CHANGED] `Instance.destroy` & `Instance.update` methods will return rejected promise with an `InstanceError` when calling the methods on a Model instance object with no `cas` value set (the operation can be forced by the `force=true`)
+* [CHANGED] format of the second argument of the `Model.buildKey` method has changed. The method accepts `options` object instead of boolean argument
+* [CHANGED] the `afterFailedIndexRemoval` hook type is triggered not just for `StorageError` but also for any other error that occurs while removing outdated reference document indexes
+* [CHANGED] defined default values are always applied when creating new Instance via `Model.build` method
+* [CHANGED] the `Model.build` method does not clone data values passed to it anymore
+* [CHANGED] `Model.getById` and `Model.getByRefDoc` methods returns resolved promise with the `null` value when a document is not found in a bucket
+* [CHANGED] `Model.getMulti` method always returns resolved promise
+* [ADDED] new `skipInternalProperties` option to the Instance.sanitize method
+* [ADDED] support for defining default array item values in a schema definition
+* [ADDED] new `Instance.populate` method - handles loading of Model's associations
+* [ADDED] new `Model.getByIdOrFail` which returns rejected promise with `StorageError` when a document is not found in a bucket
+* [ADDED] new `Model.buildRefDocKey` method (Model's private method `$buildRefDocKey` has been updated and made public)
+* [ADDED] new `getByRefDocOrFail` method for every defined refDoc index. The method returns rejected promise with `StorageError` when a document is not found in a bucket
+* [ADDED] new `lean` option to `Model` "getByRefDoc" methods - if true, the method returns document's `Key` object instead of fetched document's data
+* [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
+* [ADDED] new `key` option  to `Model.create` method which can be an `Key` object or `id` string value
+* [ADDED] new `Model.exists` method
+* [ADDED] new `indexed` option to `Model.getMulti` method which if false, causes method to return an Array instead of Object (default=true)
+* [BUGFIX] Model's `update` instance method did recursive merge with provided data on data being updated, now,  object's properties are overridden by assignment.
+* [BUGFIX] Model's `update` method works on Models with primitive root data structures
+
 ## v1.0.1
 
 * [BUGFIX] - Default values of an object type should be cloned before they are assigned to an `Instance`

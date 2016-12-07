@@ -9,8 +9,11 @@ Installation
 -------------------
 `npm install kouchbase-odm`
 
+Contributing
+-------------------
 Please, fill a bug report at [issues](https://github.com/fogine/couchbase-odm/issues) page if you find any.  
-Also, feedback and suggestions are more than welcome.
+Also, feedback, suggestions and pull requests are more than welcome!
+Make sure to discuss the issue with the community before implementing a solution for an issue.
 
 Features
 -------------------
@@ -32,11 +35,13 @@ Resources
 * [Documentation](https://fogine.github.io/couchbase-odm/tutorial-1.gettingStarted.html)
 * [Public API Reference](https://fogine.github.io/couchbase-odm/CouchbaseODM.html)
 * [Changelog](./CHANGELOG.md)
+* [Gitter chat room](https://gitter.im/couchbase-odm/couchbase-odm)
+* [Upgrade Guides](https://fogine.github.io/couchbase-odm/tutorial-8.upgrade-guides.html)
 
 Tests
 -------------------
 
-`npm run-script unit-tests`
+`npm test`
 
 -------------------------------------------
 

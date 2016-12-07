@@ -90,20 +90,39 @@ describe('Hook', function() {
         });
     });
 
+    describe('listenerCount', function() {
+        it('should return `0` if there is listener registered', function() {
+            var model = this.buildModel({});
+            model.listenerCount('beforeValidate').should.be.equal(0);
+        });
+
+        it('should return number of registered listeners', function() {
+            var model = this.buildModel({
+                beforeValidate: [{ name: 'testHook', fn: function(){} }]
+            });
+            model.listenerCount('beforeValidate').should.be.equal(1);
+        });
+    });
+
     describe('removeHook', function() {
         it('should remove registered named-only hook', function() {
             var model = this.buildModel({
-                beforeValidate: [{ name: 'testHook', fn: function(){} }]
+                beforeValidate: [
+                    { name: 'testHook', fn: function(){} },
+                    { name: 'anotherTestHook', fn: function(){} }
+                ]
             });
 
             model.options.hooks.beforeValidate[0].should.have.property('name', 'testHook');
             model.removeHook('beforeValidate', 'testHook');
-            model.options.hooks.beforeValidate.should.have.lengthOf(0);
+            model.options.hooks.beforeValidate.should.have.lengthOf(1);
         });
 
         it('should throw `HookError` if invalid `hookType` is supplied', function() {
             var model = this.buildModel({
-                beforeValidate: [{ name: 'testHook', fn: function(){} }]
+                beforeValidate: [
+                    { name: 'testHook', fn: function(){} }
+                ]
             });
 
             function test() {
@@ -126,7 +145,7 @@ describe('Hook', function() {
             var model = this.buildModel({
                 beforeCreate: [
                     { name: 'testHookAsync', fn: hookSpyAsync1 },
-                    hookSpyAsync2
+                    hookSpyAsync2,
                 ],
                 beforeValidate: [
                     { name: 'testHookSync', fn: hookSpySync1 },
@@ -144,7 +163,7 @@ describe('Hook', function() {
             hookSpySync2.should.have.been.calledTwice;
             hookSpySync2.should.have.been.calledWith(obj);
 
-            var promise = model.runHooks('beforeCreate', obj);
+            var promise = model.runHooks('beforeCreate', obj, {});
             return promise.should.be.fulfilled.then(function() {
 
                 hookSpyAsync1.should.have.been.calledOnce;
@@ -152,7 +171,7 @@ describe('Hook', function() {
                 hookSpyAsync2.should.have.been.calledOnce;
                 hookSpyAsync2.should.have.been.calledWith(obj);
 
-                var promise2 = model.runHooks(Hook.types.beforeCreate, obj);
+                var promise2 = model.runHooks(Hook.types.beforeCreate, obj, {});
 
                 return promise2.should.be.fulfilled.then(function() {
 
