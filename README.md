@@ -41,7 +41,7 @@ Resources
 Tests
 -------------------
 
-`npm run-script unit-tests`
+`npm test`
 
 -------------------------------------------
 
