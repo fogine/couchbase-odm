@@ -5,10 +5,13 @@ var chai           = require('chai');
 var chaiAsPromised = require('chai-as-promised');
 var sinonChai      = require("sinon-chai");
 var couchbase      = require('couchbase').Mock;
-var Model          = require("../../lib/model.js");
-var ODM            = require('../../index.js');
-var DataTypes      = ODM.DataTypes;
 var moment         = require('moment');
+
+var Model         = require("../../lib/model.js");
+var ODM           = require('../../index.js');
+var InstanceError = require('../../lib/error/instanceError.js');
+
+var DataTypes = ODM.DataTypes;
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -36,6 +39,23 @@ describe('Instance', function() {
         };
     });
 
+    describe('constructor', function() {
+        it("should throw an InstanceError when we don't provide valid `options.key` value", function() {
+            var model = this.buildModel('InstanceConstructorTestModel', {
+                type: DataTypes.STRING
+            });
+            model.$init(this.modelManager);
+
+            function test() {
+                var instance = new model.Instance('data string', {
+                    key: null
+                });
+            }
+
+            expect(test).to.throw(InstanceError);
+        });
+    });
+
     describe('sanitize', function() {
 
         before(function() {
@@ -44,41 +64,57 @@ describe('Instance', function() {
                 schema: {
                     username: {
                         type: DataTypes.STRING
+                    },
+                    friend: {
+                        allowEmptyValue: true,
+                        type: DataTypes.COMPLEX('User', {
+                            relation: ODM.RelationTypes.REF
+                        })
+                    },
+                    mother: {
+                        allowEmptyValue: true,
+                        type: DataTypes.COMPLEX('User', {
+                            relation: ODM.RelationTypes.EMBEDDED
+                        })
                     }
                 }
             });
             this.model.$init(this.modelManager);
+            this.modelManager.add(this.model);
         });
 
         after(function() {
             delete this.model;
-        });
-
-        afterEach(function() {
             this.modelManager.models = {};
         });
 
-
         it('should call defined `beforeValidate` and `afterValidate` hooks', function() {
             var runHooksSpy = sinon.spy(this.model, 'runHooks');
-            var sanitizerStub = sinon.stub(ODM.Sanitizer, 'sanitizeData', function() {
-                runHooksSpy.should.have.callCount(1);
-            });
+            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
             var instance = this.model.build({username: 'fogine'});
+
+            //reset spies because data can be sanitized when building new Instance
+            //via this.model.build
+            sanitizerSpy.reset();
+            runHooksSpy.reset();
 
             instance.sanitize();
             runHooksSpy.firstCall.should.have.been.calledWith(ODM.Hook.types.beforeValidate);
+            sanitizerSpy.should.have.been.calledBefore(runHooksSpy.secondCall);
             runHooksSpy.secondCall.should.have.been.calledWith(ODM.Hook.types.afterValidate);
             runHooksSpy.should.have.been.calledTwice;
             runHooksSpy.restore();
-            sanitizerStub.restore();
+            sanitizerSpy.restore();
         });
 
-        it('should call `sanitizer.sanitizeData`', function() {
-            var sanitizerSpy = sinon.spy(ODM.Sanitizer, 'sanitizeData');
+        it('should call `dataSanitizer.sanitize`', function() {
+            var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
             var instance = this.model.build({username: 'fogine'});
+            //reset spy because data can be sanitized when building new Instance
+            //via this.model.build
+            sanitizerSpy.reset();
 
             instance.$touchTimestamps();
             instance.sanitize();
@@ -87,31 +123,110 @@ describe('Instance', function() {
             sanitizerSpy.should.have.been.calledWith(
                     this.model.options.schema,
                     instance.getData(),
-                    {includeUnlisted: false}
+                    sinon.match({})
             );
             sanitizerSpy.restore();
         });
 
-        it('should set `includeUnlisted` option if schema definition has not defined property types (applies only for data of type `HASH_TABLE`)', function() {
-            var model = this.buildModel('User', {
-                type: DataTypes.HASH_TABLE
+        describe('`includeUnlisted` option', function() {
+            it('should set `includeUnlisted` option if schema definition has not defined property types (applies only for data of type `HASH_TABLE`)', function() {
+                var model = this.buildModel('User2', {
+                    type: DataTypes.HASH_TABLE
+                });
+                model.$init(this.modelManager);
+
+                var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
+
+                var instance = model.build({username: 'fogine'});
+
+                //reset spy because data can be sanitized when building new Instance
+                //via this.model.build
+                sanitizerSpy.reset();
+
+                instance.$touchTimestamps();
+                instance.sanitize();
+
+                sanitizerSpy.should.have.been.calledOnce;
+                sanitizerSpy.should.have.been.calledWith(
+                        model.options.schema,
+                        instance.getData(),
+                        sinon.match({includeUnlisted: true})
+                );
+                sanitizerSpy.restore();
             });
-            model.$init(this.modelManager);
+        });
 
-            var sanitizerSpy = sinon.spy(ODM.Sanitizer, 'sanitizeData');
+        describe('`skipInternalProperties` option', function() {
+            it('should accept `skipInternalProperties` option', function() {
+                var model = this.buildModel('User3', {
+                    type: DataTypes.HASH_TABLE
+                }, {timestamps: false});
+                model.$init(this.modelManager);
 
-            var instance = model.build({username: 'fogine'});
+                var sanitizerSpy = sinon.spy(ODM.DataSanitizer, 'sanitize');
 
-            instance.$touchTimestamps();
-            instance.sanitize();
+                var instance = model.build({username: 'fogine'});
 
-            sanitizerSpy.should.have.been.calledOnce;
-            sanitizerSpy.should.have.been.calledWith(
-                    model.options.schema,
-                    instance.getData(),
-                    {includeUnlisted: true}
-            );
-            sanitizerSpy.restore();
+                instance.sanitize({skipInternalProperties: false});
+
+                sanitizerSpy.should.have.been.calledWith(
+                        model.options.schema,
+                        instance.getData(),
+                        sinon.match(function(opt) {
+                            return opt.skipInternalProperties === false;
+                        })
+                );
+                sanitizerSpy.restore();
+            });
+        });
+
+        describe('`associations` option', function() {
+            before(function() {
+                this.instance = this.model.build({
+                    username: 'fogine',
+                    mother: this.model.build({username: 'mother'}),
+                    friend: this.model.build({username: 'James'}),
+                });
+
+                this.userSanitizeSpy = sinon.spy(this.model.Instance.prototype, 'sanitize');
+            });
+
+            beforeEach(function() {
+                this.userSanitizeSpy.reset();
+            });
+
+            after(function() {
+                this.userSanitizeSpy.restore();
+                delete this.instance;
+            });
+
+            it("should call the `sanitize` method on all object's associations as well", function() {
+                this.instance.sanitize({
+                    associations: true
+                });
+
+                this.userSanitizeSpy.should.be.calledThrice;
+            });
+
+            it("should call the `sanitize` method on all object's associations of EMBEDDED relation type", function() {
+                this.instance.sanitize({
+                    associations: {
+                        embedded: true
+                    }
+                });
+
+                this.userSanitizeSpy.should.be.calledTwice;
+            });
+
+            it("should call the `sanitize` method on all object's associations of REFERENCE relation type", function() {
+                this.instance.sanitize({
+                    associations: {
+                        reference: true
+                    }
+                });
+
+                this.userSanitizeSpy.should.be.calledTwice;
+            });
         });
     });
 
@@ -239,59 +354,122 @@ describe('Instance', function() {
             });
         });
 
-        it('should return json object with serialized associations (Instance->plain object with id property)', function() {
-            var AppModel = this.buildModel('App', {
-                type: DataTypes.STRING
-            }, { key: ODM.UUID4Key });
+        describe('with REFERENCED association relation', function() {
+            it('should return json object with serialized associations (Instance->plain object with id property)', function() {
+                var AppModel = this.buildModel('App', {
+                    type: DataTypes.STRING
+                }, { key: ODM.UUID4Key });
 
-            var UserModel = this.buildModel('User', {
-                type: DataTypes.HASH_TABLE,
-                schema: {
-                    app: {
-                        type: DataTypes.COMPLEX('App'),
-                        allowEmptyValue: true
-                    },
-                    friends: {
-                        type: DataTypes.ARRAY,
-                        allowEmptyValue: true,
-                        default: [],
-                        schema: {
-                            type: DataTypes.COMPLEX('User')
+                var UserModel = this.buildModel('User', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        app: {
+                            type: DataTypes.COMPLEX('App'),
+                            allowEmptyValue: true
+                        },
+                        friends: {
+                            type: DataTypes.ARRAY,
+                            allowEmptyValue: true,
+                            default: [],
+                            schema: {
+                                type: DataTypes.COMPLEX('User')
+                            }
                         }
                     }
-                }
-            }, { key: ODM.UUID4Key });
+                }, { key: ODM.UUID4Key });
 
-            AppModel.$init(this.modelManager);
-            this.modelManager.add(AppModel);
+                AppModel.$init(this.modelManager);
+                this.modelManager.add(AppModel);
 
-            UserModel.$init(this.modelManager);
-            this.modelManager.add(UserModel);
+                UserModel.$init(this.modelManager);
+                this.modelManager.add(UserModel);
 
-            var appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
-            var userIdPropName = UserModel.options.schemaSettings.doc.idPropertyName;
+                var appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
+                var userIdPropName = UserModel.options.schemaSettings.doc.idPropertyName;
 
-            var keyOfJessica = UserModel.buildKey('420267e5-b9bd-4456-a253-80d67b2c79ec');
-            var keyOfDavid = UserModel.buildKey('54b201f0-eac2-40f7-bad2-eaa1cd9c4fce');
-            var keyOfApp = AppModel.buildKey('7ffa1518-7156-4fe3-b0ee-23ba9c228ad7');
+                var keyOfJessica = UserModel.buildKey('420267e5-b9bd-4456-a253-80d67b2c79ec');
+                var keyOfDavid = UserModel.buildKey('54b201f0-eac2-40f7-bad2-eaa1cd9c4fce');
+                var keyOfApp = AppModel.buildKey('7ffa1518-7156-4fe3-b0ee-23ba9c228ad7');
 
-            var jessica = UserModel.build({}, {key: keyOfJessica});
-            var david = UserModel.build({}, {key: keyOfDavid});
-            var app = AppModel.build('twitter', {key: keyOfApp});
+                var jessica = UserModel.build({}, {key: keyOfJessica});
+                var david = UserModel.build({}, {key: keyOfDavid});
+                var app = AppModel.build('twitter', {key: keyOfApp});
 
-            var user = UserModel.build({
-                app: app,
-                friends: [jessica, david]
+                var user = UserModel.build({
+                    app: app,
+                    friends: [jessica, david]
+                });
+
+                var promise = user.getSerializedData();
+
+                return promise.should.be.fulfilled.then(function(serData) {
+                    var expectedAppData = {};
+                    expectedAppData[appIdPropName] = app.getKey().toString();
+
+                    serData.should.have.property('app').that.is.not.an.instanceof(AppModel.Instance);
+                    serData.should.have.property('app').that.deep.equals(expectedAppData);
+                });
             });
+        });
 
-            var promise = user.getSerializedData();
+        describe('with EMBEDDED association relation', function() {
+            it('should not include internal "id" property of associated Model instance in returned json object', function() {
+                var AppModel = this.buildModel('App', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        name: {
+                            type: DataTypes.STRING
+                        }
+                    }
+                }, {
+                    key: ODM.UUID4Key,
+                    schemaSettings: {
+                        doc: {
+                            idPropertyName: '$id',
+                            typePropertyName: '$type'
+                        }
+                    }
+                });
 
-            return promise.should.be.fulfilled.then(function(serData) {
-                var expectedAppData = {};
-                expectedAppData[appIdPropName] = app.getKey().toString();
+                var UserModel = this.buildModel('User', {
+                    type: DataTypes.HASH_TABLE,
+                    schema: {
+                        app: {
+                            type: DataTypes.COMPLEX('App', {relation: ODM.RelationTypes.EMBEDDED})
+                        }
+                    }
+                }, { key: ODM.UUID4Key });
 
-                serData.should.have.property('app').that.is.not.an.instanceof(AppModel.Instance);
-                serData.should.have.property('app').that.deep.equals(expectedAppData);
+                AppModel.$init(this.modelManager);
+                this.modelManager.add(AppModel);
+
+                UserModel.$init(this.modelManager);
+                this.modelManager.add(UserModel);
+
+                var appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
+                var appTypePropName = AppModel.options.schemaSettings.doc.typePropertyName;
+                var userIdPropName = UserModel.options.schemaSettings.doc.idPropertyName;
+                var userTypePropName = UserModel.options.schemaSettings.doc.typePropertyName;
+
+                var keyOfApp = AppModel.buildKey('7ffa1518-7156-4fe3-b0ee-23ba9c228ad7');
+
+                var app = AppModel.build({name: 'twitter'}, {key: keyOfApp});
+                var user = UserModel.build({
+                    app: app,
+                });
+
+                var promise = user.getSerializedData();
+
+                return promise.should.be.fulfilled.then(function(serData) {
+                    var expectedAppData = app.$cloneData();
+                    expectedAppData[userIdPropName] = app.getKey().toString();
+                    expectedAppData[userTypePropName] = app[appTypePropName];
+                    delete expectedAppData[appIdPropName];
+                    delete expectedAppData[appTypePropName];
+
+                    serData.should.have.property('app').that.is.not.an.instanceof(AppModel.Instance);
+                    serData.should.have.property('app').that.deep.equals(expectedAppData);
+                });
             });
         });
     });
@@ -322,9 +500,9 @@ describe('Instance', function() {
             };
             dataResponse.value[idPropName] = '7ffa1518-7156-4fe3-b0ee-23ba9c228ad7';
 
-            var getByIdStub = sinon.stub(Model, 'getById').returns(Promise.resolve(dataResponse));
+            var getByIdStub = sinon.stub(Model, 'getByIdOrFail').returns(Promise.resolve(dataResponse));
 
-            var instance = Model.build({}, {
+            var instance = Model.build({test: 'test'}, {
                 key: Model.buildKey("7ffa1518-7156-4fe3-b0ee-23ba9c228ad7")
             });
 
@@ -357,6 +535,7 @@ describe('Instance', function() {
                     },
                     username: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     },
                     address: {
                         type: DataTypes.HASH_TABLE,
@@ -365,7 +544,8 @@ describe('Instance', function() {
                                 type: DataTypes.INT
                             },
                             street: {
-                                type: DataTypes.STRING
+                                type: DataTypes.STRING,
+                                allowEmptyValue: true
                             },
                         }
                     }
@@ -374,14 +554,14 @@ describe('Instance', function() {
                 key: ODM.UUID4Key,
                 indexes: {
                     refDocs: {
-                        getByUsername: {
+                        username: {
                             keys: ['username'],
                             required: false
                         },
-                        getByName: {
+                        name: {
                             keys: ['name']
                         },
-                        getAddress: {
+                        address: {
                             keys: ['address.street', 'address.house_number']
                         }
                     }
@@ -488,19 +668,21 @@ describe('Instance', function() {
                 schema: {
                     name: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     },
                     username: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     }
                 }
             }, {
                 key: ODM.UUID4Key,
                 indexes: {
                     refDocs: {
-                        getByUsername: {
+                        username: {
                             keys: ['username']
                         },
-                        getByName: {
+                        name: {
                             keys: ['name'],
                             required: false
                         }
@@ -589,6 +771,40 @@ describe('Instance', function() {
                 refDocs.old.should.have.lengthOf(0);
             });
         });
+
+        it('should return fulfilled promise with the `name` legacy refDoc index marked for removal', function() {
+            var instanceData = {
+                username: 'happie'
+            };
+
+            var instance = this.Model.build(instanceData);
+
+            instance.$original.setData('name', 'James');
+
+            var promise = instance.$getDirtyRefDocs();
+            return promise.should.be.fulfilled.then(function(refDocs) {
+                refDocs.should.have.property('old').that.is.an.instanceof(Array);
+
+                refDocs.old.should.have.lengthOf(1);
+                refDocs.old.pop().getKey().getId().should.be.equal('James');
+            });
+        });
+
+        it("should return rejected promise with a KeyError when a required key (oldKey) of currently persisted document can't be generated", function() {
+            var instanceData = {
+                username: 'happie'
+            };
+
+            var instance = this.Model.build(instanceData);
+
+            instance.$original.setData('username', undefined);
+
+            var promise = instance.$getDirtyRefDocs();
+            return promise.should.be.rejected.then(function(error) {
+                error.should.be.instanceof(ODM.errors.KeyError);
+            });
+        });
+
         it('should return rejected promise if a key of refDoc fails generation process and the refDoc has `required` option set', function() {
             var instanceData = {
                 name: 'Petr',
@@ -599,6 +815,95 @@ describe('Instance', function() {
 
             var promise = instance.$getDirtyRefDocs();
             return promise.should.be.rejectedWith(ODM.errors.KeyError);
+        });
+
+        it('should return rejected promise with an Error if an old refDoc key generation process fails unexpectedly', function() {
+            var error = new Error('getDirtyRefDocs testing errror');
+            var keyGenerateStub = sinon.stub(this.Model.RefDocKey.prototype, 'generate')
+                .returns(Promise.reject(error));
+
+            var instanceData = {
+                name: 'Anonymous',
+                username: 'test'
+            };
+            var instance = this.Model.build(instanceData);
+            instance.username = 'anonym';
+
+            //$getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
+            var promise = instance.$getDirtyRefDocs();
+
+            return promise.should.be.rejected.then(function(err) {
+                err.should.be.equal(error);
+                keyGenerateStub.restore();
+            });
+        });
+
+        it('should return rejected promise with an Error if a new refDoc key generation process fails unexpectedly', function() {
+            var self = this;
+            var error = new Error('getDirtyRefDocs testing errror');
+
+            var instanceData = {
+                name: 'Anonymous',
+                username: 'test'
+            };
+            var instance = this.Model.build(instanceData);
+            instance.username = 'anonym';
+
+            var getGeneratedKeyStub;
+            var buildRefDocumentStub = sinon.stub(instance, '$buildRefDocument', function() {
+                var promise = self.Model.Instance.prototype.$buildRefDocument.apply(this, arguments);
+                return promise.then(function(doc) {
+                    getGeneratedKeyStub = sinon.stub(doc, 'getGeneratedKey');
+                    getGeneratedKeyStub.returns(Promise.reject(error));
+
+                    return doc;
+                });
+            });
+
+            //$getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
+            var promise = instance.$getDirtyRefDocs();
+
+            return promise.should.be.rejected.then(function(err) {
+                err.should.be.equal(error);
+                buildRefDocumentStub.restore();
+                getGeneratedKeyStub.restore();
+            });
+        });
+    });
+
+    describe('setData', function() {
+        before(function() {
+            this.model = this.buildModel('InstanceSetDataTestModel', {
+                type: DataTypes.HASH_TABLE
+            });
+            this.model.$init(this.modelManager);
+
+            this.data = {};
+            this.instance = this.model.build(this.data);
+        });
+
+        it('should set specified data under specified property', function() {
+            this.instance.setData('some', 'data');
+            this.instance.getData().should.be.equal(this.data);
+            this.instance.getData().should.have.property('some', 'data');
+        });
+
+        it('should set instance data object so that original data object reference is preserved', function() {
+            var idPropName = this.model.options.schemaSettings.doc.idPropertyName;
+            var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
+
+            var data = {another: 'data'};
+            this.instance.setData(data);
+            this.instance.getData().should.be.equal(this.data);
+            this.instance.getData().should.have.property('another', 'data');
+            this.instance.getData().should.have.property('some', 'data');
+            this.instance.getData().should.have.property(idPropName);
+            this.instance.getData().should.have.property(typePropName);
+        });
+
+        it('should return self (the document object)', function() {
+            this.instance.setData({}).should.be.equal(this.instance);
+            this.instance.setData('some', 'prop').should.be.equal(this.instance);
         });
     });
 
@@ -667,7 +972,7 @@ describe('Instance', function() {
                 key: ODM.UUID4Key,
                 indexes: {
                     refDocs: {
-                        getByName: {keys: ["name"], required: false}
+                        name: {keys: ["name"], required: false}
                     }
                 }
             });
@@ -729,9 +1034,11 @@ describe('Instance', function() {
                     },
                     email: {
                         type: DataTypes.STRING,
+                        allowEmptyValue: true
                     },
                     apps: {
-                        type: DataTypes.ARRAY
+                        type: DataTypes.ARRAY,
+                        allowEmptyValue: true
                     },
                     user: {
                         type: DataTypes.COMPLEX('Model'),
@@ -743,7 +1050,7 @@ describe('Instance', function() {
                 indexes: {
                     //must be here because of the #14 bug
                     refDocs: {
-                        getByName: {
+                        name: {
                             keys: ['name']
                         }
                     }
@@ -787,7 +1094,7 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.cloneData();
+            var originalData = instance.$original.$cloneData();
 
             var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
                 cas: '12312412'
@@ -854,7 +1161,7 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.cloneData();
+            var originalData = instance.$original.$cloneData();
 
             var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
                 cas: '12312412'
@@ -904,17 +1211,145 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.cloneData();
+            var originalData = instance.$original.$cloneData();
 
             var instanceOriginalSaveStub = sinon.stub(instance.$original, 'save')
                 .returns(Promise.reject(new ODM.errors.StorageError('test err')));
 
-            var promise = instance.update({email: 'diena@test.com'});
+            var promise = instance.update({
+                email: 'diena@test.com',
+                apps: ['appName'] // important! (it should be removed on rollback from original data object)
+            });
 
             return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
                 instance.$original.getData().should.have.property('email', 'test@test.com');
                 instance.$original.should.have.property('email', 'test@test.com');
                 instance.$original.should.have.property('user').that.is.an.instanceof(instance.Model.Instance);
+                instance.$original.getData().should.be.eql(originalData);
+            });
+        });
+    });
+
+    describe('populate', function() {
+        before(function() {
+            this.Model = this.buildModel('Model', {
+                type: DataTypes.HASH_TABLE,
+                schema: {
+                    name: {
+                        type: DataTypes.STRING
+                    },
+                    subinstance: {
+                        type: DataTypes.COMPLEX('Model'),
+                        allowEmptyValue: true
+                    }
+                }
+            }, {
+                key: ODM.UUID4Key,
+            });
+
+            this.Model.$init(this.modelManager);
+            this.modelManager.add(this.Model);
+
+            this.instanceRefreshStub = sinon.stub(this.Model.Instance.prototype, 'refresh');
+        });
+
+        beforeEach(function() {
+            this.instanceRefreshStub.reset();
+        });
+
+        after(function() {
+            this.instanceRefreshStub.restore();
+        });
+
+        it('should return rejected promise with an InstanceError when invalid `include` parameter is provided', function() {
+            var instance = this.Model.build({name: 'instance'});
+            var subinstance = this.Model.build({name: 'subinstance'});
+
+            instance.subinstance = subinstance;
+
+            var promise = instance.populate([{
+                path: {}
+            }]);
+
+            return promise.should.be.rejectedWith(InstanceError);
+        });
+
+        it('should return rejected promise with an InstanceError when destination path does not hold `Instance` object', function() {
+            var instance = this.Model.build({name: 'instance'});
+
+            var promise = instance.populate('subinstance');
+
+            return promise.should.be.rejectedWith(InstanceError);
+        });
+
+        describe('with `skipPopulated` option', function() {
+            it('should not load `Instance` objects which are considered already populated if the `options.skipPopulated=true`', function() {
+                var self = this;
+
+                var instance = this.Model.build({name: 'instance'});
+                var subinstance = this.Model.build({name: 'subinstance'}, {
+                    isNewRecord: false,
+                    cas: '124'
+                });
+
+                instance.subinstance = subinstance;
+
+                this.instanceRefreshStub.returns(Promise.resolve(subinstance));
+
+                var promise = instance.populate('subinstance', {skipPopulated: true});
+
+                return promise.should.be.fulfilled.then(function(result) {
+                    result.should.be.equal(instance);
+                    self.instanceRefreshStub.should.have.callCount(0);
+                });
+            });
+        });
+
+        describe('with `getOrFail` option', function() {
+            it('should return fulfilled promise and skip population of those Instance objects on which the process fails with the StorageError with keyNotFound code', function() {
+                var self = this;
+
+                var error = new ODM.errors.StorageError(
+                        'test error',
+                        ODM.StorageAdapter.errorCodes.keyNotFound
+                );
+                var instance = this.Model.build({name: 'instance'});
+                var subinstance = this.Model.build({name: 'subinstance'});
+
+                instance.subinstance = subinstance;
+
+                this.instanceRefreshStub.returns(Promise.reject(error));
+
+                var promise = instance.populate('subinstance', {getOrFail: false});
+
+                return promise.should.be.fulfilled.then(function(result) {
+                    self.instanceRefreshStub.should.have.callCount(1);
+                    result.should.be.equal(instance);
+                    result.subinstance.should.be.equal(subinstance);
+                });
+            });
+
+            it('should return rejected promise with the StorageError with keyNotFound code when an association is not found in a bucket ', function() {
+                var self = this;
+
+                var error = new ODM.errors.StorageError(
+                        'test error',
+                        ODM.StorageAdapter.errorCodes.keyNotFound
+                );
+                var instance = this.Model.build({name: 'instance'});
+                var subinstance = this.Model.build({name: 'subinstance'});
+
+                instance.subinstance = subinstance;
+
+                this.instanceRefreshStub.returns(Promise.reject(error));
+
+                var promise = instance.populate('subinstance', {getOrFail: true});
+
+                return promise.should.be.rejected.then(function(err) {
+                    self.instanceRefreshStub.should.have.callCount(1);
+                    err.should.be.equal(error);
+                    instance.subinstance.should.be.equal(subinstance);
+                });
             });
         });
     });
@@ -946,10 +1381,11 @@ describe('Instance', function() {
                 }
             }, {
                 key: ODM.UUID4Key,
+                timestamps: true,
                 indexes: {
                     refDocs: {
-                        getByUsername: {keys: ['username']},
-                        getByAge: {keys: ['age']}
+                        username: {keys: ['username']},
+                        age: {keys: ['age']}
                     }
                 }
             });
@@ -966,7 +1402,8 @@ describe('Instance', function() {
                 sex: 'female',
                 born_at: new Date
             }, {
-                isNewRecord: false
+                isNewRecord: false,
+                cas: '1234'
             });
 
             this.user = this.Model.build({
@@ -974,9 +1411,12 @@ describe('Instance', function() {
                 age: '26',
                 friends: [this.friend],
                 sex: 'male',
-                born_at: new Date
+                born_at: new Date,
+                created_at: "2016-08-29T11:36:46Z",
+                updated_at: "2016-08-29T11:36:46Z"
             }, {
-                isNewRecord: false
+                isNewRecord: false,
+                cas: '1234'
             });
 
             this.user.setCAS('23901742395713000');
@@ -1131,8 +1571,12 @@ describe('Instance', function() {
                 }, {paranoid: true});
 
                 model.$init(this.modelManager);
-                var instance = model.build({somedata: 'datastring'}, {isNewRecord: false});
-                instance.setCAS('23901742395713000');
+                var instance = model.build({
+                    somedata: 'datastring'
+                }, {
+                    isNewRecord: false,
+                    cas: '23901742395713000'
+                });
 
                 var casBck = instance.getCAS();
                 self.removeStub.withArgs(instance.getKey());
@@ -1221,6 +1665,29 @@ describe('Instance', function() {
                         self.user.Model.removeHook('afterFailedRollback', 'testhook');
                     });
                 });
+            });
+
+            it('should return rejected promise with an InstanceError when we try to call the method on an instance object which does not have `cas` value set', function() {
+                var self = this;
+
+                this.user.setCAS(null);
+                var promise = this.user.destroy();
+
+                return promise.should.be.rejected.then(function(error) {
+                    error.should.be.instanceof(InstanceError);
+                    self.removeStub.should.have.callCount(0);
+                });
+            });
+
+            it('should return fulfilled promise when we try to call the method on an instance object which does not have `cas` value set and `force=true`', function() {
+                var self = this;
+
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+
+                this.user.setCAS(null);
+                var promise = this.user.destroy({force:true});
+
+                return promise.should.be.fulfilled;
             });
         });
 
@@ -1330,6 +1797,23 @@ describe('Instance', function() {
                             self.insertStub.withArgs(self.user.getKey())
                             );
                     touchTimestampsSpy.restore();
+                });
+            });
+
+            it('should restore timestamp values if a validation error occurs', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+
+                this.user.setData('username', undefined);
+                var promise = this.user.insert();
+
+                return promise.should.be.rejected.then(function() {
+                    var createdAt = self.user.$original.getData('created_at');
+                    var updatedAt = self.user.$original.getData('updated_at');
+
+                    self.user.getData('created_at').should.be.equal(createdAt);
+                    self.user.getData('updated_at').should.be.equal(updatedAt);
                 });
             });
 
@@ -1599,7 +2083,7 @@ describe('Instance', function() {
             it('should try to destroy already inserted reference documents if some "bucket" operation fails during replace process', function() {
             });
 
-            it('should trigger defined `afterFailedIndexRemoval` hooks if a remove operation of outdated refDoc indexes fails during replace process', function() {
+            it('should trigger defined `afterFailedIndexRemoval` hooks if a remove operation of outdated refDoc indexes fails during replace process and there is an `afterFailedIndexRemoval` listener registered', function() {
                 var self = this;
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
@@ -1619,9 +2103,25 @@ describe('Instance', function() {
                     afterFailedIndexRemovalSpy.should.have.been.calledOnce;
                     afterFailedIndexRemovalSpy.should.have.been.calledWith(storageErr);
                     storageErr.should.have.property('doc').that.is.an.instanceof(ODM.Document);
+                    self.user.Model.removeHook('afterFailedIndexRemoval', 'testhook');
                 });
             });
 
+            it('should return rejected promise with an Error if unexpected Error occurs while trying to remove outdated reference document indexes and there is NO `afterFailedIndexRemoval` listener registered', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                //on first call it deletes the outdated reference document
+                var storageErr = new ODM.errors.StorageError('test');
+                this.removeStub.onFirstCall().returns(Promise.reject(storageErr));
+
+                this.user.username = 'happiecat';
+                var promise = this.user.replace();
+
+                return promise.should.be.rejectedWith(storageErr);
+            });
 
             it('should trigger defined `beforeRollback` and `afterRollback` hooks if performing rollback operation', function() {
                 var self = this;
@@ -1711,6 +2211,71 @@ describe('Instance', function() {
                         self.user.Model.removeHook('afterFailedRollback', 'testhook');
                     });
                 });
+            });
+
+            it('should restore timestamp values after failed `replace` operation', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                //on first call it deletes the outdated reference document
+                var storageErr = new ODM.errors.StorageError('test');
+                this.removeStub.onFirstCall().returns(Promise.reject(storageErr));
+
+                this.user.username = 'happiecat';
+                var promise = this.user.replace();
+
+                return promise.should.be.rejected.then(function() {
+                    var createdAt = self.user.$original.getData('created_at');
+                    var updatedAt = self.user.$original.getData('updated_at');
+
+                    self.user.getData('created_at').should.be.equal(createdAt);
+                    self.user.getData('updated_at').should.be.equal(updatedAt);
+                });
+            });
+
+            it('should restore timestamp values if a validation error occurs', function() {
+                var self = this;
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                this.user.setData('username', undefined);
+                var promise = this.user.replace();
+
+                return promise.should.be.rejected.then(function() {
+                    var createdAt = self.user.$original.getData('created_at');
+                    var updatedAt = self.user.$original.getData('updated_at');
+
+                    self.user.getData('created_at').should.be.equal(createdAt);
+                    self.user.getData('updated_at').should.be.equal(updatedAt);
+                });
+            });
+
+            it('should return rejected promise with an InstanceError when we try to call the method on an instance object which does not have `cas` value set', function() {
+                var self = this;
+
+                this.user.setCAS(null);
+                var promise = this.user.replace();
+
+                return promise.should.be.rejected.then(function(error) {
+                    error.should.be.instanceof(InstanceError);
+                    self.replaceStub.should.have.callCount(0);
+                });
+            });
+
+            it('should return fulfilled promise when we try to call the method on an instance object which does not have `cas` value set and `force=true`', function() {
+                var self = this;
+
+                this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
+                this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
+                this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
+
+                this.user.setCAS(null);
+                var promise = this.user.replace({force:true});
+
+                return promise.should.be.fulfilled;
             });
         });
 
@@ -1827,6 +2392,60 @@ describe('Instance', function() {
             timestampsBck.should.have.property(propNames.deletedAt).that.is.an('undefined');
             data.should.have.property(propNames.deletedAt).that.is.a('string');
             data.should.have.property(propNames.deletedAt).that.is.ok;
+        });
+    });
+
+    describe('toJSON', function() {
+        it('should throw an InstanceError when we try to convert an Instance object with primitive root data structure', function() {
+            var model = this.buildModel('TOJSONTESTMODEL', {
+                type: DataTypes.STRING
+            });
+            model.$init(this.modelManager);
+
+            var instance = model.build('test string');
+
+            function test() {
+                return instance.toJSON();
+            };
+
+            expect(test).to.throw(InstanceError);
+        });
+
+        describe('Model with JSON root data structure', function() {
+            before(function() {
+                this.model = this.buildModel('TOJSONTESTMODEL2', {
+                    type: DataTypes.HASH_TABLE
+                });
+                this.model.$init(this.modelManager);
+
+                this.instance = this.model.build({
+                    some: 'data'
+                });
+            });
+
+            it('should return cloned data object', function() {
+                this.instance.toJSON().should.not.be.equal(this.instance.getData());
+            });
+
+            it('should not include the `_type` internal property in returned data', function() {
+                var typePropName = this.model.options.schemaSettings.doc.typePropertyName;
+                this.instance.toJSON().should.not.have.property(typePropName);
+            });
+        });
+    });
+
+    describe('inspect', function() {
+        it('should return correctly formated string value', function() {
+            var model = this.buildModel('INSPECTMODELTEST', {
+                type: DataTypes.HASH_TABLE
+            });
+            model.$init(this.modelManager);
+
+            var instance = model.build({});
+
+            instance.inspect().should.be.equal("[object CouchbaseInstance:\n    " +
+                                                    "key: 'INSPECTMODELTEST_undefined'\n    " +
+                                                    "cas: undefined]");
         });
     });
 });
