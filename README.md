@@ -12,8 +12,8 @@ Installation
 Contributing
 -------------------
 Please, fill a bug report at [issues](https://github.com/fogine/couchbase-odm/issues) page if you find any.  
-Also, feedback, suggestions and pull requests are more than welcome!
-Make sure to discuss the issue with the community before implementing a solution for an issue.
+Also, feedback, suggestions and pull requests are more than welcome!  
+Make sure to discuss an issue with the community before implementing a solution for the issue.
 
 Features
 -------------------
@@ -46,5 +46,4 @@ Tests
 -------------------------------------------
 
 _**Note:** this project is using [Semantic versioning](http://semver.org/)_    
-_**Note:** this project is inspired by [Sequelize](https://github.com/sequelize/sequelize) - splendid promise-based ORM for Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server_  
-CouchbaseODM mimics some Sequelize functionality.
+_**Note:** this project is inspired by [Sequelize](https://github.com/sequelize/sequelize) - splendid promise-based ORM for Postgres, MySQL, MariaDB, SQLite and Microsoft SQL Server_
