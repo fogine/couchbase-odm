@@ -1,3 +1,7 @@
+## FUTURE
+
+* [FIXED] `storageAdapter` methods should always clone received `options` object as native `couchbase-sdk` does not do that and we need to be sure options objects are not shared and mutated between individual operations
+
 ## v2.0.0-rc.1
 
 * [REMOVED] support for callback based hook listeners. All async hook listeners are expected to return a Promise
