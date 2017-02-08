@@ -32,6 +32,7 @@
 * [ADDED] new `indexed` option to `Model.getMulti` method which if false, causes method to return an Array instead of Object (default=true)
 * [BUGFIX] Model's `update` instance method did recursive merge with provided data on data being updated, now,  object's properties are overridden by assignment.
 * [BUGFIX] Model's `update` method works on Models with primitive root data structures
+* [ADDED] new `EMBEDDED` Model association relation type
 
 ## v1.0.1
 
