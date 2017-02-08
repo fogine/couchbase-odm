@@ -30,7 +30,6 @@
   "dependencies": {
     "bluebird": "^3.4.7",
     "couchbase": "^2.1.8",
-    "debug": "^2.6.0",
     "lodash": "^4.0.0",
     "moment": "^2.13.0",
     "node-uuid": "^1.4.7"
