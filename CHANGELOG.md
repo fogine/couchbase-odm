@@ -1,7 +1,6 @@
 ## FUTURE
 
-* [BUGFIX] `storageAdapter` methods should always clone received `options` object as native `couchbase` sdk does not do that and we need to be sure options objects are not shared and mutated between individual operations
-* [CHANGED] `beforeValidate` & `afterValidate` hooks are run before the `beforeCreate`, `beforeUpdate` hooks
+* [FIXED] `storageAdapter` methods should always clone received `options` object as native `couchbase-sdk` does not do that and we need to be sure options objects are not shared and mutated between individual operations
 * [REMOVED] unused `debug` module dependency
 * [BUGFIX] updated `bluebird` module dependency
 
