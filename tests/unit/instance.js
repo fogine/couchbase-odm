@@ -521,7 +521,7 @@ describe('Instance', function() {
         });
     });
 
-    describe('$getRefDocs', function() {
+    describe('getRefDocs', function() {
         afterEach(function() {
             this.modelManager.models = {};
         });
@@ -588,7 +588,7 @@ describe('Instance', function() {
 
             var instance = this.Model.build(instanceData);
 
-            var promise = instance.$getRefDocs();
+            var promise = instance.getRefDocs();
             return promise.should.be.fulfilled.then(function(refDocs){
                 var nameRefDoc, usernameRefDoc, addressRefDoc;
 
@@ -637,7 +637,7 @@ describe('Instance', function() {
 
             var instance = this.Model.build(instanceData);
 
-            var promise = instance.$getRefDocs();
+            var promise = instance.getRefDocs();
             return promise.should.be.fulfilled.then(function(refDocs){
                 refDocs.should.be.an.instanceof(Array);
                 refDocs.should.have.lengthOf(2);
@@ -656,7 +656,7 @@ describe('Instance', function() {
 
             var instance = this.Model.build(instanceData);
 
-            var promise = instance.$getRefDocs();
+            var promise = instance.getRefDocs();
             return promise.should.be.rejectedWith(ODM.errors.KeyError);
         });
     });
@@ -1483,7 +1483,7 @@ describe('Instance', function() {
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
 
-                var promise = this.user.$getRefDocs();
+                var promise = this.user.getRefDocs();
 
                 return promise.should.be.fulfilled.then(function(refDocs) {
                     self.removeStub.withArgs(refDocs[0].getKey());
@@ -1558,7 +1558,7 @@ describe('Instance', function() {
                 return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
                     self.insertStub.should.have.been.calledTwice;
 
-                    return self.user.$getRefDocs().then(function(refDocs) {
+                    return self.user.getRefDocs().then(function(refDocs) {
                         self.insertStub.should.have.been.calledWith(refDocs[0].getKey(), refDocs[0].getData());
                         self.insertStub.should.have.been.calledWith(refDocs[1].getKey(), refDocs[1].getData());
                     });
@@ -1622,7 +1622,7 @@ describe('Instance', function() {
                     afterRollbackHookStub.should.have.been.calledOnce;
                     afterRollbackHookStub.should.have.been.calledAfter(self.insertStub);
 
-                    return self.user.$getRefDocs().then(function(refDocs) {
+                    return self.user.getRefDocs().then(function(refDocs) {
                         var reportObj = {
                             err: storageErr,
                             operation: ODM.Operation.REMOVE,
@@ -1656,7 +1656,7 @@ describe('Instance', function() {
 
                 return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
 
-                    return self.user.$getRefDocs().then(function(refDocs) {
+                    return self.user.getRefDocs().then(function(refDocs) {
                         var reportObj = {
                             err: storageErr,
                             operation: ODM.Operation.REMOVE,
@@ -1741,7 +1741,7 @@ describe('Instance', function() {
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
 
-                var promise = this.user.$getRefDocs();
+                var promise = this.user.getRefDocs();
 
                 return promise.should.be.fulfilled.then(function(refDocs) {
                     self.insertStub.withArgs(refDocs[0].getKey());
@@ -1835,7 +1835,7 @@ describe('Instance', function() {
                 return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
                     self.removeStub.should.have.been.calledTwice;
 
-                    return self.user.$getRefDocs().then(function(refDocs) {
+                    return self.user.getRefDocs().then(function(refDocs) {
                         self.removeStub.should.have.been.calledWith(refDocs[0].getKey());
                         self.removeStub.should.have.been.calledWith(refDocs[1].getKey());
                     });
@@ -1865,7 +1865,7 @@ describe('Instance', function() {
                     afterRollbackHookStub.should.have.been.calledOnce;
                     afterRollbackHookStub.should.have.been.calledAfter(self.removeStub);
 
-                    return self.user.$getRefDocs().then(function(refDocs) {
+                    return self.user.getRefDocs().then(function(refDocs) {
                         var reportObj = {
                             err: storageErr,
                             operation: ODM.Operation.INSERT,
@@ -1901,7 +1901,7 @@ describe('Instance', function() {
 
                 return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
 
-                    return self.user.$getRefDocs().then(function(refDocs) {
+                    return self.user.getRefDocs().then(function(refDocs) {
                         var reportObj = {
                             err: storageErr,
                             operation: ODM.Operation.INSERT,
