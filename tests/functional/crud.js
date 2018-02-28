@@ -67,6 +67,10 @@ describe('CRUD operations', function() {
             this.Client.beforeUpdate(function(client, options) {
                 client.setData('name', 'changed_in_before_update_hook');
             }, 'beforeUpdate');
+
+            return this.Client.create({name: 'test2'}).bind(this).then(function(client) {
+                this.client = client;
+            });
         });
 
         after(function() {
@@ -74,9 +78,7 @@ describe('CRUD operations', function() {
         });
 
         it('should update document with data mutations applied in `beforeUpdate` hook', function() {
-            return this.Client.create({name: 'test2'}).then(function(client) {
-                return client.update({name: 'test2_updated'});
-            }).then(function(client) {
+            return this.client.update({name: 'test2_updated'}).then(function(client) {
                 var nameValueBeforeRefresh = client.getData('name');
                 return client.refresh().then(function(client) {
                     client.getData('name').should.be.equal('changed_in_before_update_hook');
@@ -86,4 +88,30 @@ describe('CRUD operations', function() {
         });
     });
 
+    describe('touch', function() {
+        before(function() {
+            return this.Client.create({name: 'touch'}).bind(this).then(function(client) {
+                this.client = client;
+            });
+        });
+
+        it('should touch the client document and all its reference documents', function() {
+            return this.client.touch(10).bind(this).then(function() {
+                var key = this.client.getKey().toString();
+                var refDocKey = this.Client.buildRefDocKey('touch', {index: 'name'}).toString();
+                var keys = [key, refDocKey];
+
+                keys.forEach(function(key) {
+                    this.bucket.storage.items[key][key]
+                        .should.have.property('expiry').that.is.instanceof(Date);
+                }, this);
+            });
+        });
+
+        it('should return self (Document instance object)', function() {
+            return this.client.touch(10).bind(this).then(function(returnValue) {
+                returnValue.should.be.equal(this.client);
+            });
+        });
+    });
 });
