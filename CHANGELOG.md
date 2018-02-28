@@ -1,5 +1,6 @@
 ## FUTURE
 
+* [BUGFIX] `Model.prototype.unlock` was not accepting `cas` argument thus the unlock operation could not succeed
 * [CHANGED] `Document.prototype.touch` returns self (Document object)
 * [ADDED] `Instance.prototype.touch` which operates on all reference documents in addition to the main document
 * [ADDED] new public method `Instance.prototype.getRefDocs` which has been part of private API

@@ -1223,13 +1223,14 @@ describe('Model', function() {
             model.$init(this.modelManager);
 
             var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            var cas = '12345';
 
             var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
 
-            var promise = model.unlock(key);
+            var promise = model.unlock(key, cas);
 
             return promise.should.have.been.fulfilled.then(function() {
-                unlockStub.should.have.been.calledWith(key);
+                unlockStub.should.have.been.calledWith(key, cas);
                 unlockStub.should.have.been.calledOnce;
             });
         });
@@ -1241,16 +1242,20 @@ describe('Model', function() {
             model.$init(this.modelManager);
 
             var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            var cas = '123';
 
             var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
 
-            var promise = model.unlock(id);
+            var promise = model.unlock(id, cas);
 
             return promise.should.have.been.fulfilled.then(function() {
                 var keyArg = unlockStub.args[0][0];
-                keyArg.should.be.an.instanceof(model.Key);
-                keyArg.getId().should.be.equal(id);
                 unlockStub.should.have.been.calledOnce;
+                unlockStub.should.have.been.calledWith(
+                    sinon.match.instanceOf(model.Key),
+                    cas
+                );
+                keyArg.getId().should.be.equal(id);
             });
         });
     });
