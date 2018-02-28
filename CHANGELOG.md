@@ -1,5 +1,6 @@
 ## FUTURE
 
+* [CHANGED] `Instance.prototype.update` method behaves as one would expect, that is more or less its syntax sugar for `instance.setData()` followed by `instance.save()`. This also fixes the method design issue which broke update hooks.
 * [BUGFIX] `storageAdapter` methods should always clone received `options` object as native `couchbase` sdk does not do that and we need to be sure options objects are not shared and mutated between individual operations
 * [REMOVED] unused `debug` module dependency
 * [BUGFIX] updated `bluebird` module dependency

@@ -62,4 +62,28 @@ describe('CRUD operations', function() {
         });
     });
 
+    describe('update', function() {
+        before(function() {
+            this.Client.beforeUpdate(function(client, options) {
+                client.setData('name', 'changed_in_before_update_hook');
+            }, 'beforeUpdate');
+        });
+
+        after(function() {
+            this.Client.removeHook('beforeUpdate', 'beforeUpdate');
+        });
+
+        it('should update document with data mutations applied in `beforeUpdate` hook', function() {
+            return this.Client.create({name: 'test2'}).then(function(client) {
+                return client.update({name: 'test2_updated'});
+            }).then(function(client) {
+                var nameValueBeforeRefresh = client.getData('name');
+                return client.refresh().then(function(client) {
+                    client.getData('name').should.be.equal('changed_in_before_update_hook');
+                    nameValueBeforeRefresh.should.be.equal('changed_in_before_update_hook');
+                });
+            });
+        });
+    });
+
 });

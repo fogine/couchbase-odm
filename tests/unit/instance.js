@@ -1094,11 +1094,13 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.$cloneData();
+            var originalData = instance.$cloneData();
 
             var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
                 cas: '12312412'
             }));
+
+            var storageRemoveStub = sinon.stub(ODM.StorageAdapter.prototype, 'remove').returns(Promise.resolve());
 
             var options = {expiry: 3600};
             var data = {
@@ -1107,7 +1109,7 @@ describe('Instance', function() {
             };
             var promise = instance.update(data, options);
 
-            return promise.should.be.fulfilled.then(function(instance) {
+            return promise.then(function(instance) {
                 instance.should.be.an.instanceof(ODM.Instance);
                 instance.should.have.property('name', 'Dat');
                 instance.should.have.property('email', 'diena@test.com');
@@ -1116,28 +1118,31 @@ describe('Instance', function() {
                 var userRelationData = {};
                 userRelationData[idPropName] = instance2.getKey().toString();
 
-                instance.$original.getKey().isGenerated().should.be.equal(true, "Instance key should be generated. But it's NOT");
+                instance.getKey().isGenerated().should.be.equal(true, "Instance key should be generated. But it's NOT");
                 instance2.getKey().isGenerated().should.be.equal(true, "Instance key should be generated. But it's NOT");
 
                 storageReplaceStub.should.have.been.calledOnce;
+                storageRemoveStub.should.have.been.calledOnce;
 
                 var expectedData = originalData;
                 expectedData.email = 'diena@test.com';
-                expectedData.name = 'Jean Luc';
+                expectedData.name = 'Dat';
                 expectedData.apps = ['quake'];
                 expectedData.user = userRelationData;
-                expectedData[idPropName] = instance.$original[idPropName];
-                expectedData.created_at = instance.$original.created_at;
-                expectedData.updated_at = instance.$original.updated_at;
+                expectedData[idPropName] = instance[idPropName];
+                expectedData.created_at = instance.created_at;
+                expectedData.updated_at = instance.updated_at;
 
                 storageReplaceStub.should.have.been.calledWith(
-                        instance.$original.getKey(),
+                        instance.getKey(),
                         expectedData,
-                        _.merge({}, options, {cas: instance.getCAS()})
+                        _.merge({}, options, {cas: cas})
                 );
                 storageReplaceStub.restore();
+                storageRemoveStub.restore();
             }).catch(function(err) {
                 storageReplaceStub.restore();
+                storageRemoveStub.restore();
                 //console.log(err.stack);
                 throw err;
             });
@@ -1178,9 +1183,9 @@ describe('Instance', function() {
                 storageReplaceStub.should.have.been.calledOnce;
 
                 storageReplaceStub.should.have.been.calledWith(
-                        instance.$original.getKey(),
+                        instance.getKey(),
                         data,
-                        _.merge({}, {cas: instance.getCAS()})
+                        _.merge({}, {cas: cas})
                 );
                 storageReplaceStub.restore();
             }).catch(function(err) {
@@ -1189,7 +1194,7 @@ describe('Instance', function() {
             });
         });
 
-        it('should rollback the instance.$original to previous state if an error occurs', function() {
+        it('should rollback the instance data to previous state if an error occurs', function() {
             var idPropName = this.Model.options.schemaSettings.doc.idPropertyName;
 
             var instance2 = this.Model.build({
@@ -1211,9 +1216,9 @@ describe('Instance', function() {
             instance.setCAS(cas);
             instance.$original.setCAS(cas);
 
-            var originalData = instance.$original.$cloneData();
+            var originalData = instance.$cloneData();
 
-            var instanceOriginalSaveStub = sinon.stub(instance.$original, 'save')
+            var instanceOriginalSaveStub = sinon.stub(instance, 'save')
                 .returns(Promise.reject(new ODM.errors.StorageError('test err')));
 
             var promise = instance.update({
@@ -1222,10 +1227,10 @@ describe('Instance', function() {
             });
 
             return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
-                instance.$original.getData().should.have.property('email', 'test@test.com');
-                instance.$original.should.have.property('email', 'test@test.com');
-                instance.$original.should.have.property('user').that.is.an.instanceof(instance.Model.Instance);
-                instance.$original.getData().should.be.eql(originalData);
+                instance.getData().should.have.property('email', 'test@test.com');
+                instance.should.have.property('email', 'test@test.com');
+                instance.should.have.property('user').that.is.an.instanceof(instance.Model.Instance);
+                instance.getData().should.be.eql(originalData);
             });
         });
     });
