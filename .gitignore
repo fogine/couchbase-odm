@@ -4,3 +4,4 @@ coverage/
 .tern-project
 *.vim
 npm-debug.log
+test.js
