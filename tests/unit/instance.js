@@ -1100,7 +1100,9 @@ describe('Instance', function() {
                 cas: '12312412'
             }));
 
-            var storageRemoveStub = sinon.stub(ODM.StorageAdapter.prototype, 'remove').returns(Promise.resolve());
+            var storageRemoveStub = sinon.stub(ODM.StorageAdapter.prototype, 'remove').returns(Promise.resolve({
+                cas: '893243'
+            }));
 
             var options = {expiry: 3600};
             var data = {

@@ -1,7 +1,7 @@
 ## FUTURE
 
+* [CHANGED] `Document` methods `insert` & `replace` & `remove` & `touch` returns resolved promise with self (Document object) when operation succeeds
 * [BUGFIX] `Model.prototype.unlock` was not accepting `cas` argument thus the unlock operation could not succeed
-* [CHANGED] `Document.prototype.touch` returns self (Document object)
 * [ADDED] `Instance.prototype.touch` which operates on all reference documents in addition to the main document
 * [ADDED] new public method `Instance.prototype.getRefDocs` which has been part of private API
 * [CHANGED] `Instance.prototype.update` method behaves as one would expect, that is more or less its syntax sugar for `instance.setData()` followed by `instance.save()`. This also fixes the method design issue which broke update hooks.
