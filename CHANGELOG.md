@@ -1,5 +1,6 @@
 ## FUTURE
 
+* [BUGFIX] When Model's instance method was overriden with user defined function, the function was being called with incorrect context object
 * [CHANGED] `Document` methods `insert` & `replace` & `remove` & `touch` returns resolved promise with self (Document object) when operation succeeds
 * [BUGFIX] `Model.prototype.unlock` was not accepting `cas` argument thus the unlock operation could not succeed
 * [ADDED] `Instance.prototype.touch` which operates on all reference documents in addition to the main document

@@ -295,6 +295,7 @@ describe('Model', function() {
 
             instanceMethodSpy.should.be.calledOnce;
             instanceMethodSpy.should.be.calledWith(saveStub);
+            instanceMethodSpy.should.be.calledOn(instance);
             saveStub.should.be.calledOnce;
 
             saveStub.reset();
