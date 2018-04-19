@@ -82,6 +82,19 @@ describe("Sanitizer", function() {
                     .to.be.equal(validFloat);
             });
 
+            it('should pass validation for NEGATIVE float or integer', function() {
+                var numVal = this.numVal;
+
+                var validInt = -4;
+                var validFloat = -0.5;
+
+                expect(numVal(validInt, {propPath: 'testprop'}))
+                    .to.be.equal(validInt);
+
+                expect(numVal(validFloat, {propPath:'testprop'}))
+                    .to.be.equal(validFloat);
+            });
+
             it("should pass validation and parse string and return float or integer", function() {
                 var numVal = this.numVal;
 
@@ -100,19 +113,19 @@ describe("Sanitizer", function() {
             it("should throw an error if input is not integer or could not be parsed as integer", function() {
                 var intVal = this.intVal;
 
-                var values = ['3a', '1.0', 1.2, '2.9'];
+                var values = ['3a', '1.0', 1.2, '2.9', -3.2];
 
                 values.forEach(function(val) {
                     expect(intVal.bind(intVal, val, {propPath: 'testprop'}))
-                        .to.throw(ValidationError);
+                        .to.throw(ValidationError, undefined, `${val} should throw`);
                 });
             });
 
             it("should pass the validation and return (parsed) integer", function() {
                 var intVal = this.intVal;
 
-                var values   = [4.0, 10, '5', 1.0];
-                var expected = [4, 10, 5, 1];
+                var values   = [4.0, 10, '5', 1.0, -3];
+                var expected = [4, 10, 5, 1, -3];
 
                 values.forEach(function(val, index) {
                     expect(intVal(val, {propPath: 'testprop'}))
