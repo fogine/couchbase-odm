@@ -988,7 +988,7 @@ describe('Model', function() {
             error.code = ODM.StorageAdapter.errorCodes.connectError;
 
             var getStub = sinon.stub(ODM.StorageAdapter.prototype, 'get');
-            getStub.returns(Promise.reject(error));
+            getStub.rejects(error);
 
             return this.model.getById('c72714e3-f540-499b-be1c-9d1ab8c991b0')
                 .should.be.rejected.then(function(error) {
@@ -1078,8 +1078,8 @@ describe('Model', function() {
             var networkErr = new ODM.errors.StorageError('Network error');
             networkErr.code = ODM.StorageAdapter.errorCodes.networkError;
 
-            this.getStub.onFirstCall().returns(Promise.reject(keyNotFoundErr));
-            this.getStub.onSecondCall().returns(Promise.reject(networkErr));
+            this.getStub.onFirstCall().rejects(keyNotFoundErr);
+            this.getStub.onSecondCall().rejects(networkErr);
             var pool = [key, id];
             var promise = this.model.getMulti(pool);
 
@@ -1168,7 +1168,7 @@ describe('Model', function() {
             var keyNotFoundErr = new ODM.errors.StorageError('key not found test error');
             keyNotFoundErr.code = ODM.StorageAdapter.errorCodes.keyNotFound;
 
-            this.getByIdStub.returns(Promise.reject(keyNotFoundErr));
+            this.getByIdStub.rejects(keyNotFoundErr);
             var promise = this.model.remove('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
 
             return promise.should.be.rejectedWith(keyNotFoundErr);

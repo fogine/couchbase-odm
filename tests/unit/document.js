@@ -263,7 +263,7 @@ describe("Document", function() {
             var key = this.buildKey();
             doc.setKey(key);
 
-            this.insert.returns(Promise.reject(new StorageError));
+            this.insert.rejects(new StorageError);
             var promise = doc.insert(opt);
             return promise.should.be.rejectedWith(StorageError).then(function() {
                 return promise.catch(function(err) {
@@ -328,7 +328,7 @@ describe("Document", function() {
 
         it('should assing self (document) to a `StorageError` if storageAdapter.replace is rejected', function() {
 
-            this.replace.returns(Promise.reject(new StorageError));
+            this.replace.rejects(new StorageError);
             var promise = this.doc.replace(this.opt);
             var doc = this.doc;
 
@@ -381,7 +381,7 @@ describe("Document", function() {
 
         it('should assing self (document) to a `StorageError` if storageAdapter.remove is rejected', function() {
 
-            this.remove.returns(Promise.reject(new StorageError));
+            this.remove.rejects(new StorageError);
             var promise = this.doc.remove(this.opt);
             var doc = this.doc;
 
@@ -404,7 +404,7 @@ describe("Document", function() {
             var self = this;
 
             var error = new StorageError('test error');
-            this.touch.returns(Promise.reject(error));
+            this.touch.rejects(error);
 
             return this.doc.touch(10).should.be.rejected.then(function(error) {
                 error.should.have.property('doc').that.is.equal(self.doc);

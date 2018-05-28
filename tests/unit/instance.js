@@ -820,7 +820,7 @@ describe('Instance', function() {
         it('should return rejected promise with an Error if an old refDoc key generation process fails unexpectedly', function() {
             var error = new Error('getDirtyRefDocs testing errror');
             var keyGenerateStub = sinon.stub(this.Model.RefDocKey.prototype, 'generate')
-                .returns(Promise.reject(error));
+                .rejects(error);
 
             var instanceData = {
                 name: 'Anonymous',
@@ -1221,7 +1221,7 @@ describe('Instance', function() {
             var originalData = instance.$cloneData();
 
             var instanceOriginalSaveStub = sinon.stub(instance, 'save')
-                .returns(Promise.reject(new ODM.errors.StorageError('test err')));
+                .rejects(new ODM.errors.StorageError('test err'));
 
             var promise = instance.update({
                 email: 'diena@test.com',
@@ -1325,7 +1325,7 @@ describe('Instance', function() {
 
                 instance.subinstance = subinstance;
 
-                this.instanceRefreshStub.returns(Promise.reject(error));
+                this.instanceRefreshStub.rejects(error);
 
                 var promise = instance.populate('subinstance', {getOrFail: false});
 
@@ -1348,7 +1348,7 @@ describe('Instance', function() {
 
                 instance.subinstance = subinstance;
 
-                this.instanceRefreshStub.returns(Promise.reject(error));
+                this.instanceRefreshStub.rejects(error);
 
                 var promise = instance.populate('subinstance', {getOrFail: true});
 
@@ -1553,7 +1553,7 @@ describe('Instance', function() {
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
 
                 //on third call it deletes the main document
-                this.removeStub.onThirdCall().returns(Promise.reject(new ODM.errors.StorageError('test')));
+                this.removeStub.onThirdCall().rejects(new ODM.errors.StorageError('test'));
 
                 var promise = this.user.destroy();
 
@@ -1605,7 +1605,7 @@ describe('Instance', function() {
 
                 this.removeStub.onFirstCall().returns(Promise.resolve({cas: '21321534512314232', token: undefined}));
                 //on second call it deletes the second reference document
-                this.removeStub.onSecondCall().returns(Promise.reject(storageErr));
+                this.removeStub.onSecondCall().rejects(storageErr);
 
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
 
@@ -1647,8 +1647,8 @@ describe('Instance', function() {
 
                 this.removeStub.onFirstCall().returns(Promise.resolve({cas: '21321534512314232', token: undefined}));
                 //on second call it deletes the second reference document
-                this.removeStub.onSecondCall().returns(Promise.reject(storageErr));
-                this.insertStub.returns(Promise.reject(storageErr));
+                this.removeStub.onSecondCall().rejects(storageErr);
+                this.insertStub.rejects(storageErr);
 
                 var afterFailedRollbackStub = sinon.stub().returns(Promise.resolve({}));
 
@@ -1830,7 +1830,7 @@ describe('Instance', function() {
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
 
                 //on third call it inserts the main document
-                this.insertStub.onThirdCall().returns(Promise.reject(new ODM.errors.StorageError('test')));
+                this.insertStub.onThirdCall().rejects(new ODM.errors.StorageError('test'));
 
                 var promise = this.user.insert();
 
@@ -1850,7 +1850,7 @@ describe('Instance', function() {
 
                 this.insertStub.onFirstCall().returns(Promise.resolve({cas: '21321534512314232', token: undefined}));
                 //on second call it inserts the second reference document
-                this.insertStub.onSecondCall().returns(Promise.reject(storageErr));
+                this.insertStub.onSecondCall().rejects(storageErr);
 
                 var beforeRollbackHookStub = sinon.stub().returns(Promise.resolve({}));
                 var afterRollbackHookStub = sinon.stub().returns(Promise.resolve({}));
@@ -1891,9 +1891,9 @@ describe('Instance', function() {
                 //on first call it inserts the first reference document
                 this.insertStub.onFirstCall().returns(Promise.resolve({cas: '21321534512314232', token: undefined}));
                 //on second call it inserts the second reference document
-                this.insertStub.onSecondCall().returns(Promise.reject(storageErr));
+                this.insertStub.onSecondCall().rejects(storageErr);
                 //it will cause to fail the rollback process
-                this.removeStub.returns(Promise.reject(storageErr));
+                this.removeStub.rejects(storageErr);
 
                 var afterFailedRollbackStub = sinon.stub().returns(Promise.resolve({}));
 
@@ -2098,7 +2098,7 @@ describe('Instance', function() {
 
                 //on first call it deletes the outdated reference document
                 var storageErr = new ODM.errors.StorageError('test');
-                this.removeStub.onFirstCall().returns(Promise.reject(storageErr));
+                this.removeStub.onFirstCall().rejects(storageErr);
 
                 var afterFailedIndexRemovalSpy = sinon.stub().returns(Promise.resolve({}));
                 this.user.Model.afterFailedIndexRemoval(afterFailedIndexRemovalSpy, 'testhook');
@@ -2122,7 +2122,7 @@ describe('Instance', function() {
 
                 //on first call it deletes the outdated reference document
                 var storageErr = new ODM.errors.StorageError('test');
-                this.removeStub.onFirstCall().returns(Promise.reject(storageErr));
+                this.removeStub.onFirstCall().rejects(storageErr);
 
                 this.user.username = 'happiecat';
                 var promise = this.user.replace();
@@ -2137,7 +2137,7 @@ describe('Instance', function() {
                 //on first call it inserts new refDoc index
                 this.insertStub.onFirstCall().returns(Promise.resolve({cas: '21321534512314232', token: undefined}));
                 //on first call it inserts another new refDoc index
-                this.insertStub.onSecondCall().returns(Promise.reject(storageErr));
+                this.insertStub.onSecondCall().rejects(storageErr);
 
                 var beforeRollbackHookStub = sinon.stub().returns(Promise.resolve({}));
                 var afterRollbackHookStub = sinon.stub().returns(Promise.resolve({}));
@@ -2184,9 +2184,9 @@ describe('Instance', function() {
                 //on first call it inserts new refDoc index
                 this.insertStub.onFirstCall().returns(Promise.resolve({cas: '21321534512314232', token: undefined}));
                 //on second call it inserts another new refDoc index
-                this.insertStub.onSecondCall().returns(Promise.reject(storageErr));
+                this.insertStub.onSecondCall().rejects(storageErr);
                 //it will cause to fail the rollback process
-                this.removeStub.returns(Promise.reject(storageErr));
+                this.removeStub.rejects(storageErr);
 
                 var afterFailedRollbackStub = sinon.stub().returns(Promise.resolve({}));
 
@@ -2228,7 +2228,7 @@ describe('Instance', function() {
 
                 //on first call it deletes the outdated reference document
                 var storageErr = new ODM.errors.StorageError('test');
-                this.removeStub.onFirstCall().returns(Promise.reject(storageErr));
+                this.removeStub.onFirstCall().rejects(storageErr);
 
                 this.user.username = 'happiecat';
                 var promise = this.user.replace();
