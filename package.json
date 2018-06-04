@@ -1,7 +1,7 @@
 {
   "name": "kouchbase-odm",
-  "version": "2.0.0-rc.1",
-  "author": "fogine <fogine@opmbx.org",
+  "version": "3.0.0-dev.20180419",
+  "author": "fogine",
   "keywords": [
     "couchbase",
     "odm",
@@ -9,12 +9,12 @@
     "promise",
     "n1ql"
   ],
-  "repository" : {
-      "type" : "git",
-      "url" : "https://github.com/fogine/couchbase-odm.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fogine/couchbase-odm.git"
   },
   "bugs": {
-      "url": "https://github.com/fogine/couchbase-odm/issues"
+    "url": "https://github.com/fogine/couchbase-odm/issues"
   },
   "description": "Couchbase Promise based ODM",
   "private": false,
@@ -38,10 +38,9 @@
     "realm-jsdoc": "0.x",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
-    "codeclimate-test-reporter": "^0.3.1",
     "istanbul": "^0.4.3",
     "jsdoc": "^3.4.0",
-    "mocha": "^2.4.5",
+    "mocha": "^2.5.3",
     "sinon": "^1.17.3",
     "sinon-as-promised": "^4.0.0",
     "sinon-chai": "^2.8.0"
