@@ -7,7 +7,6 @@ var Key            = require("../../lib/key/key.js");
 var UUID4Key       = require("../../lib/key/uuid4Key.js");
 var IncrementalKey = require("../../lib/key/incrementalKey.js");
 var RefDocKey      = require("../../lib/key/refDocKey.js");
-var DataType       = require("../../lib/dataType.js");
 var KeyError       = require("../../lib/error/keyError.js");
 
 //this makes sinon-as-promised available in sinon:
@@ -79,7 +78,6 @@ describe('Keys', function() {
 
         it('should expose static `dataType` property', function() {
             expect(UUID4Key.dataType).to.be.a('string');
-            expect(DataType.exists(UUID4Key.dataType)).to.be.true;
         });
 
         describe('generate', function() {
@@ -178,7 +176,6 @@ describe('Keys', function() {
     describe('IncrementalKey', function() {
         it('should expose static `dataType` property', function() {
             expect(IncrementalKey.dataType).to.be.a('string');
-            expect(DataType.exists(IncrementalKey.dataType)).to.be.true;
         });
 
         describe('generate', function() {

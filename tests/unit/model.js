@@ -10,7 +10,7 @@ var couchbase      = require('couchbase').Mock;
 var ODM        = require('../../index.js');
 var ModelError = require('../../lib/error/modelError.js')
 
-var DataTypes = ODM.DataTypes;
+var DataTypes = {};
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');

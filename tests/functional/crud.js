@@ -1,24 +1,22 @@
-var _              = require("lodash");
-var Promise        = require('bluebird');
-var sinon          = require('sinon');
-var sinonChai      = require("sinon-chai");
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var couchbase      = require('couchbase').Mock;
+const _              = require("lodash");
+const Promise        = require('bluebird');
+const sinon          = require('sinon');
+const sinonChai      = require("sinon-chai");
+const chai           = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const couchbase      = require('couchbase').Mock;
 
-var ODM = require('../../index.js');
+const ODM = require('../../index.js');
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
-
-var DataTypes = ODM.DataTypes;
 
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
 chai.should();
 
-var assert = sinon.assert;
-var expect = chai.expect;
+const assert = sinon.assert;
+const expect = chai.expect;
 
 describe('CRUD operations', function() {
     before('Initialize bucket & Build Models', function() {
@@ -27,10 +25,10 @@ describe('CRUD operations', function() {
         this.odm = new ODM({bucket: this.bucket});
 
         this.Client = this.odm.define('Client', {
-            type: DataTypes.HASH_TABLE,
+            type: 'object',
             schema: {
                 name: {
-                    type: DataTypes.STRING
+                    type: 'string'
                 }
             }
         }, {

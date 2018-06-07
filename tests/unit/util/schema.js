@@ -3,16 +3,15 @@ const chai      = require('chai');
 const sinonChai = require("sinon-chai");
 const couchbase = require('couchbase').Mock;
 
-const schemaUtils      = require('../../../lib/util/schema.js');
-const ODM              = require('../../../index.js');
+const schemaUtils = require('../../../lib/util/schema.js');
+const ODM         = require('../../../index.js');
 
 
 chai.use(sinonChai);
 chai.should();
 
-const DataTypes  = ODM.DataTypes;
-const assert     = sinon.assert;
-const expect     = chai.expect;
+const assert = sinon.assert;
+const expect = chai.expect;
 
 describe('schema utils', function() {
     describe('extractAssociations', function() {
@@ -118,7 +117,7 @@ describe('schema utils', function() {
             const bucket = cluster.openBucket('test');
             const odm = new ODM({bucket: bucket});
             const model = odm.define('Test', {
-                type: DataTypes.HASH_TABLE
+                type: 'object'
             });
 
             const schema = {

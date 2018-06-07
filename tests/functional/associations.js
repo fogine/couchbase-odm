@@ -12,8 +12,6 @@ var RelationType = require('../../lib/relationType.js');
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
 
-var DataTypes = ODM.DataTypes;
-
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
 chai.should();
@@ -21,7 +19,7 @@ chai.should();
 var assert = sinon.assert;
 var expect = chai.expect;
 
-describe('Model associations', function() {
+describe.only('Model associations', function() {
     describe('root data type => HASH TABLE (Object)', function() {
         before('Build Models', function() {
             var cluster = new couchbase.Cluster();
@@ -33,42 +31,46 @@ describe('Model associations', function() {
 
             function buildModels(odm, relation) {
                 var Admins = odm.define('Admins', {
-                    type: DataTypes.ARRAY,
+                    type: 'array',
                     schema: {
-                        type: DataTypes.COMPLEX('User', {relation: relation})
+                        type: 'object',
+                        $relation: {type: 'User', method: relation}
                     }
                 });
 
                 var User = odm.define('User', {
-                    type: DataTypes.HASH_TABLE,
+                    type: 'object',
                     schema: {
                         username: {
-                            type: DataTypes.STRING
+                            type: 'string'
                         },
                         email: {
-                            type: DataTypes.STRING
+                            type: 'string'
                         },
                         files: {
-                            type: DataTypes.ARRAY,
+                            type: 'array',
                             schema: {
-                                type: DataTypes.COMPLEX('File', {relation: relation})
+                                type: 'object',
+                                $relation: {type: 'File', method: relation}
                             }
                         }
                     }
                 });
 
                 var FileLink = odm.define('FileLink', {
-                    type: DataTypes.COMPLEX('File', {relation: relation})
+                    type: 'object',
+                    $relation: {type: 'File', method: relation}
                 });
 
                 var File = odm.define('File', {
-                    type: DataTypes.HASH_TABLE,
+                    type: 'object',
                     schema: {
                         name: {
-                            type: DataTypes.STRING
+                            type: 'string'
                         },
                         data: {
-                            type: DataTypes.COMPLEX('FileData', {relation: relation})
+                            type: 'object',
+                            $relation: {type: 'FileData', method: relation}
                         }
                     }
                 }, {
@@ -82,7 +84,7 @@ describe('Model associations', function() {
                 });
 
                 var FileData = odm.define('FileData', {
-                    type: DataTypes.STRING
+                    type: 'string'
                 });
 
                 this.Admins = Admins;
