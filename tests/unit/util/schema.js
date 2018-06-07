@@ -28,18 +28,22 @@ describe('schema utils', function() {
         describe("Model's relations/associations", function() {
             it("should return an object with gathered collection of Model's relations/associations", function() {
                 const schema = {
-                    type: DataTypes.HASH_TABLE,
-                    schema: {
+                    type: 'object',
+                    properties: {
                         user: {
-                            type: DataTypes.COMPLEX('User'),
+                            type: 'object',
+                            $relation: {
+                                type: 'User',
+                                method: 'reference'
+                            }
                         },
                         connections: {
-                            type: DataTypes.HASH_TABLE,
-                            schema: {
+                            type: 'object',
+                            properties: {
                                 friends: {
-                                    type: DataTypes.ARRAY,
-                                    schema: {
-                                        type: DataTypes.COMPLEX('User')
+                                    type: 'array',
+                                    items: {
+                                        $relation: { type: 'User' }
                                     }
                                 }
                             }
@@ -51,19 +55,50 @@ describe('schema utils', function() {
 
                 data.should.be.instanceof(Array);
                 data.should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
-                data.should.have.deep.property('[0].path', 'user');
-                data.should.have.deep.property('[1].path', 'connections.friends');
+                data.should.have.deep.property('[0].path').that.is.eql(['user']);
+                data.should.have.deep.property('[0].type', 'User');
+                data.should.have.deep.property('[1].path').that.is.eql(['connections', 'friends']);
+                data.should.have.deep.property('[1].type', 'User');
             });
 
-            it('should allow to define `DataType.COMPLEX()` as root data type', function() {
+            it('should properly handle associations defined as specific array elements', function() {
                 const schema = {
-                    type: DataTypes.COMPLEX('User'),
+                    type: 'object',
+                    properties: {
+                        connections: {
+                            type: 'array',
+                            items: [
+                                {$relation: {type: 'User'}},
+                                {$relation: {type: 'Country', method: 'reference'}},
+                            ]
+                        }
+                    }
+                };
+
+                const data = schemaUtils.extractAssociations(schema);
+
+                data.should.be.instanceof(Array);
+                data.should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
+                data.should.have.deep.property('[0].path').that.is.eql(['connections', 0]);
+                data.should.have.deep.property('[0].type', 'User');
+                data.should.have.deep.property('[1].path').that.is.eql(['connections', 1]);
+                data.should.have.deep.property('[1].type', 'Country');
+                data.should.have.deep.property('[1].method', 'reference');
+            });
+
+            it('should allow to define `$relation` as root data type', function() {
+                const schema = {
+                    $relation: {
+                        type: 'User'
+                    },
                 };
 
                 const data = schemaUtils.extractAssociations(schema);
 
                 data.should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
-                data.should.have.deep.property('[0].path', null);
+                data.should.have.deep.property('[0].path').that.is.eql([]);
+                data.should.have.deep.property('[0].type', 'User');
+                data.should.have.deep.property('[0].method', undefined);
             });
         });
     });
