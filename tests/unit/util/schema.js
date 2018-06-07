@@ -1,25 +1,24 @@
-var sinon     = require('sinon');
-var chai      = require('chai');
-var sinonChai = require("sinon-chai");
-var couchbase = require('couchbase').Mock;
+const sinon     = require('sinon');
+const chai      = require('chai');
+const sinonChai = require("sinon-chai");
+const couchbase = require('couchbase').Mock;
 
-var schemaUtils      = require('../../../lib/util/schema.js');
-var DataTypes        = require('../../../lib/dataType.js').types;
-var ODM              = require('../../../index.js');
+const schemaUtils      = require('../../../lib/util/schema.js');
+const ODM              = require('../../../index.js');
 
 
 chai.use(sinonChai);
 chai.should();
 
-var DataTypes  = ODM.DataTypes;
-var assert     = sinon.assert;
-var expect     = chai.expect;
+const DataTypes  = ODM.DataTypes;
+const assert     = sinon.assert;
+const expect     = chai.expect;
 
 describe('schema utils', function() {
     describe('extractAssociations', function() {
 
         it('should fail if schema definition is not defined (or is not hash table)', function() {
-            var fn = schemaUtils.extractAssociations;
+            const fn = schemaUtils.extractAssociations;
             expect(fn.bind(fn, null)).to.throw(Error);
             expect(fn.bind(fn, new Date)).to.throw(Error);
             expect(fn.bind(fn, undefined)).to.throw(Error);
@@ -28,7 +27,7 @@ describe('schema utils', function() {
 
         describe("Model's relations/associations", function() {
             it("should return an object with gathered collection of Model's relations/associations", function() {
-                var schema = {
+                const schema = {
                     type: DataTypes.HASH_TABLE,
                     schema: {
                         user: {
@@ -48,7 +47,7 @@ describe('schema utils', function() {
                     }
                 };
 
-                var data = schemaUtils.extractAssociations(schema);
+                const data = schemaUtils.extractAssociations(schema);
 
                 data.should.be.instanceof(Array);
                 data.should.have.lengthOf(2, "Unexpected number of `associations` gathered from `schema` definition");
@@ -57,11 +56,11 @@ describe('schema utils', function() {
             });
 
             it('should allow to define `DataType.COMPLEX()` as root data type', function() {
-                var schema = {
+                const schema = {
                     type: DataTypes.COMPLEX('User'),
                 };
 
-                var data = schemaUtils.extractAssociations(schema);
+                const data = schemaUtils.extractAssociations(schema);
 
                 data.should.have.lengthOf(1, "Unexpected number of `associations` gathered from `schema` definition");
                 data.should.have.deep.property('[0].path', null);
@@ -72,33 +71,34 @@ describe('schema utils', function() {
     describe('extractDefaults', function() {
 
         it('should fail if schema definition is not defined (or is not hash table)', function() {
-            var fn = schemaUtils.extractDefaults;
+            const fn = schemaUtils.extractDefaults;
             expect(fn.bind(fn, null)).to.throw(Error);
             expect(fn.bind(fn, new Date)).to.throw(Error);
             expect(fn.bind(fn, undefined)).to.throw(Error);
             expect(fn.bind(fn, '')).to.throw(Error);
         });
 
-        it('should return an object with default schema property values', function() {
-            var cluster = new couchbase.Cluster();
-            var bucket = cluster.openBucket('test');
-            var odm = new ODM({bucket: bucket});
-            var model = odm.define('Test', {
+        it('should return an object with default object property values', function() {
+            const cluster = new couchbase.Cluster();
+            const bucket = cluster.openBucket('test');
+            const odm = new ODM({bucket: bucket});
+            const model = odm.define('Test', {
                 type: DataTypes.HASH_TABLE
             });
 
-            var schema = {
-                type: DataTypes.HASH_TABLE,
-                schema: {
+            const schema = {
+                type: 'object',
+                properties: {
                     name: {
-                        type: DataTypes.STRING,
+                        type: 'string',
                         default: 'John'
                     },
                     connections: {
-                        type: DataTypes.HASH_TABLE,
-                        schema: {
+                        type: 'object',
+                        properties: {
                             test: {
-                                type: DataTypes.COMPLEX('Test'),
+                                type: 'object',
+                                relation: { type: 'Test' },
                                 default: model.build({})
                             }
                         }
@@ -106,122 +106,224 @@ describe('schema utils', function() {
                 }
             };
 
-            var data = schemaUtils.extractDefaults(schema);
+            const data = schemaUtils.extractDefaults(schema);
 
             data.should.be.eql({
-                name: schema.schema.name.default,
+                name: schema.properties.name.default,
                 connections: {
-                    test: schema.schema.connections.schema.test.default
+                    test: schema.properties.connections.properties.test.default
                 }
             });
         });
 
-        it('should return an object with gathered map of default schema property values (case 2)', function() {
-            var schema = {
-                type: DataTypes.ARRAY,
+        it('should correctly resolve default schema values (0)', function() {
+            const schema = {
+                type: 'object',
+                properties: {
+                    apps: {
+                        type: 'object',
+                        default: {},
+                        properties: {
+                            prop: {type: 'integer', default: 10},
+                        }
+                    }
+                }
+            };
+
+            const defaults = schemaUtils.extractDefaults(schema);
+
+            const expectedDefaults = {
+                apps: {
+                    prop: 10
+                }
+            };
+
+            expect(defaults).to.be.eql(expectedDefaults);
+            expect(defaults.apps).to.not.have.property('_requiresMergeTarget');
+        });
+
+        it('should correctly resolve default schema values (1)', function() {
+            const schema = {
+                type: 'object',
+                properties: {
+                    apps: {
+                        type: 'array',
+                        default: [{}],
+                        items: {
+                            type: 'object',
+                            properties: {
+                                prop: {type: 'string', default: 'value'}
+                            }
+                        }
+                    }
+                }
+            };
+
+            const defaults = schemaUtils.extractDefaults(schema);
+
+            const expectedDefaults = {
+                apps: [{}]
+            };
+            expectedDefaults.apps.itemDefaults = {prop: 'value'};
+
+            expect(defaults).to.be.eql(expectedDefaults);
+            expect(defaults.apps.itemDefaults)
+                .to.be.eql(expectedDefaults.apps.itemDefaults);
+            expect(defaults.apps).to.not.have.property('_requiresMergeTarget');
+        });
+
+        it('should correctly resolve default schema values (2)', function() {
+            const schema = {
+                type: 'object',
+                properties: {
+                    apps: {
+                        type: 'array',
+                        default: [{}],
+                        items: [
+                            {
+                                type: 'object',
+                                properties: {
+                                    prop: {type: 'integer', default: 1}
+                                }
+                            },
+                            {
+                                type: 'object',
+                                properties: {
+                                    prop2: {type: 'integer', default: 2}
+                                }
+                            }
+                        ]
+                    }
+                }
+            };
+
+            const defaults = schemaUtils.extractDefaults(schema);
+
+            const expectedDefaults = {
+                apps: [{prop: 1}, {prop2: 2}]
+            };
+
+            expect(defaults).to.be.eql(expectedDefaults);
+            expect(defaults.apps[0]).to.not.have.property('_requiresMergeTarget');
+            expect(defaults.apps[1]).to.have.property('_requiresMergeTarget', true);
+        });
+
+        it('should extract default array item values when items schema is an array', function() {
+            const schema = {
+                type: 'array',
+                items: [
+                    {type: 'string', default: 'test'},
+                    {type: 'integer', default: 1},
+                    {type: 'object', default: {test: 'test'}},
+                    {
+                        type: 'object',
+                        properties: {
+                            prop: {
+                                type: 'string',
+                                default: 'value'
+                            }
+                        }
+                    },
+                    {
+                        type: 'object',
+                        default: {prop2: 'initial'},
+                        properties: {
+                            prop2: {
+                                type: 'string',
+                                default: 'value'
+                            }
+                        }
+                    }
+                ]
+            };
+
+            const defaults = schemaUtils.extractDefaults(schema);
+
+            defaults.should.be.eql([
+                'test',
+                1,
+                {test: 'test'},
+                {prop: 'value'},
+                {prop2: 'initial'}
+            ]);
+
+            defaults[2].should.not.have.property('_requiresMergeTarget');
+            defaults[3].should.have.property('_requiresMergeTarget', true);
+            defaults[4].should.not.have.property('_requiresMergeTarget');
+
+        });
+
+        it('should extract default object values for each of items of an array', function() {
+            const schema = {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        name: {
+                            type: 'string',
+                            default: 'value'
+                        }
+                    }
+                }
+            };
+
+            const defaults = schemaUtils.extractDefaults(schema);
+
+            const expectedDefaults = [];
+            expectedDefaults.itemDefaults = {
+                name: 'value'
+            };
+
+            expect(defaults).to.be.eql(expectedDefaults);
+            expect(defaults).to.have.property('itemDefaults')
+                .that.is.eql(expectedDefaults.itemDefaults);
+
+        });
+
+        it('should NOT support dafault value definition outside object properties & array items schemas', function() {
+            const schema = {
+                type: 'array',
                 default: ['some', 'values']
             };
 
-            var data = schemaUtils.extractDefaults(schema);
-            data.should.be.eql(schema.default);
+            const data = schemaUtils.extractDefaults(schema);
+            expect(data).to.be.equal(undefined);
         });
 
-        it('should return an object with gathered map of default schema property values (case 3)', function() {
-            var schema = {
-                type: DataTypes.STRING,
-                default: 'test'
-            };
-
-            var data = schemaUtils.extractDefaults(schema);
-            data.should.be.equal(schema.default);
-        });
-
-        it('should return an object with gathered default array item value', function() {
-            var schema = {
-                type: DataTypes.ARRAY,
-                default: [{}],
-                schema: {
-                    type: DataTypes.HASH_TABLE,
-                    schema: {
-                        prop: {
-                            type: DataTypes.STRING,
-                            default: 'test2'
-                        },
-                        items: {
-                            type: DataTypes.ARRAY,
-                            schema: {
-                                type: DataTypes.HASH_TABLE,
-                                schema: {
-                                    prop: {
-                                        type: DataTypes.STRING,
-                                        default: 'test3'
-                                    }
-                                }
-                            }
-                        }
-                    }
+        it('should NOT support dafault value definition outside object properties & array items schemas (2)', function() {
+            const schema = {
+                type: 'array',
+                items: {
+                    type: 'string',
+                    default: 'invalid'
                 }
             };
 
-            var data = schemaUtils.extractDefaults(schema);
-
-            var exptectedItems = [];
-            exptectedItems.itemDefaults = {prop: 'test3'};
-            exptectedItems.bindedByForce = true;
-
-            var expectedData = [{}];
-            expectedData.itemDefaults = {
-                prop: 'test2',
-                items: exptectedItems
-            };
-
-            data.should.be.eql(expectedData);
+            const data = schemaUtils.extractDefaults(schema);
+            expect(data).to.be.equal(undefined);
         });
 
-        it('should return an object with gathered default array item values (2)', function() {
-            var schema = {
-                type: DataTypes.ARRAY,
-                default: [[{}]],
-                schema: {
-                    type: DataTypes.ARRAY,
-                    schema: {
-                        type: DataTypes.HASH_TABLE,
-                        schema: {
-                            prop: {
-                                type: DataTypes.STRING,
-                                default: 'test'
-                            }
-                        }
-                    }
+        it('should NOT support dafault value definition outside object properties & array items schemas (3)', function() {
+            const schema = {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    default: {test: 'invalid'}
                 }
             };
 
-            var data = schemaUtils.extractDefaults(schema);
-
-            var expectedData = [[{}]];
-            expectedData.itemDefaults = [];
-            expectedData.itemDefaults.itemDefaults = {prop: 'test'};
-            expectedData.itemDefaults.bindedByForce = true;
-
-            data.should.be.eql(expectedData);
+            const data = schemaUtils.extractDefaults(schema);
+            expect(data).to.be.equal(undefined);
         });
-    });
 
-    it('should return an object with gathered default array item value (3)', function() {
-        var schema = {
-            type: DataTypes.ARRAY,
-            default: [],
-            schema: {
-                type: DataTypes.STRING,
+        it('should NOT support default value definition for primitive types', function() {
+            const schema = {
+                type: 'string',
                 default: 'test'
-            }
-        };
+            };
 
-        var data = schemaUtils.extractDefaults(schema);
-
-        var expectedData = [];
-        expectedData.itemDefaults = 'test';
-
-        data.should.be.eql(expectedData);
+            const data = schemaUtils.extractDefaults(schema);
+            expect(data).to.be.equal(undefined);
+        });
     });
 });

@@ -1,69 +1,180 @@
-var sinon     = require('sinon');
-var chai      = require('chai');
-var sinonChai = require("sinon-chai");
-var couchbase = require('couchbase').Mock;
+const _         = require('lodash');
+const sinon     = require('sinon');
+const chai      = require('chai');
+const sinonChai = require("sinon-chai");
+const couchbase = require('couchbase').Mock;
 
-var dataUtils = require('../../../lib/util/data.js');
-var DataTypes = require('../../../lib/dataType.js').types;
-var ODM       = require('../../../index.js');
+const dataUtils = require('../../../lib/util/data.js');
+const ODM       = require('../../../index.js');
 
 
 chai.use(sinonChai);
 chai.should();
 
-var DataTypes  = ODM.DataTypes;
-var assert     = sinon.assert;
-var expect     = chai.expect;
+const DataTypes  = ODM.DataTypes;
+const assert     = sinon.assert;
+const expect     = chai.expect;
 
 describe('data utils', function() {
     describe('applyDefaults', function() {
-        it("should correctly set default property values to object's properties which are empty (null/undefined)", function() {
-            var defaults = {
-                prop1: 'test',
-                prop2: null,
-                prop3: ['test', 'test'],
-                prop4: {
-                    prop5: 2,
-                    prop6: false
+        it('should apply missing default values to data object', function() {
+            const defaults = {
+                apps: {
+                    prop: 10,
+                    prop2: {name: 'value'}
                 },
-                prop7: ['test']
+                col: [{}],
+                prop3: false
             };
 
-            var data = {
-                prop1: 'alreadyset',
-                prop3: [],
-                prop4: {}
-            };
+            const data = {};
 
-            var expected = {
-                prop1: 'alreadyset',
-                prop2: null,
-                prop3: [],
-                prop4: {
-                    prop5: 2,
-                    prop6: false
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+
+            expect(dataWithDefaults).to.be.eql({
+                apps: {
+                    prop: 10,
+                    prop2: {name: 'value'}
                 },
-                prop7: ['test']
+                col: [{}],
+                prop3: false
+            });
+        });
+
+        it('should apply missing default values to data object (2)', function() {
+            const defaults = {
+                apps: {
+                    prop: 10,
+                    prop2: {name: 'value'}
+                },
+                col: [{}],
+                prop3: false
             };
 
-            var dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+            const data = {
+                apps: {
+                    prop: 22,
+                    prop2: {age: 12}
+                },
+                col: []
+            };
 
-            dataWithDefaults.should.be.eql(expected);
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+
+            expect(dataWithDefaults).to.be.eql({
+                apps: {
+                    prop: 22,
+                    prop2: {name: 'value', age: 12}
+                },
+                col: [{}],
+                prop3: false
+            });
+        });
+
+        it('should apply array item default values to array object elements', function() {
+            const defaults = {
+                col: [{}]
+            };
+            defaults.col.itemDefaults = {
+                prop: 'value'
+            };
+
+            Object.defineProperty(
+                defaults.col.itemDefaults,
+                '_requiresMergeTarget',
+                {
+                    value: true,
+                    writable: false,
+                    enumerable: false
+                }
+            );
+
+            const col = [];
+            col[1] = {prop2: 'value2'};
+            col[2] = null;
+
+            const data = {
+                col: col
+            };
+
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+
+            expect(dataWithDefaults).to.be.eql({
+                col: [
+                    {prop: 'value'},
+                    {prop: 'value', prop2: 'value2'},
+                    null
+                ]
+            });
+        });
+
+        it('should apply missing default values to array object elements', function() {
+            const defaults = [];
+            defaults.itemDefaults = {
+                prop: 'value',
+                obj: {prop: 'value'}
+            };
+
+            const data = [{}, {prop: 'different'}];
+
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+
+            expect(dataWithDefaults).to.be.eql([
+                {prop: 'value', obj: {prop: 'value'}},
+                {prop: 'different', obj: {prop: 'value'}}
+            ]);
+        });
+
+
+        it('should NOT apply defaults when target object does not exist and default source object is tagged with _requiresMergeTarget flag', function() {
+            const defaults = {
+                col: [{prop: 'value'}]
+            };
+
+            Object.defineProperty(defaults.col[0], '_requiresMergeTarget', {
+                enumerable: false,
+                value: true,
+                writable: false
+            });
+
+            [
+                { col: [null] },
+                { col: [] },
+                { col: [undefined] },
+                { col: [1] },
+                { col: [[]] },
+            ].forEach(function(data, index) {
+                const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+
+                expect(dataWithDefaults).to.be.eql(
+                    data,
+                    `failed with dataset: ${index}`
+                );
+            });
         });
 
         it('should clone data before they are applied to the data object', function() {
-            var defaults = {
+            const defaults = {
                 prop1: ['test', 'test'],
                 prop2: {
                     prop5: 2,
                     prop6: false
                 }
             };
-            defaults.prop1.itemDefaults = 'test';
+            Object.defineProperty(defaults.prop1, 'itemDefaults', {
+                enumerable: false,
+                value: 'test',
+                writable: true
+            });
+            Object.defineProperty(defaults.prop1, '_requiresMergeTarget', {
+                enumerable: false,
+                value: true,
+                writable: false
+            });
 
-            var data = {};
+            const data = {prop1: []};
 
-            var dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
 
             dataWithDefaults.prop1.should.be.eql(defaults.prop1);
             dataWithDefaults.prop1.should.be.eql(defaults.prop1);
@@ -72,63 +183,30 @@ describe('data utils', function() {
             dataWithDefaults.prop2.should.not.be.equal(defaults.prop2);
         });
 
-        it('should correctly apply default array item values to array items that have empty value', function() {
-            var defaults = {
-                props: []
-            };
-            defaults.props.itemDefaults = {
-                prop1: 'test',
-                prop2: null
-            };
-
-            var data = {
-                props: [{prop1: 'alreadyset'}, null, undefined, '']
+        it('should not treat null type as empty value (aka. undefined)', function() {
+            const defaults = {
+                apps: {
+                    prop: 10,
+                    prop2: {name: 'value'}
+                },
+                col: [{}],
+                prop3: false
             };
 
-            var dataWithDefaults = dataUtils.applyDefaults(defaults, data);
-
-            dataWithDefaults.should.be.eql({
-                props: [
-                    {
-                        prop1: 'alreadyset',
-                        prop2: null
-                    },
-                    {
-                        prop1: 'test',
-                        prop2: null
-                    },
-                    {
-                        prop1: 'test',
-                        prop2: null
-                    },
-                    ''
-                ]
-            });
-        });
-
-        it('should correctly apply default array item values to array items that have empty value (2)', function() {
-            var defaults = [];
-            defaults.itemDefaults = 'test';
-
-            var data = [null, undefined, ''];
-
-            var dataWithDefaults = dataUtils.applyDefaults(defaults, data);
-
-            dataWithDefaults.should.be.eql(['test', 'test', '']);
-        });
-
-        it("should not apply default array value if the value is marked as that it's been set by force (bindedByForce=true)", function() {
-            var defaults = {
-                props: []
+            const data = {
+                apps: {
+                    prop: null,
+                    prop2: null
+                },
+                col: [null],
+                prop3: null
             };
 
-            defaults.props.bindedByForce = true;
+            const dataClone = _.cloneDeep(data);
 
-            var dataWithDefaults = dataUtils.applyDefaults(defaults, {
-                props: null
-            });
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
 
-            dataWithDefaults.should.be.eql({props: null});
+            expect(dataWithDefaults).to.be.eql(dataClone);
         });
     });
 
@@ -189,15 +267,15 @@ describe('data utils', function() {
                 .that.is.eql('test');
         });
 
-        it('should copy the `bindedByForce` property on array objects', function() {
+        it('should copy the `_requiresMergeTarget` property on array objects', function() {
             var defaults = {
                 props: []
             };
-            defaults.props.bindedByForce = true;
+            defaults.props._requiresMergeTarget = true;
 
             var cloned = dataUtils.cloneDefaults(defaults);
 
-            cloned.props.should.have.property('bindedByForce', true);
+            cloned.props.should.have.property('_requiresMergeTarget', true);
         });
     });
 });
