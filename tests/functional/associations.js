@@ -1,13 +1,13 @@
-var _              = require("lodash");
-var Promise        = require('bluebird');
-var sinon          = require('sinon');
-var sinonChai      = require("sinon-chai");
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var couchbase      = require('couchbase').Mock;
+const _              = require("lodash");
+const Promise        = require('bluebird');
+const sinon          = require('sinon');
+const sinonChai      = require("sinon-chai");
+const chai           = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const couchbase      = require('couchbase').Mock;
 
-var ODM          = require('../../index.js');
-var RelationType = require('../../lib/relationType.js');
+const ODM          = require('../../index.js');
+const RelationType = require('../../lib/relationType.js');
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -16,31 +16,31 @@ chai.use(sinonChai);
 chai.use(chaiAsPromised);
 chai.should();
 
-var assert = sinon.assert;
-var expect = chai.expect;
+const assert = sinon.assert;
+const expect = chai.expect;
 
-describe.only('Model associations', function() {
+describe('Model associations', function() {
     describe('root data type => HASH TABLE (Object)', function() {
         before('Build Models', function() {
-            var cluster = new couchbase.Cluster();
-            var bucket = this.bucket = cluster.openBucket('functional');
+            const cluster = new couchbase.Cluster();
+            const bucket = this.bucket = cluster.openBucket('functional');
 
             this.buildModels = buildModels;
             this.buildDocuments = buildDocuments;
             this.insertDocuments = insertDocuments;
 
             function buildModels(odm, relation) {
-                var Admins = odm.define('Admins', {
+                const Admins = odm.define('Admins', {
                     type: 'array',
-                    schema: {
+                    items: {
                         type: 'object',
                         $relation: {type: 'User', method: relation}
                     }
                 });
 
-                var User = odm.define('User', {
+                const User = odm.define('User', {
                     type: 'object',
-                    schema: {
+                    properties: {
                         username: {
                             type: 'string'
                         },
@@ -49,7 +49,7 @@ describe.only('Model associations', function() {
                         },
                         files: {
                             type: 'array',
-                            schema: {
+                            items: {
                                 type: 'object',
                                 $relation: {type: 'File', method: relation}
                             }
@@ -57,14 +57,14 @@ describe.only('Model associations', function() {
                     }
                 });
 
-                var FileLink = odm.define('FileLink', {
+                const FileLink = odm.define('FileLink', {
                     type: 'object',
                     $relation: {type: 'File', method: relation}
                 });
 
-                var File = odm.define('File', {
+                const File = odm.define('File', {
                     type: 'object',
-                    schema: {
+                    properties: {
                         name: {
                             type: 'string'
                         },
@@ -83,7 +83,7 @@ describe.only('Model associations', function() {
                     }
                 });
 
-                var FileData = odm.define('FileData', {
+                const FileData = odm.define('FileData', {
                     type: 'string'
                 });
 
@@ -129,7 +129,7 @@ describe.only('Model associations', function() {
         describe('REFERENCE relation type', function() {
 
             before('Build models', function() {
-                var odm = this.odm = new ODM({bucket: this.bucket});
+                const odm = this.odm = new ODM({bucket: this.bucket});
                 this.buildModels.call(this, odm, RelationType.REF);
             });
 
@@ -255,86 +255,5 @@ describe.only('Model associations', function() {
                 });
             });
         });
-
-        describe('EMBEDDED relation type', function() {
-
-            before('Build models', function() {
-                var odm = this.odm = new ODM({bucket: this.bucket});
-                this.buildModels.call(this, odm, RelationType.EMBEDDED);
-            });
-
-            before('Build documents', function() {
-                this.buildDocuments.call(this);
-            });
-
-            before('Insert documents', function() {
-                return this.insertDocuments.call(this);
-            });
-
-            describe('`get from a bucket`', function() {
-                it("should successfully load file with it's 'data' association", function() {
-                    return this.File.getById(this.file.getKey())
-                    .bind(this)
-                    .should.be.fulfilled
-                    .then(function(file) {
-                        //console.log('*****************BUCKET**************');
-                        //console.log(this.bucket.storage.items[this.file.getKey().toString()][this.file.getKey().toString()].value.toString());
-                        file.data.should.be.instanceof(this.FileData.Instance);
-                        file.data.getData().should.be.eql(this.fileData.getData());
-                    });
-                });
-
-                it('should recursively load associations of the fileLink document', function() {
-                    return this.FileLink.getById(this.fileLink.getKey())
-                    .bind(this)
-                    .should.be.fulfilled
-                    .then(function(fileLink) {
-                        var file = fileLink.getData();
-                        file.should.be.an.instanceof(this.File.Instance);
-                        _.omit(file.getData(), ['data']).should.be.eql(
-                                _.omit(this.file.getData(), ['data'])
-                        );
-                        //fileData association must be compared separately because
-                        //fileData document id is not set in object initiated with data
-                        //from bucket whereas the manually builded fileData object which
-                        //has been perssisted to bucket has an id generated
-                        file.data.getData().should.be.equal(this.file.data.getData());
-                    });
-                });
-
-                it('should load file associations of the user document', function() {
-                    return this.User.getById(this.user.getKey())
-                    .bind(this)
-                    .should.be.fulfilled
-                    .then(function(user) {
-                        user.files.should.be.instanceof(Array);
-                        var file = user.files[0];
-                        file.should.be.instanceof(this.File.Instance);
-                        //File document does not have saved a FileData document key
-                        //alongside FileData association data string
-                        //so we must set it, in order to be the both instead deep equal
-                        file.data.getKey().setId(this.file.data.getKey().getId());
-                        user.getData().should.be.eql(this.user.getData());
-                    });
-                });
-
-                it("should recursivelly load all associations of the 'admins' document", function() {
-                    return this.Admins.getById(this.admins.getKey())
-                    .bind(this)
-                    .should.be.fulfilled
-                    .then(function(admins) {
-                        admins.getData().should.be.an.instanceof(Array);
-                        admins.getData().should.have.lengthOf(1);
-                        admins.getData()[0].should.be.instanceof(this.User.Instance);
-                        //File document does not have saved a FileData document key
-                        //alongside FileData association data string
-                        //so we must set it, in order to be the both instead deep equal
-                        admins.getData('0').files[0].data.getKey().setId(this.file.data.getKey().getId());
-                        admins.getData().should.be.eql(this.admins.getData());
-                    });
-                });
-            });
-        });
-
     });
 });

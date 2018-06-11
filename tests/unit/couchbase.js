@@ -1,14 +1,13 @@
-var sinon          = require('sinon');
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var sinonChai      = require("sinon-chai");
-var couchbase      = require('couchbase').Mock;
-var ODM            = require('../../index.js');
-var UUID4Key       = require("../../lib/key/uuid4Key.js");
-var IncrementalKey = require("../../lib/key/incrementalKey.js");
-var ModelManager   = require("../../lib/modelManager.js");
-var Model          = require("../../lib/model.js");
-var DataTypes      = ODM.DataTypes;
+const sinon          = require('sinon');
+const chai           = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const sinonChai      = require("sinon-chai");
+const couchbase      = require('couchbase').Mock;
+const ODM            = require('../../index.js');
+const UUID4Key       = require("../../lib/key/uuid4Key.js");
+const IncrementalKey = require("../../lib/key/incrementalKey.js");
+const ModelManager   = require("../../lib/modelManager.js");
+const Model          = require("../../lib/model.js");
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -20,15 +19,15 @@ chai.should();
 describe('CouchbaseODM', function() {
 
     before(function() {
-        var cluster = new couchbase.Cluster();
-        var bucket = cluster.openBucket('coubhasetest');
+        const cluster = new couchbase.Cluster();
+        const bucket = cluster.openBucket('coubhasetest');
 
         this.cluster = cluster;
         this.bucket = bucket;
     });
 
     it('should implement Hook API', function() {
-        var odm = new ODM({});
+        const odm = new ODM({});
 
         odm.should.have.property('runHooks').that.is.a('function');
         odm.should.have.property('addHook').that.is.a('function');
@@ -40,10 +39,10 @@ describe('CouchbaseODM', function() {
     });
 
     it('should assure that all defined hooks are items of an array', function() {
-        var beforeValidateHook = sinon.spy();
-        var afterValidateHook = sinon.spy();
+        const beforeValidateHook = sinon.spy();
+        const afterValidateHook = sinon.spy();
 
-        var odm = new ODM({
+        const odm = new ODM({
             hooks: {
                 beforeValidate: beforeValidateHook,
                 afterValidate: [
@@ -62,7 +61,7 @@ describe('CouchbaseODM', function() {
     });
 
     it('should set default options to a Model if options are not set', function() {
-        var odm = new ODM({});
+        const odm = new ODM({});
 
         odm.options.should.have.property('key', UUID4Key);
         odm.options.should.have.property('schemaSettings').that.is.eql({
@@ -102,8 +101,8 @@ describe('CouchbaseODM', function() {
         });
 
         it('should return new Model object with default options inherited from global definition', function() {
-            var ModelObject = this.odm.define('ModelName', {
-                type: DataTypes.HASH_TABLE
+            const ModelObject = this.odm.define('ModelName', {
+                type: 'object'
             }, {
                 camelCase: true
             });
@@ -117,8 +116,8 @@ describe('CouchbaseODM', function() {
         });
 
         it('should register created Model object in cache', function() {
-            var ModelObject = this.odm.define('ModelName2', {
-                type: DataTypes.HASH_TABLE
+            const ModelObject = this.odm.define('ModelName2', {
+                type: 'object'
             }, {
                 camelCase: true
             });
@@ -127,10 +126,10 @@ describe('CouchbaseODM', function() {
         });
 
         it('should call `Model.$init` with `ModelManager` instance', function() {
-            var initSpy = sinon.spy(Model.prototype, '$init');
+            const initSpy = sinon.spy(Model.prototype, '$init');
 
-            var ModelObject = this.odm.define('ModelName3', {
-                type: DataTypes.HASH_TABLE
+            const ModelObject = this.odm.define('ModelName3', {
+                type: 'object'
             });
 
             initSpy.should.have.been.calledOne;

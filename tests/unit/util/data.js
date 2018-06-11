@@ -153,6 +153,41 @@ describe('data utils', function() {
             });
         });
 
+        it('should NOT merge two array when applying defaults', function() {
+            const defaults = {
+                prop: ['val1', 'val2', 'val3']
+            };
+
+            const data = {
+                prop: ['val4']
+            };
+
+            dataUtils.applyDefaults(defaults, data).should.be.eql({
+                prop: ['val4']
+            });
+        });
+
+        it('should correctly apply array item defaults', function() {
+            const defaults = {
+                apps: [{prop: 1}, {prop2: 2}]
+            };
+
+            Object.defineProperty(defaults.apps[0], '_requiresMergeTarget', {
+                enumerable: false,
+                value: true
+            });
+            Object.defineProperty(defaults.apps[1], '_requiresMergeTarget', {
+                enumerable: false,
+                value: true
+            });
+
+            const data = {apps: []};
+
+            dataUtils.applyDefaults(defaults, data).should.be.eql({
+                apps: []
+            });
+        });
+
         it('should clone data before they are applied to the data object', function() {
             const defaults = {
                 prop1: ['test', 'test'],
@@ -216,7 +251,7 @@ describe('data utils', function() {
             var bucket = cluster.openBucket('test');
             var odm = new ODM({bucket: bucket});
             var model = odm.define('CloneDefaultsTestModel', {
-                type: DataTypes.HASH_TABLE
+                type: 'object'
             });
 
             this.model = model;

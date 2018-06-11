@@ -1,10 +1,10 @@
-var Promise        = require('bluebird');
-var sinon          = require('sinon');
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var sinonChai      = require("sinon-chai");
-var Hook           = require("../../lib/hook.js");
-var HookError      = require('../../lib/error/hookError.js');
+const Promise        = require('bluebird');
+const sinon          = require('sinon');
+const chai           = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const sinonChai      = require("sinon-chai");
+const Hook           = require("../../lib/hook.js");
+const HookError      = require('../../lib/error/hookError.js');
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -13,8 +13,8 @@ chai.use(sinonChai);
 chai.use(chaiAsPromised);
 chai.should();
 
-var assert = sinon.assert;
-var expect = chai.expect;
+const assert = sinon.assert;
+const expect = chai.expect;
 
 describe('Hook', function() {
 
@@ -34,8 +34,8 @@ describe('Hook', function() {
     });
 
     it('should have hook methods attached according to existing hook types', function() {
-        var model = this.buildModel();
-        var self = this;
+        const model = this.buildModel();
+        const self = this;
 
         Object.keys(Hook.types).forEach(function(hookType){
             model.should.have.property(hookType).that.is.a('function');
@@ -48,7 +48,7 @@ describe('Hook', function() {
 
     describe('addHook', function() {
         it('should register provided hook function under defined `type` and `name`', function() {
-            var model = this.buildModel();
+            const model = this.buildModel();
 
             Object.keys(Hook.types).forEach(function(hookType, index) {
                 model.addHook(hookType, function() {}, 'hookName' + index);
@@ -58,9 +58,9 @@ describe('Hook', function() {
         });
 
         it('should allow to register unnamed hook function ', function() {
-            var model = this.buildModel();
+            const model = this.buildModel();
 
-            var hook = function() {};
+            const hook = function() {};
             model.addHook('beforeValidate', hook);
 
             Object.keys(model.options.hooks).should.have.lengthOf(1);
@@ -68,10 +68,10 @@ describe('Hook', function() {
         });
 
         it('should throw `HookError` if invalid `hookType` is supplied', function() {
-            var model = this.buildModel();
+            const model = this.buildModel();
 
             function test() {
-                var hook = function() {};
+                const hook = function() {};
                 model.addHook('invalidHookType', hook);
             }
 
@@ -79,10 +79,10 @@ describe('Hook', function() {
         });
 
         it('should throw `HookError` if hook is not a function', function() {
-            var model = this.buildModel();
+            const model = this.buildModel();
 
             function test() {
-                var hook = function() {};
+                const hook = function() {};
                 model.addHook('beforeValidate', null);
             }
 
@@ -92,12 +92,12 @@ describe('Hook', function() {
 
     describe('listenerCount', function() {
         it('should return `0` if there is listener registered', function() {
-            var model = this.buildModel({});
+            const model = this.buildModel({});
             model.listenerCount('beforeValidate').should.be.equal(0);
         });
 
         it('should return number of registered listeners', function() {
-            var model = this.buildModel({
+            const model = this.buildModel({
                 beforeValidate: [{ name: 'testHook', fn: function(){} }]
             });
             model.listenerCount('beforeValidate').should.be.equal(1);
@@ -106,7 +106,7 @@ describe('Hook', function() {
 
     describe('removeHook', function() {
         it('should remove registered named-only hook', function() {
-            var model = this.buildModel({
+            const model = this.buildModel({
                 beforeValidate: [
                     { name: 'testHook', fn: function(){} },
                     { name: 'anotherTestHook', fn: function(){} }
@@ -119,7 +119,7 @@ describe('Hook', function() {
         });
 
         it('should throw `HookError` if invalid `hookType` is supplied', function() {
-            var model = this.buildModel({
+            const model = this.buildModel({
                 beforeValidate: [
                     { name: 'testHook', fn: function(){} }
                 ]
@@ -136,13 +136,13 @@ describe('Hook', function() {
     describe('runHooks', function() {
 
         it('should call all registered hooks of given type', function() {
-            var hookSpyAsync1 = sinon.spy();
-            var hookSpyAsync2 = sinon.spy();
+            const hookSpyAsync1 = sinon.spy();
+            const hookSpyAsync2 = sinon.spy();
 
-            var hookSpySync1 = sinon.spy();
-            var hookSpySync2 = sinon.spy();
+            const hookSpySync1 = sinon.spy();
+            const hookSpySync2 = sinon.spy();
 
-            var model = this.buildModel({
+            const model = this.buildModel({
                 beforeCreate: [
                     { name: 'testHookAsync', fn: hookSpyAsync1 },
                     hookSpyAsync2,
@@ -153,7 +153,7 @@ describe('Hook', function() {
                 ]
             });
 
-            var obj = {};
+            const obj = {};
 
             model.runHooks('beforeValidate', obj);
             model.runHooks(Hook.types.beforeValidate, obj);
@@ -163,7 +163,7 @@ describe('Hook', function() {
             hookSpySync2.should.have.been.calledTwice;
             hookSpySync2.should.have.been.calledWith(obj);
 
-            var promise = model.runHooks('beforeCreate', obj, {});
+            const promise = model.runHooks('beforeCreate', obj, {});
             return promise.should.be.fulfilled.then(function() {
 
                 hookSpyAsync1.should.have.been.calledOnce;
@@ -171,7 +171,7 @@ describe('Hook', function() {
                 hookSpyAsync2.should.have.been.calledOnce;
                 hookSpyAsync2.should.have.been.calledWith(obj);
 
-                var promise2 = model.runHooks(Hook.types.beforeCreate, obj, {});
+                const promise2 = model.runHooks(Hook.types.beforeCreate, obj, {});
 
                 return promise2.should.be.fulfilled.then(function() {
 
@@ -184,7 +184,7 @@ describe('Hook', function() {
         });
 
         it('should throw `HookError` if invalid `hookType` is supplied', function() {
-            var model = this.buildModel({
+            const model = this.buildModel({
                 beforeValidate: [{ name: 'testHook', fn: function(){} }]
             });
 

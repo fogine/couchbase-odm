@@ -238,8 +238,39 @@ describe('schema utils', function() {
             };
 
             expect(defaults).to.be.eql(expectedDefaults);
-            expect(defaults.apps[0]).to.not.have.property('_requiresMergeTarget');
+            expect(defaults.apps[0]).to.have.property('_requiresMergeTarget', true);
             expect(defaults.apps[1]).to.have.property('_requiresMergeTarget', true);
+        });
+
+        it('should correctly resolve default schema values (3)', function() {
+            const schema = {
+                type: 'object',
+                properties: {
+                    apps: {
+                        type: 'array',
+                        default: ['test1'],
+                        items: [
+                            {
+                                type: 'string',
+                                default: 'test2'
+                            },
+                            {
+                                type: 'string',
+                                default: 'test3'
+                            }
+                        ]
+                    }
+                }
+            };
+
+            const defaults = schemaUtils.extractDefaults(schema);
+
+            const expectedDefaults = {
+                //TODO
+                apps: ['', 'test3']
+            };
+
+            expect(defaults).to.be.eql(expectedDefaults);
         });
 
         it('should extract default array item values when items schema is an array', function() {

@@ -1,5 +1,6 @@
 ## FUTURE
 
+* [CHANGED] `Instance.prototype.sanitize` does not accept any options
 * [BUGFIX] `DataTypes.INT` was failing with negative integer numbers
 * [BUGFIX] When Model's instance method was overriden with user defined function, the function was being called with incorrect context object
 * [CHANGED] `Document` methods `insert` & `replace` & `remove` & `touch` returns resolved promise with self (Document object) when operation succeeds
