@@ -102,7 +102,7 @@ describe('schema utils', function() {
         });
     });
 
-    describe.only('extractDefaults', function() {
+    describe('extractDefaults', function() {
 
         it('should fail if schema definition is not defined (or is not hash table)', function() {
             const fn = schemaUtils.extractDefaults;
