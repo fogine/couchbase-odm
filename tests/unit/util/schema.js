@@ -102,7 +102,7 @@ describe('schema utils', function() {
         });
     });
 
-    describe('extractDefaults', function() {
+    describe.only('extractDefaults', function() {
 
         it('should fail if schema definition is not defined (or is not hash table)', function() {
             const fn = schemaUtils.extractDefaults;
@@ -279,7 +279,8 @@ describe('schema utils', function() {
                             items: {
                                 type: 'object',
                                 properties: {
-                                    prop: {type: 'string', default: 'value'}
+                                    prop: {type: 'string', default: 'value'},
+                                    prop2: {type: 'string', default: 'value2'}
                                 }
                             }
                         }
@@ -290,7 +291,8 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps', [['prop']]], default: 'value'}
+                {path: ['apps', [['prop']]], default: 'value'},
+                {path: ['apps', [['prop2']]], default: 'value2'},
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -308,7 +310,8 @@ describe('schema utils', function() {
                                 prop: {
                                     type: 'object',
                                     properties: {
-                                        prop2: {type: 'string', default: 'value'}
+                                        prop2: {type: 'string', default: 'value'},
+                                        prop3: {type: 'string', default: 'value3'}
                                     }
                                 }
                             }
@@ -320,7 +323,8 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps', ['prop', 'prop2']], default: 'value'}
+                {path: ['apps', ['prop', 'prop2']], default: 'value'},
+                {path: ['apps', ['prop', 'prop3']], default: 'value3'},
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -338,8 +342,13 @@ describe('schema utils', function() {
                                 {
                                     type: 'object',
                                     properties: {
-                                        prop2: {type: 'string', default: 'value'}
+                                        prop2: {type: 'string', default: 'value'},
+                                        prop3: {type: 'string', default: 'value2'},
                                     }
+                                },
+                                {
+                                    type: 'string',
+                                    default: 'value3'
                                 }
                             ]
                         }
@@ -350,7 +359,9 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps', [0, 'prop2']], default: 'value'}
+                {path: ['apps', [0, 'prop2'] ], default: 'value'},
+                {path: ['apps', [0, 'prop3'] ], default: 'value2'},
+                {path: ['apps', [1] ], default: 'value3'}
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -369,7 +380,11 @@ describe('schema utils', function() {
                             prop: {
                                 type: 'string',
                                 default: 'value'
-                            }
+                            },
+                            prop3: {
+                                type: 'string',
+                                default: 'value3'
+                            },
                         }
                     },
                     {
@@ -392,6 +407,7 @@ describe('schema utils', function() {
                 {path: [1], default: 1},
                 {path: [2], default: {test: 'test'}},
                 {path: [3, 'prop'], default: 'value'},
+                {path: [3, 'prop3'], default: 'value3'},
                 {path: [4], default: {prop2: 'initial'}},
                 {path: [4, 'prop2'], default: 'value'}
             ]);
