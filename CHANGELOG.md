@@ -1,5 +1,6 @@
 ## FUTURE
 
+* [CHANGED] dropped support for build-in custom Model schema format which has been replaced with `json-schema` validation provided by `Ajv` package
 * [CHANGED] `Instance.prototype.sanitize` does not accept any options
 * [BUGFIX] `DataTypes.INT` was failing with negative integer numbers
 * [BUGFIX] When Model's instance method was overriden with user defined function, the function was being called with incorrect context object

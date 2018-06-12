@@ -598,6 +598,7 @@ describe('Model', function() {
                         },
                         dimensions: {
                             type: 'object',
+                            default: {},
                             properties: {
                                 height: {
                                     type: 'integer',
@@ -655,7 +656,7 @@ describe('Model', function() {
                 });
                 const data = instance.getData();
 
-                data.should.have.property('color',null);
+                data.should.have.property('color', null);
                 data.should.have.property('dimensions', null);
             });
 
@@ -678,7 +679,7 @@ describe('Model', function() {
                 const data = instance.getData();
 
                 data.should.have.property('owner').that.is.not.equal(this.model.defaults.owner);
-                data.owner.getData().should.be.equal(this.model.defaults.owner.getData());
+                data.owner.getData().should.be.equal(this.model.defaults[2].default.getData());
             });
 
             it('(default values) should not overwrite provided instance data values', function() {

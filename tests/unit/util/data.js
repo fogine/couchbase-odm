@@ -18,14 +18,15 @@ const expect     = chai.expect;
 describe('data utils', function() {
     describe('applyDefaults', function() {
         it('should apply missing default values to data object', function() {
-            const defaults = {
-                apps: {
-                    prop: 10,
-                    prop2: {name: 'value'}
-                },
-                col: [{}],
-                prop3: false
-            };
+            const defaults = [
+                {path: ['apps'], default: {}},
+                {path: ['apps', 'prop'], default: 10},
+                {path: ['apps', 'prop2'], default: {}},
+                {path: ['apps', 'prop2', 'name'], default: 'value'},
+                {path: ['col'], default: []},
+                {path: ['col', 0], default: {}},
+                {path: ['prop3'], default: false}
+            ];
 
             const data = {};
 
@@ -42,14 +43,14 @@ describe('data utils', function() {
         });
 
         it('should apply missing default values to data object (2)', function() {
-            const defaults = {
-                apps: {
-                    prop: 10,
-                    prop2: {name: 'value'}
-                },
-                col: [{}],
-                prop3: false
-            };
+            const defaults = [
+                {path: ['apps'], default: {}},
+                {path: ['apps', 'prop'], default: 10},
+                {path: ['apps', 'prop2'], default: {}},
+                {path: ['apps', 'prop2', 'name'], default: 'value'},
+                {path: ['col', 0], default: {prop: 'value'}},
+                {path: ['prop3'], default: false}
+            ];
 
             const data = {
                 apps: {
@@ -66,28 +67,16 @@ describe('data utils', function() {
                     prop: 22,
                     prop2: {name: 'value', age: 12}
                 },
-                col: [{}],
+                col: [{prop: 'value'}],
                 prop3: false
             });
         });
 
         it('should apply array item default values to array object elements', function() {
-            const defaults = {
-                col: [{}]
-            };
-            defaults.col.itemDefaults = {
-                prop: 'value'
-            };
-
-            Object.defineProperty(
-                defaults.col.itemDefaults,
-                '_requiresMergeTarget',
-                {
-                    value: true,
-                    writable: false,
-                    enumerable: false
-                }
-            );
+            const defaults = [
+                {path: ['col', 0], default: {}},
+                {path: ['col', ['prop']], default: 'value'}
+            ];
 
             const col = [];
             col[1] = {prop2: 'value2'};
@@ -109,11 +98,10 @@ describe('data utils', function() {
         });
 
         it('should apply missing default values to array object elements', function() {
-            const defaults = [];
-            defaults.itemDefaults = {
-                prop: 'value',
-                obj: {prop: 'value'}
-            };
+            const defaults = [
+                {path: [['prop']], default: 'value'},
+                {path: [['obj']], default: {prop: 'value'}},
+            ];
 
             const data = [{}, {prop: 'different'}];
 
@@ -126,16 +114,10 @@ describe('data utils', function() {
         });
 
 
-        it('should NOT apply defaults when target object does not exist and default source object is tagged with _requiresMergeTarget flag', function() {
-            const defaults = {
-                col: [{prop: 'value'}]
-            };
-
-            Object.defineProperty(defaults.col[0], '_requiresMergeTarget', {
-                enumerable: false,
-                value: true,
-                writable: false
-            });
+        it('should NOT apply defaults when target object does not exist', function() {
+            const defaults = [
+                {path: ['col', 0, 'prop'], default: 'value'}
+            ];
 
             [
                 { col: [null] },
@@ -154,9 +136,9 @@ describe('data utils', function() {
         });
 
         it('should NOT merge two array when applying defaults', function() {
-            const defaults = {
-                prop: ['val1', 'val2', 'val3']
-            };
+            const defaults = [
+                {path: ['prop'], default: ['val1', 'val2', 'val3']}
+            ];
 
             const data = {
                 prop: ['val4']
@@ -168,18 +150,10 @@ describe('data utils', function() {
         });
 
         it('should correctly apply array item defaults', function() {
-            const defaults = {
-                apps: [{prop: 1}, {prop2: 2}]
-            };
-
-            Object.defineProperty(defaults.apps[0], '_requiresMergeTarget', {
-                enumerable: false,
-                value: true
-            });
-            Object.defineProperty(defaults.apps[1], '_requiresMergeTarget', {
-                enumerable: false,
-                value: true
-            });
+            const defaults = [
+                {path: ['apps', 0, 'prop'], default: 1},
+                {path: ['apps', 1, 'prop2'], default: 2}
+            ];
 
             const data = {apps: []};
 
@@ -189,44 +163,31 @@ describe('data utils', function() {
         });
 
         it('should clone data before they are applied to the data object', function() {
-            const defaults = {
-                prop1: ['test', 'test'],
-                prop2: {
-                    prop5: 2,
-                    prop6: false
-                }
-            };
-            Object.defineProperty(defaults.prop1, 'itemDefaults', {
-                enumerable: false,
-                value: 'test',
-                writable: true
-            });
-            Object.defineProperty(defaults.prop1, '_requiresMergeTarget', {
-                enumerable: false,
-                value: true,
-                writable: false
-            });
+            const defaults = [
+                {path: ['prop1'], default: [{}]},
+                {path: ['prop1', 0], default: {}},
+                {path: ['prop2'], default: {}}
+            ];
 
             const data = {prop1: []};
 
             const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
 
-            dataWithDefaults.prop1.should.be.eql(defaults.prop1);
-            dataWithDefaults.prop1.should.be.eql(defaults.prop1);
+            dataWithDefaults.prop1.should.be.eql(defaults[0].default);
+            dataWithDefaults.prop2.should.be.eql(defaults[1].default);
 
-            dataWithDefaults.prop1.should.not.be.equal(defaults.prop1);
-            dataWithDefaults.prop2.should.not.be.equal(defaults.prop2);
+            dataWithDefaults.prop1.should.not.be.equal(defaults[0].default);
+            dataWithDefaults.prop2.should.not.be.equal(defaults[1].default);
         });
 
         it('should not treat null type as empty value (aka. undefined)', function() {
-            const defaults = {
-                apps: {
-                    prop: 10,
-                    prop2: {name: 'value'}
-                },
-                col: [{}],
-                prop3: false
-            };
+            const defaults = [
+                {path: ['apps'], default: {}},
+                {path: ['apps', 'prop'], default: 10},
+                {path: ['apps', 'prop2'], default: {name: 'value'}},
+                {path: ['col', 0], default: {}},
+                {path: ['prop3'], default: false}
+            ];
 
             const data = {
                 apps: {

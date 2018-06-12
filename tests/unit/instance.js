@@ -67,14 +67,7 @@ describe('Instance', function() {
                     },
                     friend: {
                         $relation: {type: 'User'}
-                    },
-                    //mother: {
-                        //allowEmptyValue: true,
-                        //TODO
-                        //type: DataTypes.COMPLEX('User', {
-                            //relation: ODM.RelationTypes.EMBEDDED
-                        //})
-                    //}
+                    }
                 }
             });
             this.model.$init(this.modelManager);
@@ -264,6 +257,7 @@ describe('Instance', function() {
         });
 
         describe('with REFERENCED association relation', function() {
+
             it('should return json object with serialized associations (Instance->plain object with id property)', function() {
                 const AppModel = this.buildModel('App', {
                     type: 'string'
@@ -321,6 +315,11 @@ describe('Instance', function() {
     });
 
     describe('refresh', function() {
+
+        beforeEach(function() {
+            this.odm.Model.validator.removeSchema('Model');
+        });
+
         afterEach(function() {
             this.modelManager.models = {};
             this.odm.Model.validator.removeSchema('Model');
@@ -1111,6 +1110,7 @@ describe('Instance', function() {
         });
 
         after(function() {
+            this.odm.Model.validator.removeSchema('Model');
             this.instanceRefreshStub.restore();
         });
 
@@ -2258,22 +2258,17 @@ describe('Instance', function() {
     });
 
     describe('toJSON', function() {
-        it('should throw an InstanceError when we try to convert an Instance object with primitive root data structure', function() {
+        it('should return a string', function() {
             var model = this.buildModel('TOJSONTESTMODEL', {
                 type: 'string'
             });
             model.$init(this.modelManager);
 
             var instance = model.build('test string');
-
-            function test() {
-                return instance.toJSON();
-            };
-
-            expect(test).to.throw(InstanceError);
+            return instance.toJSON().should.be.equal('test string');
         });
 
-        describe('Model with JSON root data structure', function() {
+        describe('Model with object root data structure', function() {
             before(function() {
                 this.model = this.buildModel('TOJSONTESTMODEL2', {
                     type: 'object'

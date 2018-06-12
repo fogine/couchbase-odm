@@ -133,6 +133,13 @@ describe('Model associations', function() {
                 this.buildModels.call(this, odm, RelationType.REF);
             });
 
+            after('Unregister models', function() {
+                this.odm.Model.validator.removeSchema('User');
+                this.odm.Model.validator.removeSchema('Admins');
+                this.odm.Model.validator.removeSchema('File');
+                this.odm.Model.validator.removeSchema('FileData');
+            });
+
             before('Build documents', function() {
                 this.buildDocuments.call(this);
             });

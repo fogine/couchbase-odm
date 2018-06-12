@@ -42,6 +42,10 @@ describe('CRUD operations', function() {
         });
     });
 
+    after(function() {
+        this.odm.Model.validator.removeSchema('Client');
+    });
+
     describe('create & get', function() {
         before(function() {
             this.id = '92d64e03-bde9-4e9b-9ff5-29a01ed5dc27';
