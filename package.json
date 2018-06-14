@@ -13,6 +13,9 @@
     "type": "git",
     "url": "https://github.com/fogine/couchbase-odm.git"
   },
+  "engines": {
+      "node": ">=6.4.0"
+  },
   "bugs": {
     "url": "https://github.com/fogine/couchbase-odm/issues"
   },
