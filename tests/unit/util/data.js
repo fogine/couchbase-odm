@@ -83,7 +83,9 @@ describe('data utils', function() {
             const defaults = [
                 {path: 'col', defaults: [
                     {path: 0, default: {}},
-                    {path: ['prop'], default: 'value'}
+                    {path: 1, defaults: [
+                        {path: 'prop', default: 'value'},
+                    ]},
                 ]},
             ];
 
@@ -99,7 +101,7 @@ describe('data utils', function() {
 
             expect(dataWithDefaults).to.be.eql({
                 col: [
-                    {prop: 'value'},
+                    {},
                     {prop: 'value', prop2: 'value2'},
                     null
                 ]
@@ -108,8 +110,10 @@ describe('data utils', function() {
 
         it('should apply missing default values to array object elements', function() {
             const defaults = [
-                {path: ['prop'], default: 'value'},
-                {path: ['obj'], default: {prop: 'value'}},
+                {path: [], defaults: [
+                    {path: 'prop', default: 'value'},
+                    {path: 'obj', default: {prop: 'value'}},
+                ]}
             ];
 
             const data = [{}, {prop: 'different'}];
@@ -122,6 +126,49 @@ describe('data utils', function() {
             ]);
         });
 
+        it('should apply missing default values to array object elements', function() {
+            const defaults = [
+                {path: ['apps'], default: {}, defaults: [
+                    {path: 'prop', default: {}, defaults: [
+                        {path: 'prop2', default: 'value'},
+                    ]},
+                    {path: 'prop3', default: {prop4: 'value'}},
+                ]}
+            ];
+
+            const data = {apps: [
+                {},
+                {prop: {prop2: 'different'}}
+            ]};
+
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+
+            expect(dataWithDefaults).to.be.eql({
+                apps: [
+                    {prop: {prop2: 'value'}, prop3: {prop4: 'value'}},
+                    {prop: {prop2: 'different'}, prop3: {prop4: 'value'}}
+                ]
+            });
+        });
+
+        it('should apply missing default values to object elements of nested array', function() {
+            const defaults = [
+                {path: [], defaults: [
+                    {path: [], defaults: [
+                        {path: 'obj', default: {prop: 'value'}}
+                    ]}
+                ]}
+            ];
+
+            const data = [[{}], []];
+
+            const dataWithDefaults = dataUtils.applyDefaults(defaults, data);
+
+            expect(dataWithDefaults).to.be.eql([
+                [{obj: {prop: 'value'}}],
+                []
+            ]);
+        });
 
         it('should NOT apply defaults when target object does not exist', function() {
             const defaults = [
