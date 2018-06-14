@@ -347,7 +347,7 @@ describe('Instance', function() {
             };
             dataResponse.value[idPropName] = '7ffa1518-7156-4fe3-b0ee-23ba9c228ad7';
 
-            var getByIdStub = sinon.stub(Model, 'getByIdOrFail').returns(Promise.resolve(dataResponse));
+            var getByIdStub = sinon.stub(Model.storage, 'get').returns(Promise.resolve(dataResponse));
 
             const instance = Model.build({test: 'test'}, {
                 key: Model.buildKey("7ffa1518-7156-4fe3-b0ee-23ba9c228ad7")
@@ -359,7 +359,7 @@ describe('Instance', function() {
                 var data = instance.getData();
 
                 getByIdStub.should.have.been.calledOnce;
-                getByIdStub.should.have.been.calledWith(instance.getKey(), {plain: true});
+                getByIdStub.should.have.been.calledWith(instance.getKey());
                 data.should.have.property('test', dataResponse.value.test);
                 instance.should.have.property('test', dataResponse.value.test);
                 data.should.have.property(idPropName, instance.getKey().getId());

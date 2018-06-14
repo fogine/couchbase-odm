@@ -18,34 +18,78 @@ chai.should();
 const assert = sinon.assert;
 const expect = chai.expect;
 
+function defineModel(name, options) {
+    options = options || {};
+
+    this.Client = this.odm.define(name, {
+        type: 'object',
+        schema: {
+            name: {
+                type: 'string'
+            }
+        }
+    }, {
+        timestamps: options.timestamps,
+        paranoid: options.paranoid,
+        indexes: {
+            refDocs: {
+                name: {
+                    keys: ['name']
+                }
+            }
+        }
+    });
+}
+
 describe('CRUD operations', function() {
     before('Initialize bucket & Build Models', function() {
         var cluster = new couchbase.Cluster();
         this.bucket = cluster.openBucket('crud');
         this.odm = new ODM({bucket: this.bucket});
+    });
 
-        this.Client = this.odm.define('Client', {
-            type: 'object',
-            schema: {
-                name: {
-                    type: 'string'
-                }
-            }
-        }, {
-            indexes: {
-                refDocs: {
-                    name: {
-                        keys: ['name']
-                    }
-                }
-            }
+    describe('no timestamps', function() {
+
+        before(function() {
+            return defineModel.call(this, 'Client');
         });
+
+        after(function() {
+            this.odm.Model.validator.removeSchema('Client');
+        });
+
+        return defineTests();
     });
 
-    after(function() {
-        this.odm.Model.validator.removeSchema('Client');
+    describe('with timestamps=true', function() {
+
+        before(function() {
+            return defineModel.call(this, 'Client2', {timestamps: true});
+        });
+
+        after(function() {
+            this.odm.Model.validator.removeSchema('Client2');
+        });
+
+        return defineTests();
     });
 
+    describe('with paranoid=true', function() {
+
+        before(function() {
+            return defineModel.call(this, 'Client3', {paranoid: true});
+        });
+
+        after(function() {
+            this.odm.Model.validator.removeSchema('Client3');
+        });
+
+        return defineTests();
+    });
+
+});
+
+function defineTests() {
     describe('create & get', function() {
         before(function() {
             this.id = '92d64e03-bde9-4e9b-9ff5-29a01ed5dc27';
@@ -116,4 +160,29 @@ describe('CRUD operations', function() {
             });
         });
     });
-});
+
+    describe('destroy', function() {
+        before(function() {
+            return this.Client.create({name: 'destroy'}).bind(this).then(function(client) {
+                this.client = client;
+            });
+        });
+
+        it('should destroy the client document and all its reference documents', function() {
+            let message = /key not found/;
+
+            return this.client.destroy().bind(this).then(function() {
+                return this.client.getRefDocs();
+            }).map(function(refDoc) {
+                return refDoc.refresh().should.be.rejectedWith(ODM.errors.StorageError, message);
+            }).then(function() {
+                if (this.Client.options.paranoid) {
+                    this.client.deleted_at.should.be.a('string');
+                    return this.client.refresh();
+                } else {
+                    return this.client.refresh().should.be.rejectedWith(ODM.errors.StorageError, message);
+                }
+            });
+        });
+    });
+}
