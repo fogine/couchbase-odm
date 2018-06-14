@@ -144,8 +144,10 @@ describe('schema utils', function() {
             const data = schemaUtils.extractDefaults(schema);
 
             data.should.be.eql([
-                {path: ['name'], default: 'John'},
-                {path: ['connections', 'test'], default: instance}
+                {path: 'name', default: 'John', defaults: []},
+                {path: 'connections', defaults: [
+                    {path: 'test', default: instance, defaults: []}
+                ]}
             ]);
         });
 
@@ -166,8 +168,9 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps'], default: {}},
-                {path: ['apps', 'prop'], default: 10}
+                {path: 'apps', default: {}, defaults: [
+                    {path: 'prop', default: 10, defaults: []}
+                ]},
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -193,8 +196,9 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps'], default: [{}]},
-                {path: ['apps', ['prop']], default: 'value'}
+                {path: 'apps', default: [{}], defaults: [
+                    {path: ['prop'], default: 'value', defaults: []}
+                ]},
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -228,9 +232,14 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps'], default: [{}]},
-                {path: ['apps', 0, 'prop'], default: 1},
-                {path: ['apps', 1, 'prop2'], default: 2}
+                {path: 'apps', default: [{}], defaults: [
+                    {path: 0, defaults: [
+                        {path: 'prop', default: 1, defaults: []}
+                    ]},
+                    {path: 1, defaults: [
+                        {path: 'prop2', default: 2, defaults: []}
+                    ]}
+                ]}
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -260,9 +269,10 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps'], default: ['test1']},
-                {path: ['apps', 0], default: 'test2'},
-                {path: ['apps', 1], default: 'test3'}
+                {path: 'apps', default: ['test1'], defaults: [
+                    {path: 0, default: 'test2', defaults: []},
+                    {path: 1, default: 'test3', defaults: []}
+                ]},
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -291,11 +301,47 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps', [['prop']]], default: 'value'},
-                {path: ['apps', [['prop2']]], default: 'value2'},
+                {path: 'apps', defaults: [
+                    {path: [['prop']], default: 'value', defaults: []},
+                    {path: [['prop2']], default: 'value2', defaults: []}
+                ]}
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
+        });
+
+        it.only('should correctly resolve default schema values (7)', function() {
+            const schema = {
+                type: 'array',
+                items: {
+                    type: 'object',
+                    properties: {
+                        prop: {
+                            type: 'object',
+                            default: {},
+                            properties: {
+                                nestedProp: {
+                                    type: 'string',
+                                    default: 'test'
+                                }
+                            }
+                        },
+                        prop2: {type: 'string', default: 'value2'}
+                    }
+                }
+            };
+
+            const defaults = schemaUtils.extractDefaults(schema);
+
+            console.log(JSON.stringify(defaults, null, 4))
+            //const expectedDefaults = [
+                //{path: 'apps', defaults: [
+                    //{path: [['prop']], default: 'value', defaults: []},
+                    //{path: [['prop2']], default: 'value2', defaults: []}
+                //]}
+            //];
+
+            //expect(defaults).to.be.eql(expectedDefaults);
         });
 
         it('should correctly resolve default schema values (5)', function() {
@@ -323,8 +369,10 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps', ['prop', 'prop2']], default: 'value'},
-                {path: ['apps', ['prop', 'prop3']], default: 'value3'},
+                {path: 'apps', defaults: [
+                    {path: ['prop', 'prop2'], default: 'value', defaults: []},
+                    {path: ['prop', 'prop3'], default: 'value3', defaults: []}
+                ]}
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -359,9 +407,11 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: ['apps', [0, 'prop2'] ], default: 'value'},
-                {path: ['apps', [0, 'prop3'] ], default: 'value2'},
-                {path: ['apps', [1] ], default: 'value3'}
+                {path: 'apps', defaults: [
+                    {path: [0, 'prop2'], default: 'value', defaults: []},
+                    {path: [0, 'prop3'], default: 'value2', defaults: []},
+                    {path: [1], default: 'value3', defaults: []}
+                ]}
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);
@@ -403,13 +453,16 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             defaults.should.be.eql([
-                {path: [0], default: 'test'},
-                {path: [1], default: 1},
-                {path: [2], default: {test: 'test'}},
-                {path: [3, 'prop'], default: 'value'},
-                {path: [3, 'prop3'], default: 'value3'},
-                {path: [4], default: {prop2: 'initial'}},
-                {path: [4, 'prop2'], default: 'value'}
+                {path: 0, default: 'test', defaults: []},
+                {path: 1, default: 1, defaults: []},
+                {path: 2, default: {test: 'test'}, defaults: []},
+                {path: 3, defaults: [
+                    {path: 'prop', default: 'value', defaults: []},
+                    {path: 'prop3', default: 'value3', defaults: []}
+                ]},
+                {path: 4, default: {prop2: 'initial'}, defaults: [
+                    {path: 'prop2', default: 'value', defaults: []}
+                ]},
             ]);
         });
 
@@ -430,7 +483,7 @@ describe('schema utils', function() {
             const defaults = schemaUtils.extractDefaults(schema);
 
             const expectedDefaults = [
-                {path: [['name']], default: 'value'}
+                {path: ['name'], default: 'value', defaults: []}
             ];
 
             expect(defaults).to.be.eql(expectedDefaults);

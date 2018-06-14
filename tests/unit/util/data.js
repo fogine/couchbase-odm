@@ -19,13 +19,16 @@ describe('data utils', function() {
     describe('applyDefaults', function() {
         it('should apply missing default values to data object', function() {
             const defaults = [
-                {path: ['apps'], default: {}},
-                {path: ['apps', 'prop'], default: 10},
-                {path: ['apps', 'prop2'], default: {}},
-                {path: ['apps', 'prop2', 'name'], default: 'value'},
-                {path: ['col'], default: []},
-                {path: ['col', 0], default: {}},
-                {path: ['prop3'], default: false}
+                {path: 'apps', default: {}, defaults: [
+                    {path: 'prop', default: 10},
+                    {path: 'prop2', default: {}, defaults: [
+                        {path: 'name', default: 'value'}
+                    ]},
+                ]},
+                {path: 'col', default: [], defaults: [
+                    {path: 0, default: {}},
+                ]},
+                {path: 'prop3', default: false}
             ];
 
             const data = {};
@@ -44,12 +47,16 @@ describe('data utils', function() {
 
         it('should apply missing default values to data object (2)', function() {
             const defaults = [
-                {path: ['apps'], default: {}},
-                {path: ['apps', 'prop'], default: 10},
-                {path: ['apps', 'prop2'], default: {}},
-                {path: ['apps', 'prop2', 'name'], default: 'value'},
-                {path: ['col', 0], default: {prop: 'value'}},
-                {path: ['prop3'], default: false}
+                {path: 'apps', default: {}, defaults: [
+                    {path: 'prop', default: 10},
+                    {path: 'prop2', default: {}, defaults: [
+                        {path: 'name', default: 'value'}
+                    ]}
+                ]},
+                {path: 'col', defaults: [
+                    {path: 0, default: {prop: 'value'}}
+                ]},
+                {path: 'prop3', default: false}
             ];
 
             const data = {
@@ -74,8 +81,10 @@ describe('data utils', function() {
 
         it('should apply array item default values to array object elements', function() {
             const defaults = [
-                {path: ['col', 0], default: {}},
-                {path: ['col', ['prop']], default: 'value'}
+                {path: 'col', defaults: [
+                    {path: 0, default: {}},
+                    {path: ['prop'], default: 'value'}
+                ]},
             ];
 
             const col = [];
@@ -99,8 +108,8 @@ describe('data utils', function() {
 
         it('should apply missing default values to array object elements', function() {
             const defaults = [
-                {path: [['prop']], default: 'value'},
-                {path: [['obj']], default: {prop: 'value'}},
+                {path: ['prop'], default: 'value'},
+                {path: ['obj'], default: {prop: 'value'}},
             ];
 
             const data = [{}, {prop: 'different'}];
@@ -116,7 +125,11 @@ describe('data utils', function() {
 
         it('should NOT apply defaults when target object does not exist', function() {
             const defaults = [
-                {path: ['col', 0, 'prop'], default: 'value'}
+                {path: 'col', defaults: [
+                    {path: 0, defaults: [
+                        {path: 'prop', default: 'value'}
+                    ]}
+                ]}
             ];
 
             [
@@ -137,7 +150,7 @@ describe('data utils', function() {
 
         it('should NOT merge two array when applying defaults', function() {
             const defaults = [
-                {path: ['prop'], default: ['val1', 'val2', 'val3']}
+                {path: 'prop', default: ['val1', 'val2', 'val3']}
             ];
 
             const data = {
@@ -151,8 +164,14 @@ describe('data utils', function() {
 
         it('should correctly apply array item defaults', function() {
             const defaults = [
-                {path: ['apps', 0, 'prop'], default: 1},
-                {path: ['apps', 1, 'prop2'], default: 2}
+                {path: 'apps', defaults: [
+                    {path: 0, defaults: [
+                        {path: 'prop', default: 1}
+                    ]},
+                    {path: 1, defaults: [
+                        {path: 'prop2', default: 2}
+                    ]},
+                ]}
             ];
 
             const data = {apps: []};
@@ -164,9 +183,10 @@ describe('data utils', function() {
 
         it('should clone data before they are applied to the data object', function() {
             const defaults = [
-                {path: ['prop1'], default: [{}]},
-                {path: ['prop1', 0], default: {}},
-                {path: ['prop2'], default: {}}
+                {path: 'prop1', default: [{}], defaults: [
+                    {path: 0, default: {}}
+                ]},
+                {path: 'prop2', default: {}}
             ];
 
             const data = {prop1: []};
@@ -182,11 +202,14 @@ describe('data utils', function() {
 
         it('should not treat null type as empty value (aka. undefined)', function() {
             const defaults = [
-                {path: ['apps'], default: {}},
-                {path: ['apps', 'prop'], default: 10},
-                {path: ['apps', 'prop2'], default: {name: 'value'}},
-                {path: ['col', 0], default: {}},
-                {path: ['prop3'], default: false}
+                {path: 'apps', default: {}, defaults: [
+                    {path: 'prop', default: 10},
+                    {path: 'prop2', default: {name: 'value'}}
+                ]},
+                {path: 'col', defaults: [
+                    {path: 0, default: {}}
+                ]},
+                {path: 'prop3', default: false}
             ];
 
             const data = {
