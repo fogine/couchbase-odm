@@ -86,7 +86,7 @@ describe('Model', function() {
         });
     });
 
-    describe('$init', function() {
+    describe('_init', function() {
         afterEach(function() {
             this.odm.Model.validator.removeSchema('Test1');
             this.odm.Model.validator.removeSchema('Test1a');
@@ -123,11 +123,11 @@ describe('Model', function() {
                 type: 'object'
             }, {timestamps: false});
 
-            model1.$init(this.modelManager);
-            model2.$init(this.modelManager);
-            model3.$init(this.modelManager);
-            model4.$init(this.modelManager);
-            model5.$init(this.modelManager);
+            model1._init(this.modelManager);
+            model2._init(this.modelManager);
+            model3._init(this.modelManager);
+            model4._init(this.modelManager);
+            model5._init(this.modelManager);
 
             model1.options.schema.properties.should.have.property('_id');
             model1.options.schema.properties.should.have.property('_type');
@@ -172,7 +172,7 @@ describe('Model', function() {
 
                 const model = self.buildModel('Test2' + index, schema, {timestamps: true});
 
-                model.$init(self.modelManager);
+                model._init(self.modelManager);
 
                 if (model.options.schema.properties) {
                     model.options.schema.properties.should.not.have.property('createdAt');
@@ -191,7 +191,7 @@ describe('Model', function() {
             }, {});
 
             const stub = sinon.stub(ODM.Model.validator, 'addSchema');
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             stub.should.have.been.calledOnce;
             stub.should.have.been.calledWith(model.options.schema, model.name);
@@ -209,7 +209,7 @@ describe('Model', function() {
             }, {key: KeyMock});
 
             function init() {
-                model.$init(self.modelManager);
+                model._init(self.modelManager);
             }
 
             expect(init).to.throw(ODM.errors.ModelError);
@@ -227,7 +227,7 @@ describe('Model', function() {
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             model.should.have.property('getAndHash').that.is.a('function');
             model.getAndHash();
@@ -251,7 +251,7 @@ describe('Model', function() {
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const instance = model.build('sometext');
 
@@ -275,7 +275,7 @@ describe('Model', function() {
 
             const getByIdStub = sinon.stub(model, 'getById');
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             model.should.have.property('getById').that.is.a('function');
             model.getById();
@@ -302,7 +302,7 @@ describe('Model', function() {
 
             const saveStub = sinon.stub(ODM.Instance.prototype, 'save');
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const instance = model.build('test');
 
@@ -324,7 +324,7 @@ describe('Model', function() {
             const model2 = this.buildModel('Test20', {
                 type: 'string'
             });
-            model2.$init(this.modelManager);
+            model2._init(this.modelManager);
 
             const instance2 = model2.build('test2');
             instance2.save();
@@ -362,7 +362,7 @@ describe('Model', function() {
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const stub = sinon.stub(model.storage, 'get');
             //on first call it finds refdoc and returns it's value which is
@@ -404,7 +404,7 @@ describe('Model', function() {
             const model = this.buildModel('Test8', {
                 type: 'string'
             }, {key: ODM.UUID4Key});
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const stub = sinon.stub(ODM.UUID4Key.prototype, 'parse');
 
@@ -452,8 +452,8 @@ describe('Model', function() {
                     _.assign({refDocKey: CustomRefDocKey}, modelOptinos)
             );
 
-            this.model.$init(this.modelManager);
-            this.modelWithCustomRefDocKey.$init(this.modelManager);
+            this.model._init(this.modelManager);
+            this.modelWithCustomRefDocKey._init(this.modelManager);
 
             this.CustomRefDocKey = CustomRefDocKey;
             this.options = _.merge(
@@ -525,7 +525,7 @@ describe('Model', function() {
             const model = this.buildModel('BuildInstanceTestModelName', {
                 type: 'boolean'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const instance = model.build(true);
 
@@ -537,7 +537,7 @@ describe('Model', function() {
                 this.model = this.buildModel('Test9', {
                     type: 'boolean'
                 });
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
 
                 this.sanitizeSpy = sinon.spy(this.model.Instance.prototype, 'sanitize');
             });
@@ -580,7 +580,7 @@ describe('Model', function() {
                     type: 'string'
                 });
                 this.modelManager.add(this.ownerModel);
-                this.ownerModel.$init(this.modelManager);
+                this.ownerModel._init(this.modelManager);
 
                 this.model = this.buildModel('Car', {
                     type: 'object',
@@ -593,7 +593,7 @@ describe('Model', function() {
                         brand: { type: 'string' },
                         owner: {
                             type: 'object',
-                            $relation: {type: 'Owner'},
+                            _relation: {type: 'Owner'},
                             default: this.ownerModel.build('David')
                         },
                         dimensions: {
@@ -625,7 +625,7 @@ describe('Model', function() {
                 });
 
                 this.modelManager.add(this.model);
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
             });
 
             after(function() {
@@ -722,7 +722,7 @@ describe('Model', function() {
             const model = this.buildModel('Test9', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
             const saveStub = sinon.stub(model.Instance.prototype, 'save').returns(Promise.resolve());
 
             const promise = model.create(5);
@@ -735,7 +735,7 @@ describe('Model', function() {
             const model = this.buildModel('Test11', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
             const insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
 
             const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
@@ -750,7 +750,7 @@ describe('Model', function() {
             const model = this.buildModel('Test11', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
             const insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
 
             const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
@@ -778,7 +778,7 @@ describe('Model', function() {
                         }
                     }
                 });
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
             });
 
             after(function() {
@@ -933,7 +933,7 @@ describe('Model', function() {
                     paranoid:true,
                     timestamps: true,
                 });
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
 
                 return this.model.create({some: 'data'}).then(function(doc) {
                     self.doc = doc;
@@ -1002,7 +1002,7 @@ describe('Model', function() {
                 paranoid:true,
                 timestamps: true,
             });
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
 
             return this.model.create({some: 'data'}).then(function(doc) {
                 self.doc = doc;
@@ -1044,7 +1044,7 @@ describe('Model', function() {
             this.model = this.buildModel('Test11', {
                 type: 'string'
             }, {});
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
         });
 
         beforeEach(function() {
@@ -1174,7 +1174,7 @@ describe('Model', function() {
             this.model = this.buildModel('Test12', {
                 type: 'integer'
             });
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
 
             this.getByIdStub = sinon.stub(ODM.Model.prototype, 'getByIdOrFail');
         });
@@ -1228,7 +1228,7 @@ describe('Model', function() {
             const model = this.buildModel('Test13', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
             const expiry = 50;
@@ -1247,7 +1247,7 @@ describe('Model', function() {
             const model = this.buildModel('Test14', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
 
@@ -1274,7 +1274,7 @@ describe('Model', function() {
             const model = this.buildModel('Test15', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
             const cas = '12345';
@@ -1293,7 +1293,7 @@ describe('Model', function() {
             const model = this.buildModel('Test16', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
             const cas = '123';
@@ -1324,7 +1324,7 @@ describe('Model', function() {
             const model = this.buildModel('Test17', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
 
@@ -1342,7 +1342,7 @@ describe('Model', function() {
             const model = this.buildModel('Test18', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
 
@@ -1378,7 +1378,7 @@ describe('Model', function() {
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             this.getStub = sinon.stub(model.storage, 'get');
 
@@ -1524,7 +1524,7 @@ describe('Model', function() {
             const model = this.buildModel('Test21', {
                 type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             model.toString().should.be.equal('[object CouchbaseModel:Test21]');
         });

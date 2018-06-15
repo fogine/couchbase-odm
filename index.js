@@ -129,7 +129,7 @@ CouchbaseODM.prototype.define = function(name, schema, options) {
     });
 
     var model = new Model(name, schema, options);
-    model.$init(this.modelManager);
+    model._init(this.modelManager);
 
     this.modelManager.add(model);
 

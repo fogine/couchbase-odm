@@ -43,7 +43,7 @@ describe('Instance', function() {
             const model = this.buildModel('InstanceConstructorTestModel', {
                 type: 'string'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             function test() {
                 const instance = new model.Instance('data string', {
@@ -66,11 +66,11 @@ describe('Instance', function() {
                         type: 'string'
                     },
                     friend: {
-                        $relation: {type: 'User'}
+                        _relation: {type: 'User'}
                     }
                 }
             });
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
             this.modelManager.add(this.model);
         });
 
@@ -108,7 +108,7 @@ describe('Instance', function() {
             //via this.model.build
             validateSpy.reset();
 
-            instance.$touchTimestamps();
+            instance._touchTimestamps();
             instance.sanitize();
 
             validateSpy.should.have.been.calledOnce;
@@ -120,7 +120,7 @@ describe('Instance', function() {
         });
     });
 
-    describe('$initRelations', function() {
+    describe('_initRelations', function() {
         after(function() {
             this.odm.Model.validator.removeSchema('User');
             this.odm.Model.validator.removeSchema('App');
@@ -140,12 +140,12 @@ describe('Instance', function() {
                 required: ['app', 'friends'],
                 properties: {
                     app: {
-                        $relation: {type: 'App'}
+                        _relation: {type: 'App'}
                     },
                     friends: {
                         type: 'array',
                         items: {
-                            $relation: {type: 'User'}
+                            _relation: {type: 'User'}
                         }
                     }
                 }
@@ -153,10 +153,10 @@ describe('Instance', function() {
                 key: ODM.UUID4Key
             });
 
-            AppModel.$init(this.modelManager);
+            AppModel._init(this.modelManager);
             this.modelManager.add(AppModel);
 
-            UserModel.$init(this.modelManager);
+            UserModel._init(this.modelManager);
             this.modelManager.add(UserModel);
 
             let appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
@@ -191,16 +191,16 @@ describe('Instance', function() {
             const PeopleModel = this.buildModel('People', {
                 type: 'array',
                 items: {
-                    $relation: {type: 'Human'}
+                    _relation: {type: 'Human'}
                 }
             }, {
                 key: ODM.UUID4Key
             });
 
-            HumanModel.$init(this.modelManager);
+            HumanModel._init(this.modelManager);
             this.modelManager.add(HumanModel);
 
-            PeopleModel.$init(this.modelManager);
+            PeopleModel._init(this.modelManager);
             this.modelManager.add(PeopleModel);
 
             let humanIdPropName = HumanModel.options.schemaSettings.doc.idPropertyName;
@@ -237,7 +237,7 @@ describe('Instance', function() {
                 key: ODM.UUID4Key
             });
 
-            AppModel.$init(this.modelManager);
+            AppModel._init(this.modelManager);
             this.modelManager.add(AppModel);
 
             let data = 'twitter';
@@ -267,22 +267,22 @@ describe('Instance', function() {
                     type: 'object',
                     properties: {
                         app: {
-                            $relation: {type: 'App'}
+                            _relation: {type: 'App'}
                         },
                         friends: {
                             type: 'array',
                             default: [],
                             items: {
-                                $relation: {type: 'User'}
+                                _relation: {type: 'User'}
                             }
                         }
                     }
                 }, { key: ODM.UUID4Key });
 
-                AppModel.$init(this.modelManager);
+                AppModel._init(this.modelManager);
                 this.modelManager.add(AppModel);
 
-                UserModel.$init(this.modelManager);
+                UserModel._init(this.modelManager);
                 this.modelManager.add(UserModel);
 
                 var appIdPropName = AppModel.options.schemaSettings.doc.idPropertyName;
@@ -336,7 +336,7 @@ describe('Instance', function() {
                 }
             });
 
-            Model.$init(this.modelManager);
+            Model._init(this.modelManager);
             var idPropName = Model.options.schemaSettings.doc.idPropertyName;
 
             var dataResponse = {
@@ -415,7 +415,7 @@ describe('Instance', function() {
                 }
             });
 
-            this.Model.$init(this.modelManager);
+            this.Model._init(this.modelManager);
         });
 
 
@@ -445,7 +445,7 @@ describe('Instance', function() {
                 refDocs.forEach(function(refDoc) {
                     var refDocKey = refDoc.getKey();
                     refDoc.should.be.an.instanceof(ODM.Document);
-                    refDocKey.should.have.property('$isGenerated', true, 'RefDocKey must be generated');
+                    refDocKey.should.have.property('_isGenerated', true, 'RefDocKey must be generated');
 
                     if (refDocKey.ref.indexOf('name') > -1) nameRefDoc = refDoc;
                     if (refDocKey.ref.indexOf('username') > -1) usernameRefDoc = refDoc;
@@ -509,7 +509,7 @@ describe('Instance', function() {
         });
     });
 
-    describe('$getDirtyRefDocs', function() {
+    describe('_getDirtyRefDocs', function() {
         before(function() {
             this.Model = this.buildModel('Model', {
                 type: 'object',
@@ -536,7 +536,7 @@ describe('Instance', function() {
                 }
             });
 
-            this.Model.$init(this.modelManager);
+            this.Model._init(this.modelManager);
         });
 
         afterEach(function() {
@@ -558,8 +558,8 @@ describe('Instance', function() {
             var instance = this.Model.build(instanceData);
             instance.username = 'anonym';
 
-            //$getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
-            var promise = instance.$getDirtyRefDocs();
+            //_getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
+            var promise = instance._getDirtyRefDocs();
 
             return promise.should.be.fulfilled.then(function(refDocs) {
                 refDocs.should.have.property('current').that.is.an.instanceof(Array);
@@ -589,12 +589,12 @@ describe('Instance', function() {
             }, {
                 key: ODM.UUID4Key
             });
-            Model.$init(this.modelManager);
+            Model._init(this.modelManager);
 
             const instance = Model.build('val1');
             instance.setData('val2');
 
-            const promise = instance.$getDirtyRefDocs();
+            const promise = instance._getDirtyRefDocs();
 
             return promise.should.be.fulfilled.then(function(refDocs) {
                 refDocs.should.have.property('current').that.is.an.instanceof(Array);
@@ -610,7 +610,7 @@ describe('Instance', function() {
 
             const instance = this.Model.build(instanceData);
 
-            const promise = instance.$getDirtyRefDocs();
+            const promise = instance._getDirtyRefDocs();
             return promise.should.be.fulfilled.then(function(refDocs) {
                 refDocs.should.have.property('current').that.is.an.instanceof(Array);
                 refDocs.should.have.property('old').that.is.an.instanceof(Array);
@@ -627,9 +627,9 @@ describe('Instance', function() {
 
             const instance = this.Model.build(instanceData);
 
-            instance.$original.setData('name', 'James');
+            instance._original.setData('name', 'James');
 
-            const promise = instance.$getDirtyRefDocs();
+            const promise = instance._getDirtyRefDocs();
             return promise.should.be.fulfilled.then(function(refDocs) {
                 refDocs.should.have.property('old').that.is.an.instanceof(Array);
 
@@ -645,9 +645,9 @@ describe('Instance', function() {
 
             const instance = this.Model.build(instanceData);
 
-            instance.$original.setData('username', undefined);
+            instance._original.setData('username', undefined);
 
-            const promise = instance.$getDirtyRefDocs();
+            const promise = instance._getDirtyRefDocs();
             return promise.should.be.rejected.then(function(error) {
                 error.should.be.instanceof(ODM.errors.KeyError);
             });
@@ -661,7 +661,7 @@ describe('Instance', function() {
 
             const instance = this.Model.build(instanceData);
 
-            const promise = instance.$getDirtyRefDocs();
+            const promise = instance._getDirtyRefDocs();
             return promise.should.be.rejectedWith(ODM.errors.KeyError);
         });
 
@@ -677,8 +677,8 @@ describe('Instance', function() {
             var instance = this.Model.build(instanceData);
             instance.username = 'anonym';
 
-            //$getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
-            var promise = instance.$getDirtyRefDocs();
+            //_getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
+            var promise = instance._getDirtyRefDocs();
 
             return promise.should.be.rejected.then(function(err) {
                 err.should.be.equal(error);
@@ -698,8 +698,8 @@ describe('Instance', function() {
             instance.username = 'anonym';
 
             var getGeneratedKeyStub;
-            var buildRefDocumentStub = sinon.stub(instance, '$buildRefDocument', function() {
-                var promise = self.Model.Instance.prototype.$buildRefDocument.apply(this, arguments);
+            var buildRefDocumentStub = sinon.stub(instance, '_buildRefDocument', function() {
+                var promise = self.Model.Instance.prototype._buildRefDocument.apply(this, arguments);
                 return promise.then(function(doc) {
                     getGeneratedKeyStub = sinon.stub(doc, 'getGeneratedKey');
                     getGeneratedKeyStub.returns(Promise.reject(error));
@@ -708,8 +708,8 @@ describe('Instance', function() {
                 });
             });
 
-            //$getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
-            var promise = instance.$getDirtyRefDocs();
+            //_getDirtyRefDocs currently ignores whether an instance is persisted to bucket or not.
+            var promise = instance._getDirtyRefDocs();
 
             return promise.should.be.rejected.then(function(err) {
                 err.should.be.equal(error);
@@ -724,7 +724,7 @@ describe('Instance', function() {
             this.model = this.buildModel('InstanceSetDataTestModel', {
                 type: 'object'
             });
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
 
             this.data = {};
             this.instance = this.model.build(this.data);
@@ -770,7 +770,7 @@ describe('Instance', function() {
             }, {
                 key: ODM.UUID4Key
             });
-            Model.$init(this.modelManager);
+            Model._init(this.modelManager);
 
             var instance = Model.build(true);
 
@@ -794,7 +794,7 @@ describe('Instance', function() {
             }, {
                 key: ODM.UUID4Key
             });
-            Model.$init(this.modelManager);
+            Model._init(this.modelManager);
 
             var instance = Model.build((new Date).toJSON());
 
@@ -833,16 +833,16 @@ describe('Instance', function() {
                     }
                 }
             });
-            Model.$init(this.modelManager);
+            Model._init(this.modelManager);
 
             var instance = Model.build({
                 age: 21
             });
             //fake that the instance has been persisted to bucket
             instance.options.isNewRecord = false;
-            instance.$original.options.isNewRecord = false;
+            instance._original.options.isNewRecord = false;
             instance.options.cas = '213124123';
-            instance.$original.options.cas = '213124123';
+            instance._original.options.cas = '213124123';
 
             //update field so an index will be generated
             instance.name = 'David';
@@ -890,7 +890,7 @@ describe('Instance', function() {
                     name: { type: 'string' },
                     email: { type: 'string' },
                     apps: { type: 'array' },
-                    user: { $relation: {type: 'Model'} }
+                    user: { _relation: {type: 'Model'} }
                 }
             }, {
                 key: ODM.UUID4Key,
@@ -904,7 +904,7 @@ describe('Instance', function() {
                 }
             });
 
-            this.Model.$init(this.modelManager);
+            this.Model._init(this.modelManager);
             this.modelManager.add(this.Model);
         });
 
@@ -938,12 +938,12 @@ describe('Instance', function() {
 
             //fake that the instance has been persisted to bucket
             instance.options.isNewRecord = false;
-            instance.$original.options.isNewRecord = false;
+            instance._original.options.isNewRecord = false;
             var cas = '123244';
             instance.setCAS(cas);
-            instance.$original.setCAS(cas);
+            instance._original.setCAS(cas);
 
-            var originalData = instance.$cloneData();
+            var originalData = instance._cloneData();
 
             var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
                 cas: '12312412'
@@ -1006,18 +1006,18 @@ describe('Instance', function() {
                 key: ODM.UUID4Key,
             });
 
-            Model.$init(this.modelManager);
+            Model._init(this.modelManager);
 
             var instance = Model.build('initial-document-value');
 
             //fake that the instance has been persisted to bucket
             instance.options.isNewRecord = false;
-            instance.$original.options.isNewRecord = false;
+            instance._original.options.isNewRecord = false;
             var cas = '123244';
             instance.setCAS(cas);
-            instance.$original.setCAS(cas);
+            instance._original.setCAS(cas);
 
-            var originalData = instance.$original.$cloneData();
+            var originalData = instance._original._cloneData();
 
             var storageReplaceStub = sinon.stub(ODM.StorageAdapter.prototype, 'replace').returns(Promise.resolve({
                 cas: '12312412'
@@ -1030,7 +1030,7 @@ describe('Instance', function() {
                 instance.should.be.an.instanceof(ODM.Instance);
                 instance.getData().should.be.equal(data);
 
-                instance.$original.getKey().isGenerated().should.be.equal(true, "Instance key should be generated. But it's NOT");
+                instance._original.getKey().isGenerated().should.be.equal(true, "Instance key should be generated. But it's NOT");
                 storageReplaceStub.should.have.been.calledOnce;
 
                 storageReplaceStub.should.have.been.calledWith(
@@ -1062,12 +1062,12 @@ describe('Instance', function() {
 
             //fake that the instance has been persisted to bucket
             instance.options.isNewRecord = false;
-            instance.$original.options.isNewRecord = false;
+            instance._original.options.isNewRecord = false;
             var cas = '123244';
             instance.setCAS(cas);
-            instance.$original.setCAS(cas);
+            instance._original.setCAS(cas);
 
-            var originalData = instance.$cloneData();
+            var originalData = instance._cloneData();
 
             var instanceOriginalSaveStub = sinon.stub(instance, 'save')
                 .rejects(new ODM.errors.StorageError('test err'));
@@ -1093,13 +1093,13 @@ describe('Instance', function() {
                 required: ['name'],
                 properties: {
                     name: { type: 'string' },
-                    subinstance: { $relation: {type: 'Model'} }
+                    subinstance: { _relation: {type: 'Model'} }
                 }
             }, {
                 key: ODM.UUID4Key,
             });
 
-            this.Model.$init(this.modelManager);
+            this.Model._init(this.modelManager);
             this.modelManager.add(this.Model);
 
             this.instanceRefreshStub = sinon.stub(this.Model.Instance.prototype, 'refresh');
@@ -1218,7 +1218,7 @@ describe('Instance', function() {
                     friends: {
                         type: 'array',
                         items: {
-                            $relation: {type: 'User'}
+                            _relation: {type: 'User'}
                         }
                     },
                     sex: {
@@ -1241,7 +1241,7 @@ describe('Instance', function() {
                 }
             });
 
-            this.Model.$init(this.modelManager);
+            this.Model._init(this.modelManager);
             this.modelManager.add(this.Model);
         });
 
@@ -1383,7 +1383,7 @@ describe('Instance', function() {
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
 
-                var touchTimestampsSpy = sinon.spy(this.user, '$touchTimestamps');
+                var touchTimestampsSpy = sinon.spy(this.user, '_touchTimestamps');
                 this.removeStub.withArgs(this.user.getKey());
 
                 var promise = this.user.destroy();
@@ -1426,7 +1426,7 @@ describe('Instance', function() {
                     type: 'object'
                 }, {paranoid: true});
 
-                model.$init(this.modelManager);
+                model._init(this.modelManager);
                 var instance = model.build({
                     somedata: 'datastring'
                 }, {
@@ -1643,7 +1643,7 @@ describe('Instance', function() {
                 this.removeStub.returns(Promise.resolve({cas: '72286253696174100', token: undefined}));
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
 
-                var touchTimestampsSpy = sinon.spy(this.user, '$touchTimestamps');
+                var touchTimestampsSpy = sinon.spy(this.user, '_touchTimestamps');
                 this.insertStub.withArgs(this.user.getKey());
 
                 var promise = this.user.insert();
@@ -1665,8 +1665,8 @@ describe('Instance', function() {
                 var promise = this.user.insert();
 
                 return promise.should.be.rejected.then(function() {
-                    var createdAt = self.user.$original.getData('created_at');
-                    var updatedAt = self.user.$original.getData('updated_at');
+                    var createdAt = self.user._original.getData('created_at');
+                    var updatedAt = self.user._original.getData('updated_at');
 
                     self.user.getData('created_at').should.be.equal(createdAt);
                     self.user.getData('updated_at').should.be.equal(updatedAt);
@@ -1820,7 +1820,7 @@ describe('Instance', function() {
 
                 var oldUsername = this.user.username;
                 this.user.username = 'cat';
-                var promise = this.user.$getDirtyRefDocs();
+                var promise = this.user._getDirtyRefDocs();
 
                 return promise.should.be.fulfilled.then(function(refDocs) {
                     refDocs = refDocs.old;
@@ -1855,7 +1855,7 @@ describe('Instance', function() {
 
                 var oldUsername = this.user.username;
                 this.user.username = 'cat';
-                var promise = this.user.$getDirtyRefDocs();
+                var promise = this.user._getDirtyRefDocs();
 
                 return promise.should.be.fulfilled.then(function(refDocs) {
                     refDocs = refDocs.current;
@@ -1919,7 +1919,7 @@ describe('Instance', function() {
                 this.insertStub.returns(Promise.resolve({cas: '12343895749571342', token: undefined}));
                 this.replaceStub.returns(Promise.resolve({cas: '1324231541234515', token: undefined}));
 
-                var touchTimestampsSpy = sinon.spy(this.user, '$touchTimestamps');
+                var touchTimestampsSpy = sinon.spy(this.user, '_touchTimestamps');
                 this.replaceStub.withArgs(this.user.getKey());
 
                 this.user.username = 'cat';
@@ -2007,7 +2007,7 @@ describe('Instance', function() {
                     afterRollbackHookStub.should.have.been.calledOnce;
                     afterRollbackHookStub.should.have.been.calledAfter(self.insertStub);
 
-                    return self.user.$getDirtyRefDocs().then(function(refDocs) {
+                    return self.user._getDirtyRefDocs().then(function(refDocs) {
                         refDocs = refDocs.current;
 
                         var reportObj = {
@@ -2051,7 +2051,7 @@ describe('Instance', function() {
 
                 return promise.should.be.rejectedWith(ODM.errors.StorageError).then(function() {
 
-                    return self.user.$getDirtyRefDocs().then(function(refDocs) {
+                    return self.user._getDirtyRefDocs().then(function(refDocs) {
                         refDocs = refDocs.current;
 
                         var reportObj = {
@@ -2083,8 +2083,8 @@ describe('Instance', function() {
                 var promise = this.user.replace();
 
                 return promise.should.be.rejected.then(function() {
-                    var createdAt = self.user.$original.getData('created_at');
-                    var updatedAt = self.user.$original.getData('updated_at');
+                    var createdAt = self.user._original.getData('created_at');
+                    var updatedAt = self.user._original.getData('updated_at');
 
                     self.user.getData('created_at').should.be.equal(createdAt);
                     self.user.getData('updated_at').should.be.equal(updatedAt);
@@ -2101,8 +2101,8 @@ describe('Instance', function() {
                 var promise = this.user.replace();
 
                 return promise.should.be.rejected.then(function() {
-                    var createdAt = self.user.$original.getData('created_at');
-                    var updatedAt = self.user.$original.getData('updated_at');
+                    var createdAt = self.user._original.getData('created_at');
+                    var updatedAt = self.user._original.getData('updated_at');
 
                     self.user.getData('created_at').should.be.equal(createdAt);
                     self.user.getData('updated_at').should.be.equal(updatedAt);
@@ -2137,7 +2137,7 @@ describe('Instance', function() {
 
     });
 
-    describe('$touchTimestamps', function() {
+    describe('_touchTimestamps', function() {
 
         before(function() {
             this.model = this.buildModel('Test1', {
@@ -2152,9 +2152,9 @@ describe('Instance', function() {
                 type: 'object',
             }, {timestamps: true, paranoid: true});
 
-            this.model.$init(this.modelManager);
-            this.modelWithTimestamps.$init(this.modelManager);
-            this.paranoidModel.$init(this.modelManager);
+            this.model._init(this.modelManager);
+            this.modelWithTimestamps._init(this.modelManager);
+            this.paranoidModel._init(this.modelManager);
 
             this.convertDateToUTC = convertDateToUTC;
 
@@ -2179,10 +2179,10 @@ describe('Instance', function() {
         it('should NOT try to update any timestamp properties if `options.timestamps` option is disabled', function() {
             var instance = this.model.build({});
 
-            var propNames = this.model.$getTimestampPropertyNames();
-            var getTimestampNamesSpy = sinon.spy(this.model, '$getTimestampPropertyNames');
+            var propNames = this.model._getTimestampPropertyNames();
+            var getTimestampNamesSpy = sinon.spy(this.model, '_getTimestampPropertyNames');
 
-            instance.$touchTimestamps();
+            instance._touchTimestamps();
 
             instance.getData().should.not.have.property(propNames.createdAt);
             instance.getData().should.not.have.property(propNames.updatedAt);
@@ -2194,7 +2194,7 @@ describe('Instance', function() {
 
         it('should touch timestamp values and return state of timestamp property values before they were touched', function() {
             var instanceWithTimestamps = this.modelWithTimestamps.build({});
-            var propNames = this.modelWithTimestamps.$getTimestampPropertyNames();
+            var propNames = this.modelWithTimestamps._getTimestampPropertyNames();
 
             var originalCreatedAt = moment.utc(1462046976313).format();
             var originalUpdatedAt = moment.utc(1462046976313).format();
@@ -2203,7 +2203,7 @@ describe('Instance', function() {
             data[propNames.createdAt] = originalCreatedAt;
             data[propNames.updatedAt] = originalUpdatedAt;
 
-            var timestampsBck = instanceWithTimestamps.$touchTimestamps();
+            var timestampsBck = instanceWithTimestamps._touchTimestamps();
 
             timestampsBck.should.have.property(propNames.createdAt);
             timestampsBck.should.have.property(propNames.updatedAt);
@@ -2217,18 +2217,18 @@ describe('Instance', function() {
         });
 
         it('should update `created at` property only if the property is NOT set already', function() {
-            var propNames = this.modelWithTimestamps.$getTimestampPropertyNames();
+            var propNames = this.modelWithTimestamps._getTimestampPropertyNames();
             var instanceWithTimestamps = this.modelWithTimestamps.build({});
 
             var data = instanceWithTimestamps.getData();
 
-            var timestampsBck = instanceWithTimestamps.$touchTimestamps();
+            var timestampsBck = instanceWithTimestamps._touchTimestamps();
             timestampsBck.should.have.property(propNames.createdAt).that.is.a("undefined");
             data.should.have.property(propNames.createdAt).that.is.a('string');
         });
 
-        it('should watch for an object as 1st argument of `$touchTimestamps` call, if it\'s found it should set timestamp values to those provided in the object', function() {
-            var propNames = this.paranoidModel.$getTimestampPropertyNames();
+        it('should watch for an object as 1st argument of `_touchTimestamps` call, if it\'s found it should set timestamp values to those provided in the object', function() {
+            var propNames = this.paranoidModel._getTimestampPropertyNames();
             var paranoidInstance = this.paranoidModel.build({});
 
             var timestampValues = {};
@@ -2237,7 +2237,7 @@ describe('Instance', function() {
             timestampValues[propNames.deletedAt] = moment.utc(1462046979999).format();
 
             var data = paranoidInstance.getData();
-            var timestampsBck = paranoidInstance.$touchTimestamps(timestampValues);
+            var timestampsBck = paranoidInstance._touchTimestamps(timestampValues);
 
             data.should.have.property(propNames.createdAt, timestampValues[propNames.createdAt]);
             data.should.have.property(propNames.updatedAt, timestampValues[propNames.updatedAt]);
@@ -2245,11 +2245,11 @@ describe('Instance', function() {
         });
 
         it('should update `deleted at` property only if explicit `options.touchDeletedAt` option is set AND the `paranoid` option is enabled', function() {
-            var propNames = this.paranoidModel.$getTimestampPropertyNames();
+            var propNames = this.paranoidModel._getTimestampPropertyNames();
             var paranoidInstance = this.paranoidModel.build({});
 
             var data = paranoidInstance.getData();
-            var timestampsBck = paranoidInstance.$touchTimestamps(undefined, {touchDeletedAt: true});
+            var timestampsBck = paranoidInstance._touchTimestamps(undefined, {touchDeletedAt: true});
 
             timestampsBck.should.have.property(propNames.deletedAt).that.is.an('undefined');
             data.should.have.property(propNames.deletedAt).that.is.a('string');
@@ -2262,7 +2262,7 @@ describe('Instance', function() {
             var model = this.buildModel('TOJSONTESTMODEL', {
                 type: 'string'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             var instance = model.build('test string');
             return instance.toJSON().should.be.equal('test string');
@@ -2273,7 +2273,7 @@ describe('Instance', function() {
                 this.model = this.buildModel('TOJSONTESTMODEL2', {
                     type: 'object'
                 });
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
 
                 this.instance = this.model.build({
                     some: 'data'
@@ -2296,7 +2296,7 @@ describe('Instance', function() {
             var model = this.buildModel('INSPECTMODELTEST', {
                 type: 'object'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             var instance = model.build({});
 

@@ -21,7 +21,7 @@
 * [BUGFIX] the `caseSensitive`option on `Key` object was being owerwritten by `true` boolean
 * [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
-* [CHANGED] `Instance.cloneData` method has been made part of private (renamed to `Instance.$cloneData`)
+* [CHANGED] `Instance.cloneData` method has been made part of private (renamed to `Instance._cloneData`)
 * [CHANGED] `Instance.destroy` & `Instance.update` methods will return rejected promise with an `InstanceError` when calling the methods on a Model instance object with no `cas` value set (the operation can be forced by the `force=true`)
 * [CHANGED] format of the second argument of the `Model.buildKey` method has changed. The method accepts `options` object instead of boolean argument
 * [CHANGED] the `afterFailedIndexRemoval` hook type is triggered not just for `StorageError` but also for any other error that occurs while removing outdated reference document indexes
@@ -33,7 +33,7 @@
 * [ADDED] support for defining default array item values in a schema definition
 * [ADDED] new `Instance.populate` method - handles loading of Model's associations
 * [ADDED] new `Model.getByIdOrFail` which returns rejected promise with `StorageError` when a document is not found in a bucket
-* [ADDED] new `Model.buildRefDocKey` method (Model's private method `$buildRefDocKey` has been updated and made public)
+* [ADDED] new `Model.buildRefDocKey` method (Model's private method `_buildRefDocKey` has been updated and made public)
 * [ADDED] new `getByRefDocOrFail` method for every defined refDoc index. The method returns rejected promise with `StorageError` when a document is not found in a bucket
 * [ADDED] new `lean` option to `Model` "getByRefDoc" methods - if true, the method returns document's `Key` object instead of fetched document's data
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
@@ -50,7 +50,7 @@
 * [BUGFIX] - `Model.getById` was throwing synchronous exeption when building of document's `Key` object failed. See #12
 * [BUGFIX] - Setting Model's association default value on schema definition property of `Complex` type was throwing unexpected `ValidationError`/`TypeError`. See #19
 * [BUGFIX] - It was not possible to update `refDoc` index of already persisted `Instance` with no index value present yet. See #15
-* [BUGFIX] - Semantic error - `Instance.update` method was trowing "Cannot read property '$buildRefDocument' of null". See #14
+* [BUGFIX] - Semantic error - `Instance.update` method was trowing "Cannot read property '_buildRefDocument' of null". See #14
 
 ## v1.0.0
 

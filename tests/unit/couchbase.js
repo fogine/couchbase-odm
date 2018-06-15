@@ -125,8 +125,8 @@ describe('CouchbaseODM', function() {
             this.odm.modelManager.get('ModelName2').should.be.equal(ModelObject);
         });
 
-        it('should call `Model.$init` with `ModelManager` instance', function() {
-            const initSpy = sinon.spy(Model.prototype, '$init');
+        it('should call `Model._init` with `ModelManager` instance', function() {
+            const initSpy = sinon.spy(Model.prototype, '_init');
 
             const ModelObject = this.odm.define('ModelName3', {
                 type: 'object'

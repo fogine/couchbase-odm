@@ -251,7 +251,7 @@ describe('Keys', function() {
     });
 
     describe('RefDocKey', function() {
-        describe('$setRef', function() {
+        describe('_setRef', function() {
             it("should throw a KeyError when we don't provide valid property references", function() {
                 function case1() {
                     return new RefDocKey({
