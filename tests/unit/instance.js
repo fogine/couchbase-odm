@@ -755,6 +755,130 @@ describe('Instance', function() {
         });
     });
 
+    describe('isDirty', function() {
+        describe('json object dataset', function() {
+            before(function() {
+                this.model = this.buildModel('InstanceIsDirtyObjectTestModel', {
+                    type: 'object'
+                });
+                this.model._init(this.modelManager);
+            });
+
+            it('should return true when the method is called on a new model instance object', function() {
+                let instance = this.model.build({
+                    prop: 'value'
+                });
+                instance.isDirty().should.be.equal(true);
+                instance.isDirty('prop').should.be.equal(true);
+            });
+
+            it('should return false when a property value does not differ from its saved counterpart', function() {
+                let instance = this.model.build({
+                    prop: 'value'
+                });
+
+                //fake that the instance is saved
+                instance.options.isNewRecord = false;
+                instance._original = instance.clone();
+
+                instance.isDirty().should.be.equal(false);
+                instance.isDirty('prop').should.be.equal(false);
+            });
+
+            it('should return true when a property value differs from its saved counterpart', function() {
+                let instance = this.model.build({
+                    prop: 'value'
+                });
+
+                //fake that the instance is saved
+                instance.options.isNewRecord = false;
+                instance._original = instance.clone();
+
+                instance.setData('prop', 'changed');
+
+                instance.isDirty().should.be.equal(true);
+                instance.isDirty('prop').should.be.equal(true);
+            });
+        });
+
+        describe('json array dataset', function() {
+            before(function() {
+                this.model = this.buildModel('InstanceIsDirtyArrayTestModel', {
+                    type: 'array'
+                });
+                this.model._init(this.modelManager);
+            });
+
+            it('should return true when the method is called on a new model instance object', function() {
+                let instance = this.model.build([1,2, {prop: 'value'}]);
+                instance.isDirty().should.be.equal(true);
+                instance.isDirty('prop').should.be.equal(true);
+            });
+
+            it('should return false when a property value does not differ from its saved counterpart', function() {
+                let instance = this.model.build([1,2, {prop: 'value'}]);
+
+                //fake that the instance is saved
+                instance.options.isNewRecord = false;
+                instance._original = instance.clone();
+
+                instance.isDirty().should.be.equal(false);
+                instance.isDirty([2, 'prop']).should.be.equal(false);
+                instance.isDirty('[2].prop').should.be.equal(false);
+            });
+
+            it('should return true when a property value differs from its saved counterpart', function() {
+                let instance = this.model.build([1,2, {prop: 'value'}]);
+
+                //fake that the instance is saved
+                instance.options.isNewRecord = false;
+                instance._original = instance.clone();
+
+                instance.options.data[2].prop = 'changed';
+
+                instance.isDirty().should.be.equal(true);
+                instance.isDirty([2, 'prop']).should.be.equal(true);
+                instance.isDirty('[2].prop').should.be.equal(true);
+            });
+        });
+
+        describe('primitive type dataset (string)', function() {
+            before(function() {
+                this.model = this.buildModel('InstanceIsDirtyStringTestModel', {
+                    type: 'string'
+                });
+                this.model._init(this.modelManager);
+            });
+
+            it('should return true when the method is called on a new model instance object', function() {
+                let instance = this.model.build('test string');
+                instance.isDirty().should.be.equal(true);
+            });
+
+            it('should return false when string data does not differ from its saved counterpart', function() {
+                let instance = this.model.build('test string');
+
+                //fake that the instance is saved
+                instance.options.isNewRecord = false;
+                instance._original = instance.clone();
+
+                instance.isDirty().should.be.equal(false);
+            });
+
+            it('should return true when a property value differs from its saved counterpart', function() {
+                let instance = this.model.build('test string');
+
+                //fake that the instance is saved
+                instance.options.isNewRecord = false;
+                instance._original = instance.clone();
+
+                instance.setData('updated string');
+
+                instance.isDirty().should.be.equal(true);
+            });
+        });
+    });
+
     describe('save', function() {
         beforeEach(function() {
             this.odm.Model.validator.removeSchema('Test');
