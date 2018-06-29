@@ -23,7 +23,7 @@ function defineModel(name, options) {
 
     this.Client = this.odm.define(name, {
         type: 'object',
-        schema: {
+        properties: {
             name: {
                 type: 'string'
             }
@@ -105,6 +105,12 @@ function defineTests() {
 
         it('should `getByIdOrFail` previosly created Client doc by its id and not fail!', function() {
             return this.Client.getByIdOrFail(this.id).should.be.fulfilled;
+        });
+
+        it('should fail when we try to save invalid data', function() {
+            return this.Client.create({
+                name: {invalid: 'data'} //invalid
+            }).should.be.rejectedWith(ODM.errors.ValidationError);
         });
     });
 
