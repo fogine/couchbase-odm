@@ -1,6 +1,6 @@
 {
   "name": "kouchbase-odm",
-  "version": "3.0.0-dev.20180419",
+  "version": "3.0.0-dev.20180619",
   "author": "fogine",
   "keywords": [
     "couchbase",
@@ -33,11 +33,11 @@
   "dependencies": {
     "ajv": "^6.5.1",
     "ajv-keywords": "^3.2.0",
-    "bluebird": "^3.4.7",
-    "couchbase": "^2.1.8",
-    "lodash": "^4.0.0",
+    "bluebird": "^3.5.1",
+    "couchbase": "^2.4.6",
+    "lodash": "^4.17.0",
     "moment": "^2.13.0",
-    "node-uuid": "^1.4.7"
+    "node-uuid": "^1.4.8"
   },
   "devDependencies": {
     "realm-jsdoc": "0.x",
