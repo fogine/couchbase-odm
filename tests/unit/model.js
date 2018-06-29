@@ -581,7 +581,7 @@ describe('Model', function() {
                         brand: { type: 'string' },
                         owner: {
                             type: 'object',
-                            _relation: {type: 'Owner'}
+                            relation: {type: 'Owner'}
                         },
                         dimensions: {
                             type: 'object',

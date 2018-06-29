@@ -34,7 +34,7 @@ describe('Model associations', function() {
                     type: 'array',
                     items: {
                         type: 'object',
-                        _relation: {type: 'User', method: relation}
+                        relation: {type: 'User', method: relation}
                     }
                 });
 
@@ -51,7 +51,7 @@ describe('Model associations', function() {
                             type: 'array',
                             items: {
                                 type: 'object',
-                                _relation: {type: 'File', method: relation}
+                                relation: {type: 'File', method: relation}
                             }
                         }
                     }
@@ -59,7 +59,7 @@ describe('Model associations', function() {
 
                 const FileLink = odm.define('FileLink', {
                     type: 'object',
-                    _relation: {type: 'File', method: relation}
+                    relation: {type: 'File', method: relation}
                 });
 
                 const File = odm.define('File', {
@@ -70,7 +70,7 @@ describe('Model associations', function() {
                         },
                         data: {
                             type: 'object',
-                            _relation: {type: 'FileData', method: relation}
+                            relation: {type: 'FileData', method: relation}
                         }
                     }
                 }, {

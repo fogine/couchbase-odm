@@ -66,7 +66,7 @@ describe('Instance', function() {
                         type: 'string'
                     },
                     friend: {
-                        _relation: {type: 'User'}
+                        relation: {type: 'User'}
                     }
                 }
             });
@@ -138,12 +138,12 @@ describe('Instance', function() {
                 required: ['app', 'friends'],
                 properties: {
                     app: {
-                        _relation: {type: 'App'}
+                        relation: {type: 'App'}
                     },
                     friends: {
                         type: 'array',
                         items: {
-                            _relation: {type: 'User'}
+                            relation: {type: 'User'}
                         }
                     }
                 }
@@ -189,7 +189,7 @@ describe('Instance', function() {
             const PeopleModel = this.buildModel('People', {
                 type: 'array',
                 items: {
-                    _relation: {type: 'Human'}
+                    relation: {type: 'Human'}
                 }
             }, {
                 key: ODM.UUID4Key
@@ -263,13 +263,13 @@ describe('Instance', function() {
                     type: 'object',
                     properties: {
                         app: {
-                            _relation: {type: 'App'}
+                            relation: {type: 'App'}
                         },
                         friends: {
                             type: 'array',
                             default: [],
                             items: {
-                                _relation: {type: 'User'}
+                                relation: {type: 'User'}
                             }
                         }
                     }
@@ -1009,7 +1009,7 @@ describe('Instance', function() {
                     name: { type: 'string' },
                     email: { type: 'string' },
                     apps: { type: 'array' },
-                    user: { _relation: {type: 'Model'} }
+                    user: { relation: {type: 'Model'} }
                 }
             }, {
                 key: ODM.UUID4Key,
@@ -1211,7 +1211,7 @@ describe('Instance', function() {
                 required: ['name'],
                 properties: {
                     name: { type: 'string' },
-                    subinstance: { _relation: {type: 'Model'} }
+                    subinstance: { relation: {type: 'Model'} }
                 }
             }, {
                 key: ODM.UUID4Key,
@@ -1336,7 +1336,7 @@ describe('Instance', function() {
                     friends: {
                         type: 'array',
                         items: {
-                            _relation: {type: 'User'}
+                            relation: {type: 'User'}
                         }
                     },
                     sex: {

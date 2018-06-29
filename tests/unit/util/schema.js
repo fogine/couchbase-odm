@@ -31,7 +31,7 @@ describe('schema utils', function() {
                     properties: {
                         user: {
                             type: 'object',
-                            _relation: {
+                            relation: {
                                 type: 'User',
                                 method: 'reference'
                             }
@@ -42,7 +42,7 @@ describe('schema utils', function() {
                                 friends: {
                                     type: 'array',
                                     items: {
-                                        _relation: { type: 'User' }
+                                        relation: { type: 'User' }
                                     }
                                 }
                             }
@@ -67,8 +67,8 @@ describe('schema utils', function() {
                         connections: {
                             type: 'array',
                             items: [
-                                {_relation: {type: 'User'}},
-                                {_relation: {type: 'Country', method: 'reference'}},
+                                {relation: {type: 'User'}},
+                                {relation: {type: 'Country', method: 'reference'}},
                             ]
                         }
                     }
@@ -85,9 +85,9 @@ describe('schema utils', function() {
                 data.should.have.deep.property('[1].method', 'reference');
             });
 
-            it('should allow to define `_relation` as root data type', function() {
+            it('should allow to define `relation` as root data type', function() {
                 const schema = {
-                    _relation: {
+                    relation: {
                         type: 'User'
                     },
                 };
