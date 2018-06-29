@@ -39,8 +39,7 @@ describe('Model', function() {
 
     describe('constructor', function() {
         after(function() {
-            this.odm.Model.validator.removeSchema('name');
-            this.odm.Model.validator.removeSchema('name1');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it("should throw a ModelError when invalid model's name is provided", function() {
@@ -88,18 +87,7 @@ describe('Model', function() {
 
     describe('_init', function() {
         afterEach(function() {
-            this.odm.Model.validator.removeSchema('Test1');
-            this.odm.Model.validator.removeSchema('Test1a');
-            this.odm.Model.validator.removeSchema('Test1b');
-            this.odm.Model.validator.removeSchema('Test1c');
-            this.odm.Model.validator.removeSchema('Test1d');
-            this.odm.Model.validator.removeSchema('Test2');
-            this.odm.Model.validator.removeSchema('Test3');
-            this.odm.Model.validator.removeSchema('Test4');
-            this.odm.Model.validator.removeSchema('Test5');
-            this.odm.Model.validator.removeSchema('Test6');
-            this.odm.Model.validator.removeSchema('Test7');
-            this.odm.Model.validator.removeSchema('Test20');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should add internal properties to schema if "root" data type is object and if a property is not disabled by option set', function() {
@@ -193,8 +181,8 @@ describe('Model', function() {
             const stub = sinon.stub(ODM.Model.validator, 'addSchema');
             model._init(this.modelManager);
 
-            stub.should.have.been.calledOnce;
-            stub.should.have.been.calledWith(model.options.schema, model.name);
+            stub.should.have.been.calledThrice;
+            stub.getCall(0).should.have.been.calledWith(model.options.schema, model.name);
             stub.restore();//important!
         });
 
@@ -397,7 +385,7 @@ describe('Model', function() {
 
     describe('buildKey', function() {
         after(function() {
-            this.odm.Model.validator.removeSchema('Test8');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should accept whole `key` string in place of `id` (dynamic part of key)', function() {
@@ -547,7 +535,7 @@ describe('Model', function() {
             });
 
             after(function() {
-                this.odm.Model.validator.removeSchema('Test9');
+                this.odm.Model.validator.removeSchema(/.*/);
                 this.sanitizeSpy.restore();
             });
 
@@ -593,8 +581,7 @@ describe('Model', function() {
                         brand: { type: 'string' },
                         owner: {
                             type: 'object',
-                            _relation: {type: 'Owner'},
-                            default: this.ownerModel.build('David')
+                            _relation: {type: 'Owner'}
                         },
                         dimensions: {
                             type: 'object',
@@ -630,8 +617,7 @@ describe('Model', function() {
 
             after(function() {
                 this.modelManager.models = {};
-                this.odm.Model.validator.removeSchema('Owner');
-                this.odm.Model.validator.removeSchema('Car');
+                this.odm.Model.validator.removeSchema(/.*/);
             });
 
             it('should assign default values to properties with undefined values', function() {
@@ -646,7 +632,6 @@ describe('Model', function() {
                 data.should.have.property('accessTypes').that.is.eql([
                         'ground', 'air', 'space'
                 ]);
-                data.should.have.property('owner').that.is.instanceof(this.ownerModel.Instance);
             });
 
             it('should NOT assign default values to properties with null values', function() {
@@ -674,14 +659,6 @@ describe('Model', function() {
                 });
             });
 
-            it('should assign cloned default owner instance object', function() {
-                const instance = this.model.build();
-                const data = instance.getData();
-
-                data.should.have.property('owner').that.is.not.equal(this.model.defaults.owner);
-                data.owner.getData().should.be.equal(this.model.defaults[2].default.getData());
-            });
-
             it('(default values) should not overwrite provided instance data values', function() {
                 const instance = this.model.build({
                     accessTypes: ['ground'],
@@ -699,7 +676,6 @@ describe('Model', function() {
                     width: 250,
                     height: 170
                 });
-                //TODO
                 data.should.have.property('accessTypes').that.is.eql(['ground']);
             });
 
@@ -714,8 +690,7 @@ describe('Model', function() {
 
     describe('create', function() {
         afterEach(function() {
-            this.odm.Model.validator.removeSchema('Test9');
-            this.odm.Model.validator.removeSchema('Test11');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should return fulfilled promise with persisted instance', function() {
@@ -783,7 +758,7 @@ describe('Model', function() {
 
             after(function() {
                 delete this.model;
-                this.odm.Model.validator.removeSchema('Test10');
+                this.odm.Model.validator.removeSchema(/.*/);
             });
 
             beforeEach(function() {
@@ -944,7 +919,7 @@ describe('Model', function() {
             after(function() {
                 delete this.model;
                 delete this.doc;
-                this.odm.Model.validator.removeSchema('Test20');
+                this.odm.Model.validator.removeSchema(/.*/);
             });
 
             it('should NOT call the `getAndLock` method if the `lockTime` option is set AND the relevant document IS soft-deleted', function() {
@@ -1013,7 +988,7 @@ describe('Model', function() {
         after(function() {
             delete this.model;
             delete this.doc;
-            this.odm.Model.validator.removeSchema('Test20');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should return resolved promise with `null` if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
@@ -1063,7 +1038,7 @@ describe('Model', function() {
 
         after(function() {
             delete this.model;
-            this.odm.Model.validator.removeSchema('Test11');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it("should return fulfilled promise with data object containing indexed list of results by document's id (indexed=true)", function() {
@@ -1185,7 +1160,7 @@ describe('Model', function() {
 
         after(function() {
             this.getByIdStub.restore();
-            this.odm.Model.validator.removeSchema('Test12');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should find a document which should be removed and then call `destroy` method on the instance object', function() {
@@ -1220,8 +1195,7 @@ describe('Model', function() {
 
     describe('touch', function() {
         after(function() {
-            this.odm.Model.validator.removeSchema('Test13');
-            this.odm.Model.validator.removeSchema('Test14');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should call `StorageAdapter.touch` method with provided `Key` object and other options', function() {
@@ -1266,8 +1240,7 @@ describe('Model', function() {
 
     describe('unlock', function() {
         after(function() {
-            this.odm.Model.validator.removeSchema('Test15');
-            this.odm.Model.validator.removeSchema('Test16');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should call `StorageAdapter.unlock` method with provided `Key` object', function() {
@@ -1316,8 +1289,7 @@ describe('Model', function() {
 
     describe('exists', function() {
         after(function() {
-            this.odm.Model.validator.removeSchema('Test17');
-            this.odm.Model.validator.removeSchema('Test18');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should call `StorageAdapter.exists` method with provided `Key` object', function() {
@@ -1395,7 +1367,7 @@ describe('Model', function() {
             delete this.modelName;
 
             this.getStub.restore();
-            this.odm.Model.validator.removeSchema('Test17');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         describe('getByRefDocOrFail', function() {
@@ -1517,7 +1489,7 @@ describe('Model', function() {
 
     describe('toString', function() {
         before(function() {
-            this.odm.Model.validator.removeSchema('Test21');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should return correctly formated string', function() {

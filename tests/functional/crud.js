@@ -55,7 +55,7 @@ describe('CRUD operations', function() {
         });
 
         after(function() {
-            this.odm.Model.validator.removeSchema('Client');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         return defineTests();
@@ -68,7 +68,7 @@ describe('CRUD operations', function() {
         });
 
         after(function() {
-            this.odm.Model.validator.removeSchema('Client2');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         return defineTests();
@@ -81,7 +81,7 @@ describe('CRUD operations', function() {
         });
 
         after(function() {
-            this.odm.Model.validator.removeSchema('Client3');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         return defineTests();

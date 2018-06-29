@@ -77,7 +77,7 @@ describe('Instance', function() {
         after(function() {
             delete this.model;
             this.modelManager.models = {};
-            this.odm.Model.validator.removeSchema('User');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should call defined `beforeValidate` and `afterValidate` hooks', function() {
@@ -85,6 +85,7 @@ describe('Instance', function() {
             const validateSpy = sinon.spy(ODM.Model.validator, 'validate');
 
             const instance = this.model.build({username: 'fogine'});
+            instance._touchTimestamps();
 
             //reset spies because data can be sanitized when building new Instance
             //via this.model.build
@@ -122,10 +123,7 @@ describe('Instance', function() {
 
     describe('_initRelations', function() {
         after(function() {
-            this.odm.Model.validator.removeSchema('User');
-            this.odm.Model.validator.removeSchema('App');
-            this.odm.Model.validator.removeSchema('Human');
-            this.odm.Model.validator.removeSchema('People');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should instantiate all non-empty relations', function() {
@@ -225,9 +223,7 @@ describe('Instance', function() {
         afterEach(function() {
             this.modelManager.models = {};
 
-            this.odm.Model.validator.removeSchema('Application');
-            this.odm.Model.validator.removeSchema('App');
-            this.odm.Model.validator.removeSchema('User');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should only call original `document.getSerializedData` method for object which has primitive base type', function() {
@@ -317,12 +313,12 @@ describe('Instance', function() {
     describe('refresh', function() {
 
         beforeEach(function() {
-            this.odm.Model.validator.removeSchema('Model');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         afterEach(function() {
             this.modelManager.models = {};
-            this.odm.Model.validator.removeSchema('Model');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should NOT overwrite `id` getter property on data object', function() {
@@ -421,7 +417,7 @@ describe('Instance', function() {
 
         after(function() {
             delete this.Model;
-            this.odm.Model.validator.removeSchema('Model');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should return fulfilled promise with instantiated documents of all reference documents, according to current object data values', function() {
@@ -546,8 +542,7 @@ describe('Instance', function() {
 
         after(function() {
             delete this.Model;
-            this.odm.Model.validator.removeSchema('Model');
-            this.odm.Model.validator.removeSchema('Test');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should return fulfilled promise with list containing two collections of documents', function() {
@@ -881,11 +876,11 @@ describe('Instance', function() {
 
     describe('save', function() {
         beforeEach(function() {
-            this.odm.Model.validator.removeSchema('Test');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         afterEach(function() {
-            this.odm.Model.validator.removeSchema('Test');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should call `insert` method when a instance has not been persisted to bucket yet', function() {
@@ -1036,8 +1031,7 @@ describe('Instance', function() {
         after(function() {
             delete this.Model;
             this.modelManager.models = {};
-            this.odm.Model.validator.removeSchema('Model');
-            this.odm.Model.validator.removeSchema('PrimitiveModel');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         afterEach(function() {
@@ -1234,7 +1228,7 @@ describe('Instance', function() {
         });
 
         after(function() {
-            this.odm.Model.validator.removeSchema('Model');
+            this.odm.Model.validator.removeSchema(/.*/);
             this.instanceRefreshStub.restore();
         });
 
@@ -1412,14 +1406,10 @@ describe('Instance', function() {
             delete this.friend;
             delete this.user;
             this.modelManager.models = {};
-            this.odm.Model.validator.removeSchema('User');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         describe('destroy', function() {
-
-            after(function() {
-                this.odm.Model.validator.removeSchema('ModelParanoid');
-            });
 
             it('should call defined `beforeDestroy` and `afterDestroy` hooks before and after destroy process', function() {
                 var self = this;
@@ -1565,6 +1555,7 @@ describe('Instance', function() {
                 return promise.should.be.fulfilled.then(function(result) {
                     self.removeStub.withArgs(instance.getKey()).should.have.callCount(0);
                     self.replaceStub.should.have.been.calledOnce;
+                    self.odm.Model.validator.removeSchema('ModelParanoid');
                     //for some misterious reason it stresses that arguments dont match, which does not seem like that
                     //self.replaceStub.should.have.been.calledWithMatch(instance.getKey(), instance.getData(), {
                         //cas: casBck
@@ -2295,9 +2286,7 @@ describe('Instance', function() {
         });
 
         after(function() {
-            this.odm.Model.validator.removeSchema('Test1');
-            this.odm.Model.validator.removeSchema('Test2');
-            this.odm.Model.validator.removeSchema('Test3');
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should NOT try to update any timestamp properties if `options.timestamps` option is disabled', function() {

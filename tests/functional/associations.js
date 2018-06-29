@@ -134,10 +134,7 @@ describe('Model associations', function() {
             });
 
             after('Unregister models', function() {
-                this.odm.Model.validator.removeSchema('User');
-                this.odm.Model.validator.removeSchema('Admins');
-                this.odm.Model.validator.removeSchema('File');
-                this.odm.Model.validator.removeSchema('FileData');
+                this.odm.Model.validator.removeSchema(/.*/);
             });
 
             before('Build documents', function() {
