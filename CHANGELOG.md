@@ -1,5 +1,6 @@
 ## FUTURE
 
+* [CHANGED] model option `paranoid=true` does NOT implicitly enable `timestamps` option (only `deleted_at` property is considered indstead of additional properties `created_at` & `updated_at`)
 * [ADDED] a new Model instance method `isDirty()`
 * [CHANGED] dropped support for build-in custom Model schema format which has been replaced with `json-schema` validation provided by `Ajv` package
 * [CHANGED] `Instance.prototype.sanitize` does not accept any options

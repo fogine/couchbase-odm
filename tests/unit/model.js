@@ -124,8 +124,8 @@ describe('Model', function() {
 
             model2.options.schema.properties.should.have.property('_id');
             model2.options.schema.properties.should.have.property('_type');
-            model2.options.schema.properties.should.have.property('created_at');
-            model2.options.schema.properties.should.have.property('updated_at');
+            model2.options.schema.properties.should.not.have.property('created_at');
+            model2.options.schema.properties.should.not.have.property('updated_at');
             model2.options.schema.properties.should.have.property('deleted_at');
 
             model3.options.schema.properties.should.have.property('_id');

@@ -2262,13 +2262,18 @@ describe('Instance', function() {
                 type: 'object',
             }, {timestamps: true});
 
-            this.paranoidModel = this.buildModel('Test3', {
+            this.paranoidModel = this.buildModel('Test4', {
+                type: 'object',
+            }, {timestamps: false, paranoid: true});
+
+            this.paranoidWithTimestampsModel = this.buildModel('Test3', {
                 type: 'object',
             }, {timestamps: true, paranoid: true});
 
             this.model._init(this.modelManager);
             this.modelWithTimestamps._init(this.modelManager);
             this.paranoidModel._init(this.modelManager);
+            this.paranoidWithTimestampsModel._init(this.modelManager);
 
             this.convertDateToUTC = convertDateToUTC;
 
@@ -2340,8 +2345,8 @@ describe('Instance', function() {
         });
 
         it('should accept an object as 1st argument of `_touchTimestamps` call, if its provided timestamp values should be set to those provided in the object', function() {
-            var propNames = this.paranoidModel._getTimestampPropertyNames();
-            var paranoidInstance = this.paranoidModel.build({});
+            var propNames = this.paranoidWithTimestampsModel._getTimestampPropertyNames();
+            var paranoidInstance = this.paranoidWithTimestampsModel.build({});
 
             var timestampValues = {};
             timestampValues[propNames.createdAt] = new Date(1462046976313);
@@ -2356,9 +2361,21 @@ describe('Instance', function() {
             data.should.have.property(propNames.deletedAt, timestampValues[propNames.deletedAt]);
         });
 
-        it('should update `deleted at` property only if explicit `options.touchDeletedAt` option is set AND the `paranoid` option is enabled', function() {
+        it('should touch deleted_at property only when options paranoid=true & timestamps=false', function() {
+            var instance = this.paranoidModel.build({});
+
             var propNames = this.paranoidModel._getTimestampPropertyNames();
-            var paranoidInstance = this.paranoidModel.build({});
+
+            instance._touchTimestamps(undefined, {touchDeletedAt: true});
+
+            instance.getData().should.not.have.property(propNames.createdAt);
+            instance.getData().should.not.have.property(propNames.updatedAt);
+            instance.getData().should.have.property(propNames.deletedAt);
+        });
+
+        it('should update `deleted at` property only if explicit `options.touchDeletedAt` option is set AND the `paranoid` option is enabled', function() {
+            var propNames = this.paranoidWithTimestampsModel._getTimestampPropertyNames();
+            var paranoidInstance = this.paranoidWithTimestampsModel.build({});
 
             var data = paranoidInstance.getData();
             var timestampsBck = paranoidInstance._touchTimestamps(undefined, {touchDeletedAt: true});
