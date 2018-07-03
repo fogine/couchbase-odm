@@ -5,6 +5,7 @@ const sinonChai      = require("sinon-chai");
 const chai           = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const couchbase      = require('couchbase').Mock;
+Promise.longStackTraces();
 
 const ODM = require('../../index.js');
 
@@ -183,7 +184,7 @@ function defineTests() {
                 return refDoc.refresh().should.be.rejectedWith(ODM.errors.StorageError, message);
             }).then(function() {
                 if (this.Client.options.paranoid) {
-                    this.client.deleted_at.should.be.a('string');
+                    this.client.deleted_at.should.instanceof(Date);
                     return this.client.refresh();
                 } else {
                     return this.client.refresh().should.be.rejectedWith(ODM.errors.StorageError, message);

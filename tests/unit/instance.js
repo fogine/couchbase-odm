@@ -5,7 +5,6 @@ const chai           = require('chai');
 const chaiAsPromised = require('chai-as-promised');
 const sinonChai      = require("sinon-chai");
 const couchbase      = require('couchbase').Mock;
-const moment         = require('moment');
 
 const Model         = require("../../lib/model.js");
 const ODM           = require('../../index.js');
@@ -226,7 +225,7 @@ describe('Instance', function() {
             this.odm.Model.validator.removeSchema(/.*/);
         });
 
-        it('should only call original `document.getSerializedData` method for object which has primitive base type', function() {
+        it('should only clone data for object which has primitive base type', function() {
             const AppModel = this.buildModel('Application', {
                 type: 'string'
             }, {
@@ -238,7 +237,7 @@ describe('Instance', function() {
 
             let data = 'twitter';
             let twitter = AppModel.build(data);
-            const serializeDataSpy = sinon.spy(twitter.super,  'getSerializedData');
+            const serializeDataSpy = sinon.spy(twitter,  '_cloneData');
 
             const promise = twitter.getSerializedData();
 
@@ -1783,8 +1782,8 @@ describe('Instance', function() {
                     var createdAt = self.user._original.getData('created_at');
                     var updatedAt = self.user._original.getData('updated_at');
 
-                    self.user.getData('created_at').should.be.equal(createdAt);
-                    self.user.getData('updated_at').should.be.equal(updatedAt);
+                    self.user.getData('created_at').should.be.eql(createdAt);
+                    self.user.getData('updated_at').should.be.eql(updatedAt);
                 });
             });
 
@@ -2201,8 +2200,8 @@ describe('Instance', function() {
                     var createdAt = self.user._original.getData('created_at');
                     var updatedAt = self.user._original.getData('updated_at');
 
-                    self.user.getData('created_at').should.be.equal(createdAt);
-                    self.user.getData('updated_at').should.be.equal(updatedAt);
+                    self.user.getData('created_at').should.be.eql(createdAt);
+                    self.user.getData('updated_at').should.be.eql(updatedAt);
                 });
             });
 
@@ -2219,8 +2218,8 @@ describe('Instance', function() {
                     var createdAt = self.user._original.getData('created_at');
                     var updatedAt = self.user._original.getData('updated_at');
 
-                    self.user.getData('created_at').should.be.equal(createdAt);
-                    self.user.getData('updated_at').should.be.equal(updatedAt);
+                    self.user.getData('created_at').should.be.eql(createdAt);
+                    self.user.getData('updated_at').should.be.eql(updatedAt);
                 });
             });
 
@@ -2309,8 +2308,8 @@ describe('Instance', function() {
             var instanceWithTimestamps = this.modelWithTimestamps.build({});
             var propNames = this.modelWithTimestamps._getTimestampPropertyNames();
 
-            var originalCreatedAt = moment.utc(1462046976313).format();
-            var originalUpdatedAt = moment.utc(1462046976313).format();
+            var originalCreatedAt = new Date(1462046976313);
+            var originalUpdatedAt = new Date(1462046976313);
 
             var data = instanceWithTimestamps.getData();
             data[propNames.createdAt] = originalCreatedAt;
@@ -2337,17 +2336,17 @@ describe('Instance', function() {
 
             var timestampsBck = instanceWithTimestamps._touchTimestamps();
             timestampsBck.should.have.property(propNames.createdAt).that.is.a("undefined");
-            data.should.have.property(propNames.createdAt).that.is.a('string');
+            data.should.have.property(propNames.createdAt).that.is.instanceof(Date);
         });
 
-        it('should watch for an object as 1st argument of `_touchTimestamps` call, if it\'s found it should set timestamp values to those provided in the object', function() {
+        it('should accept an object as 1st argument of `_touchTimestamps` call, if its provided timestamp values should be set to those provided in the object', function() {
             var propNames = this.paranoidModel._getTimestampPropertyNames();
             var paranoidInstance = this.paranoidModel.build({});
 
             var timestampValues = {};
-            timestampValues[propNames.createdAt] = moment.utc(1462046976313).format();
-            timestampValues[propNames.updatedAt] = moment.utc(1462046976313).format();
-            timestampValues[propNames.deletedAt] = moment.utc(1462046979999).format();
+            timestampValues[propNames.createdAt] = new Date(1462046976313);
+            timestampValues[propNames.updatedAt] = new Date(1462046976313);
+            timestampValues[propNames.deletedAt] = new Date(1462046979999);
 
             var data = paranoidInstance.getData();
             var timestampsBck = paranoidInstance._touchTimestamps(timestampValues);
@@ -2365,7 +2364,7 @@ describe('Instance', function() {
             var timestampsBck = paranoidInstance._touchTimestamps(undefined, {touchDeletedAt: true});
 
             timestampsBck.should.have.property(propNames.deletedAt).that.is.an('undefined');
-            data.should.have.property(propNames.deletedAt).that.is.a('string');
+            data.should.have.property(propNames.deletedAt).that.is.instanceof(Date);
             data.should.have.property(propNames.deletedAt).that.is.ok;
         });
     });

@@ -24,7 +24,7 @@
   "scripts": {
     "unit-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/unit/**/*.js'",
     "functional-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/functional/**/*.js'",
-    "tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/**/*.js'",
+    "tests": "node --use-strict ./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/**/*.js'",
     "test": "npm run tests",
     "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json -u ./tutorials --verbose",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --ui bdd -R spec 'tests/**/*.js' -t 5000"
@@ -36,7 +36,6 @@
     "bluebird": "^3.5.1",
     "couchbase": "^2.4.6",
     "lodash": "^4.17.0",
-    "moment": "^2.13.0",
     "node-uuid": "^1.4.8"
   },
   "devDependencies": {
