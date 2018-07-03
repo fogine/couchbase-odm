@@ -8,7 +8,7 @@
 * [BUGFIX] `Model.prototype.unlock` was not accepting `cas` argument thus the unlock operation could not succeed
 * [ADDED] `Instance.prototype.touch` which operates on all reference documents in addition to the main document
 * [ADDED] new public method `Instance.prototype.getRefDocs` which has been part of private API
-* [CHANGED] `Instance.prototype.update` method behaves as one would expect, that is, more or less its syntax sugar for `instance.setData()` followed by `instance.save()`. This also fixes the method design issue which broke update hooks.
+* [CHANGED] `Instance.prototype.update` method behaves as one would expect, that is, its syntax sugar for `instance.setData()` followed by `instance.save()`. This also fixes the method design issue which broke update hooks.
 * [BUGFIX] `storageAdapter` methods should always clone received `options` object as native `couchbase` sdk does not do that and we need to be sure options objects are not shared and mutated between individual operations
 * [REMOVED] unused `debug` module dependency
 * [BUGFIX] updated `bluebird` module dependency
