@@ -39,6 +39,9 @@
         "children": {
             "8.1.0-to-2.0": {
                 "title": "Upgrading from 1.0 to 2.0"
+            },
+            "8.2.x-to-3.x": {
+                "title": "Upgrading from 2.x to 3.x"
             }
         }
     }
