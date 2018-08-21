@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Tutorial: Views (next minor release)</title>
+    <title>Tutorial: Upgrading from 2.x to 3.x</title>
     
     
     
@@ -855,11 +855,58 @@
 <header>
     
 
-    <h2>Views (next minor release)</h2>
+    <h2>Upgrading from 2.x to 3.x</h2>
 </header>  
 
 <article>
-    
+    <p>The main reason behind the new major release is shift to <code>json-schema</code> model definitions as described by <a href="http://json-schema.org/">json schema specification</a><br>The <code>json-schema</code> support is provided by <a href="https://github.com/epoberezkin/ajv">Ajv</a> library which comes with other features like extended validation support, dynamic defaults etc.. see <code>ajv</code> API for more details.  </p>
+<p><strong>Why?</strong><br>It allows model schemas to be further integrated with your REST APIs. Unified schema definitions throughout your service implementations make it easier for interfaces to be implemented and documentation to be auto-generated.<br>It reduces the complexity of your code by getting rid of the proprietary and somewhat limited schema format.  </p>
+<hr>
+<p>Note that in the time of <code>v3</code> release, <code>v3</code> includes numerous bugfixes which have not been backported to <code>v2</code>.<br>For full list of changes, please see the <a href="https://github.com/fogine/couchbase-odm/blob/master/CHANGELOG.md">CHANGELOG</a>  </p>
+<p>The following is description of breaking changes:  </p>
+<h2>All models` schemas must be updated</h2><p>From:</p>
+<pre class="prettyprint source lang-javascript"><code>{
+    type: DataType.HASH_TABLE,
+    schema: {
+        username: {
+            type: DataType.STRING,
+            allowEmptyValue: true
+        },
+        email: {
+            type: DataType.STRING
+        },
+        age: {
+            type: DataType.INT
+        },
+        apps: {
+            type: DataType.ARRAY,
+            allowEmptyValue: true,
+            schema: {
+                type: DataType.STRING
+            }
+        }
+    }
+}</code></pre><p>To:</p>
+<pre class="prettyprint source lang-javascript"><code>{
+    type: 'object',
+    required: ['email', 'age'],
+    additionalProperties: false,
+    properties: {
+        username: {type: 'string'},
+        email: {
+            type: 'string',
+            format: 'email'
+        },
+        age: {type: 'integer'},
+        apps: {
+            type: 'array',
+            items: {
+                type: 'string'
+            }
+        }
+    }
+}</code></pre><h2><code>modelInstance.update</code> method:</h2><p>The method behaves as one would expect, that is, its syntax sugar for <code>instance.setData()</code> followed by <code>instance.save()</code> ... with addition that when the operation fails, the instance data are restored to the previous state.<br>This also fixes the method design issue of <code>v2.x</code> which broke <code>beforeUpdate</code> &amp; <code>afterUpdate</code> hooks for the <code>update</code> method.</p>
+<h2><code>modelInstance.sanitize</code> method:</h2><p>does not accept any options</p>
 </article>
 
 </section>  
