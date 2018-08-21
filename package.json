@@ -1,6 +1,6 @@
 {
   "name": "kouchbase-odm",
-  "version": "3.0.0-dev.20180619",
+  "version": "3.0.0-alpha.1",
   "author": "fogine",
   "keywords": [
     "couchbase",

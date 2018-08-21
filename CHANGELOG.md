@@ -1,4 +1,4 @@
-## FUTURE
+## v3.0.0-alpha.1
 
 * [CHANGED] model option `paranoid=true` does NOT implicitly enable `timestamps` option (only `deleted_at` property is considered indstead of additional properties `created_at` & `updated_at`)
 * [ADDED] a new Model instance method `isDirty()`
