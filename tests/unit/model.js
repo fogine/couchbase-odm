@@ -1,16 +1,14 @@
-var util           = require('util');
-var _              = require("lodash");
-var Promise        = require('bluebird');
-var sinon          = require('sinon');
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var sinonChai      = require("sinon-chai");
-var couchbase      = require('couchbase').Mock;
+const util           = require('util');
+const _              = require("lodash");
+const Promise        = require('bluebird');
+const sinon          = require('sinon');
+const chai           = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const sinonChai      = require("sinon-chai");
+const couchbase      = require('couchbase').Mock;
 
-var ODM        = require('../../index.js');
-var ModelError = require('../../lib/error/modelError.js')
-
-var DataTypes = ODM.DataTypes;
+const ODM        = require('../../index.js');
+const ModelError = require('../../lib/error/modelError.js')
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -19,38 +17,43 @@ chai.use(sinonChai);
 chai.use(chaiAsPromised);
 chai.should();
 
-var assert = sinon.assert;
-var expect = chai.expect;
+const assert = sinon.assert;
+const expect = chai.expect;
 
 describe('Model', function() {
 
     before(function() {
-        var cluster = new couchbase.Cluster();
-        var bucket = cluster.openBucket('test');
+        const cluster = new couchbase.Cluster();
+        const bucket = cluster.openBucket('test');
 
-        var odm = new ODM({bucket: bucket});
+        const odm = new ODM({bucket: bucket});
+        this.odm = odm;
 
         this.modelManager = odm.modelManager;
         this.buildModel = function(name, schema, options) {
             options = _.merge({}, odm.options, options || {});
-            var model = new ODM.Model(name, schema, options);
+            const model = new ODM.Model(name, schema, options);
             return model;
         };
     });
 
     describe('constructor', function() {
+        after(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
+
         it("should throw a ModelError when invalid model's name is provided", function() {
-            var self = this;
+            const self = this;
 
             function case1() {
                 self.buildModel('', {
-                    type: DataTypes.STRING
+                    type: 'string'
                 });
             }
 
             function case2() {
                 self.buildModel({}, {
-                    type: DataTypes.STRING
+                    type: 'string'
                 });
             }
 
@@ -59,19 +62,19 @@ describe('Model', function() {
         });
 
         it("should throw a ModelError when we don't provide valid `options.key` option", function() {
-            var self = this;
+            const self = this;
 
             function case1() {
                 self.buildModel('name', {
-                    type: DataTypes.STRING
+                    type: 'string'
                 }, {
                     key: function() {}
                 });
             }
 
             function case2() {
-                self.buildModel('name', {
-                    type: DataTypes.STRING
+                self.buildModel('name2', {
+                    type: 'string'
                 }, {
                     key: {}
                 });
@@ -82,118 +85,119 @@ describe('Model', function() {
         });
     });
 
-    describe('$init', function() {
+    describe('_init', function() {
+        afterEach(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
+
         it('should add internal properties to schema if "root" data type is object and if a property is not disabled by option set', function() {
-            var model1 = this.buildModel('Test1', {
-                type: DataTypes.HASH_TABLE
+            const model1 = this.buildModel('Test1', {
+                type: 'object'
             }, {timestamps: true});
 
-            var model2 = this.buildModel('Test1a', {
-                type: DataTypes.HASH_TABLE
+            const model2 = this.buildModel('Test1a', {
+                type: 'object'
             }, {paranoid: true, timestamps:false});
 
-            var model3 = this.buildModel('Test1b', {
-                type: DataTypes.HASH_TABLE
+            const model3 = this.buildModel('Test1b', {
+                type: 'object'
             }, {camelCase: true});
 
-            var model4 = this.buildModel('Test1c', {
-                type: DataTypes.HASH_TABLE
+            const model4 = this.buildModel('Test1c', {
+                type: 'object'
             }, {camelCase: true, paranoid: true});
 
-            var model5 = this.buildModel('Test1d', {
-                type: DataTypes.HASH_TABLE
+            const model5 = this.buildModel('Test1d', {
+                type: 'object'
             }, {timestamps: false});
 
-            model1.$init(this.modelManager);
-            model2.$init(this.modelManager);
-            model3.$init(this.modelManager);
-            model4.$init(this.modelManager);
-            model5.$init(this.modelManager);
+            model1._init(this.modelManager);
+            model2._init(this.modelManager);
+            model3._init(this.modelManager);
+            model4._init(this.modelManager);
+            model5._init(this.modelManager);
 
-            model1.options.schema.schema.should.have.property('_id');
-            model1.options.schema.schema.should.have.property('_type');
-            model1.options.schema.schema.should.have.property('created_at');
-            model1.options.schema.schema.should.have.property('updated_at');
+            model1.options.schema.properties.should.have.property('_id');
+            model1.options.schema.properties.should.have.property('_type');
+            model1.options.schema.properties.should.have.property('created_at');
+            model1.options.schema.properties.should.have.property('updated_at');
 
-            model2.options.schema.schema.should.have.property('_id');
-            model2.options.schema.schema.should.have.property('_type');
-            model2.options.schema.schema.should.have.property('created_at');
-            model2.options.schema.schema.should.have.property('updated_at');
-            model2.options.schema.schema.should.have.property('deleted_at');
+            model2.options.schema.properties.should.have.property('_id');
+            model2.options.schema.properties.should.have.property('_type');
+            model2.options.schema.properties.should.not.have.property('created_at');
+            model2.options.schema.properties.should.not.have.property('updated_at');
+            model2.options.schema.properties.should.have.property('deleted_at');
 
-            model3.options.schema.schema.should.have.property('_id');
-            model3.options.schema.schema.should.have.property('_type');
-            model3.options.schema.schema.should.have.property('createdAt');
-            model3.options.schema.schema.should.have.property('updatedAt');
+            model3.options.schema.properties.should.have.property('_id');
+            model3.options.schema.properties.should.have.property('_type');
+            model3.options.schema.properties.should.have.property('createdAt');
+            model3.options.schema.properties.should.have.property('updatedAt');
 
-            model4.options.schema.schema.should.have.property('_id');
-            model4.options.schema.schema.should.have.property('_type');
-            model4.options.schema.schema.should.have.property('createdAt');
-            model4.options.schema.schema.should.have.property('updatedAt');
-            model4.options.schema.schema.should.have.property('deletedAt');
+            model4.options.schema.properties.should.have.property('_id');
+            model4.options.schema.properties.should.have.property('_type');
+            model4.options.schema.properties.should.have.property('createdAt');
+            model4.options.schema.properties.should.have.property('updatedAt');
+            model4.options.schema.properties.should.have.property('deletedAt');
 
-            model5.options.schema.schema.should.have.property('_id');
-            model5.options.schema.schema.should.have.property('_type');
-            model5.options.schema.schema.should.not.have.property('createdAt');
-            model5.options.schema.schema.should.not.have.property('updatedAt');
-            model5.options.schema.schema.should.not.have.property('deletedAt');
-            model5.options.schema.schema.should.not.have.property('created_at');
-            model5.options.schema.schema.should.not.have.property('updated_at');
-            model5.options.schema.schema.should.not.have.property('deleted_at');
+            model5.options.schema.properties.should.have.property('_id');
+            model5.options.schema.properties.should.have.property('_type');
+            model5.options.schema.properties.should.not.have.property('createdAt');
+            model5.options.schema.properties.should.not.have.property('updatedAt');
+            model5.options.schema.properties.should.not.have.property('deletedAt');
+            model5.options.schema.properties.should.not.have.property('created_at');
+            model5.options.schema.properties.should.not.have.property('updated_at');
+            model5.options.schema.properties.should.not.have.property('deleted_at');
         });
 
         it('should NOT add internal schema properties if "root" data type is NOT an `Object`', function() {
-            var  types = ['NUMBER', 'INT', 'FLOAT', 'ARRAY', 'STRING', 'BOOLEAN', 'DATE', 'ENUM'];
-            var self = this;
+            const  types = ['number', 'integer', 'array', 'string', 'boolean', 'null'];
+            const self = this;
 
             types.forEach(function(type, index) {
-                var schema = {
-                    type: DataTypes[type]
+                const schema = {
+                    type: type
                 };
-                if (type === 'ENUM') {
-                    schema.enum = [];
-                }
 
-                var model = self.buildModel('Test2' + index, schema, {timestamps: true});
+                const model = self.buildModel('Test2' + index, schema, {timestamps: true});
 
-                model.$init(self.modelManager);
+                model._init(self.modelManager);
 
-                if (model.options.schema.schema) {
-                    model.options.schema.schema.should.not.have.property('createdAt');
-                    model.options.schema.schema.should.not.have.property('updatedAt');
-                    model.options.schema.schema.should.not.have.property('deletedAt');
-                    model.options.schema.schema.should.not.have.property('created_at');
-                    model.options.schema.schema.should.not.have.property('updated_at');
-                    model.options.schema.schema.should.not.have.property('deleted_at');
+                if (model.options.schema.properties) {
+                    model.options.schema.properties.should.not.have.property('createdAt');
+                    model.options.schema.properties.should.not.have.property('updatedAt');
+                    model.options.schema.properties.should.not.have.property('deletedAt');
+                    model.options.schema.properties.should.not.have.property('created_at');
+                    model.options.schema.properties.should.not.have.property('updated_at');
+                    model.options.schema.properties.should.not.have.property('deleted_at');
                 }
             });
         });
 
-        it('should sanitize `Model`s schema difinition', function() {
-            var model = this.buildModel('Test3', {
-                type: DataTypes.HASH_TABLE
+        it('should register `Model`s schema difinition with Ajv validator', function() {
+            const model = this.buildModel('Test3', {
+                type: 'object'
             }, {});
 
-            var stub = sinon.stub(ODM.SchemaSanitizer, 'sanitize');
-            model.$init(this.modelManager);
+            const stub = sinon.stub(ODM.Model.validator, 'addSchema');
+            model._init(this.modelManager);
 
-            stub.should.have.been.calledOnce;
-            stub.should.have.been.calledWith(model.options.schema);
+            stub.should.have.been.calledThrice;
+            stub.getCall(0).should.have.been.calledWith(model.options.schema, model.name);
             stub.restore();//important!
         });
 
         it('should fail the initialization if defined `options.key` constructor does not expose valid `dataType` property', function() {
-            var self = this;
+            const self = this;
             function KeyMock() {}
             KeyMock.prototype = Object.create(ODM.Key.prototype);
             KeyMock.prototype.constructor = KeyMock;
 
-            var model = this.buildModel('Test4', {
-                type: DataTypes.HASH_TABLE
+            const model = this.buildModel('Test4', {
+                type: 'object'
             }, {key: KeyMock});
 
             function init() {
-                model.$init(self.modelManager);
+                model._init(self.modelManager);
             }
 
             expect(init).to.throw(ODM.errors.ModelError);
@@ -201,17 +205,17 @@ describe('Model', function() {
 
         it('should add defined `classMethods` to the Model', function() {
 
-            var classMethodSpy = sinon.spy(getAndHash);
+            const classMethodSpy = sinon.spy(getAndHash);
 
-            var model = this.buildModel('Test5', {
-                type: DataTypes.STRING
+            const model = this.buildModel('Test5', {
+                type: 'string'
             }, {
                 classMethods: {
                     getAndHash: classMethodSpy
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             model.should.have.property('getAndHash').that.is.a('function');
             model.getAndHash();
@@ -223,21 +227,21 @@ describe('Model', function() {
 
         it('should add defined `instanceMethods` to Instance prototype', function() {
 
-            var instanceMethodSpy = sinon.spy(function() {
+            const instanceMethodSpy = sinon.spy(function() {
                 this.should.be.instanceof(ODM.Instance);
             });
 
-            var model = this.buildModel('Test6', {
-                type: DataTypes.STRING
+            const model = this.buildModel('Test6', {
+                type: 'string'
             }, {
                 instanceMethods: {
                     hash: instanceMethodSpy
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var instance = model.build('sometext');
+            const instance = model.build('sometext');
 
             instance.should.have.property('hash').that.is.a('function');
             instance.hash();
@@ -245,21 +249,21 @@ describe('Model', function() {
         });
 
         it('should allow to override already defined `classMethods`', function() {
-            var classMethodSpy = sinon.spy(function(originalMethod) {
+            const classMethodSpy = sinon.spy(function(originalMethod) {
                 originalMethod();
             });
 
-            var model = this.buildModel('Test5', {
-                type: DataTypes.STRING
+            const model = this.buildModel('Test5', {
+                type: 'string'
             }, {
                 classMethods: {
                     getById: classMethodSpy
                 }
             });
 
-            var getByIdStub = sinon.stub(model, 'getById');
+            const getByIdStub = sinon.stub(model, 'getById');
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             model.should.have.property('getById').that.is.a('function');
             model.getById();
@@ -272,23 +276,23 @@ describe('Model', function() {
         });
 
         it('should allow to override already defined `instanceMethods`', function() {
-            var instanceMethodSpy = sinon.spy(function(originalMethod) {
+            const instanceMethodSpy = sinon.spy(function(originalMethod) {
                 originalMethod();
             });
 
-            var model = this.buildModel('Test5', {
-                type: DataTypes.STRING
+            const model = this.buildModel('Test5', {
+                type: 'string'
             }, {
                 instanceMethods: {
                     save: instanceMethodSpy
                 }
             });
 
-            var saveStub = sinon.stub(ODM.Instance.prototype, 'save');
+            const saveStub = sinon.stub(ODM.Instance.prototype, 'save');
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var instance = model.build('test');
+            const instance = model.build('test');
 
             instance.should.have.property('save').that.is.a('function');
             instance.save();
@@ -305,12 +309,12 @@ describe('Model', function() {
             //won't have the save method overriden,
             //it should be only Model specific
 
-            var model2 = this.buildModel('Test20', {
-                type: DataTypes.STRING
+            const model2 = this.buildModel('Test20', {
+                type: 'string'
             });
-            model2.$init(this.modelManager);
+            model2._init(this.modelManager);
 
-            var instance2 = model2.build('test2');
+            const instance2 = model2.build('test2');
             instance2.save();
 
             instanceMethodSpy.should.have.callCount(0);
@@ -319,17 +323,19 @@ describe('Model', function() {
 
         it('should attach `getByRefDoc` && `getByRefDocOrFail` methods to the Model object according to `options.indexes.refDocs` options', function() {
 
-            var model = this.buildModel('Test7', {
-                type: DataTypes.HASH_TABLE,
-                schema: {
+            const model = this.buildModel('Test7', {
+                type: 'object',
+                required: ['name', 'personalData'],
+                properties: {
                     name: {
-                        type: DataTypes.STRING
+                        type: 'string'
                     },
                     personalData: {
-                        type: DataTypes.HASH_TABLE,
-                        schema: {
+                        type: 'object',
+                        required: ['email'],
+                        properties: {
                             email: {
-                                type: DataTypes.STRING
+                                type: 'string'
                             }
                         }
                     }
@@ -344,9 +350,9 @@ describe('Model', function() {
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var stub = sinon.stub(model.storage, 'get');
+            const stub = sinon.stub(model.storage, 'get');
             //on first call it finds refdoc and returns it's value which is
             //parent document key
             stub.onFirstCall().returns(Promise.resolve({
@@ -367,7 +373,7 @@ describe('Model', function() {
 
             model.should.have.property('getByNameAndEmailOrFail').that.is.a('function');
             model.should.have.property('getByNameAndEmail').that.is.a('function');
-            var promise = model.getByNameAndEmail(['testname', 'test@test.com']);
+            const promise = model.getByNameAndEmail(['testname', 'test@test.com']);
 
             return promise.should.be.fulfilled.then(function() {
                 stub.should.have.been.calledTwice;
@@ -378,13 +384,17 @@ describe('Model', function() {
     });
 
     describe('buildKey', function() {
-        it('should accept whole `key` string in place of `id` (dynamic part of key)', function() {
-            var model = this.buildModel('Test8', {
-                type: DataTypes.STRING
-            }, {key: ODM.UUID4Key});
-            model.$init(this.modelManager);
+        after(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
 
-            var stub = sinon.stub(ODM.UUID4Key.prototype, 'parse');
+        it('should accept whole `key` string in place of `id` (dynamic part of key)', function() {
+            const model = this.buildModel('Test8', {
+                type: 'string'
+            }, {key: ODM.UUID4Key});
+            model._init(this.modelManager);
+
+            const stub = sinon.stub(ODM.UUID4Key.prototype, 'parse');
 
             var keyString = 'Test8_3e5d622e-5786-4d79-9062-b4e2b48ce541';
             var key = model.buildKey(keyString, {parse: true});
@@ -406,10 +416,11 @@ describe('Model', function() {
             util.inherits(CustomRefDocKey, ODM.RefDocKey);
 
             var modelSchema = {
-                type: DataTypes.HASH_TABLE,
-                schema: {
+                type: 'object',
+                required: ['name'],
+                properties: {
                     name: {
-                        type: DataTypes.STRING
+                        type: 'string'
                     }
                 }
             };
@@ -429,8 +440,8 @@ describe('Model', function() {
                     _.assign({refDocKey: CustomRefDocKey}, modelOptinos)
             );
 
-            this.model.$init(this.modelManager);
-            this.modelWithCustomRefDocKey.$init(this.modelManager);
+            this.model._init(this.modelManager);
+            this.modelWithCustomRefDocKey._init(this.modelManager);
 
             this.CustomRefDocKey = CustomRefDocKey;
             this.options = _.merge(
@@ -499,12 +510,12 @@ describe('Model', function() {
     describe('build', function() {
 
         it("should return new model's Instance object", function() {
-            var model = this.buildModel('BuildInstanceTestModelName', {
-                type: DataTypes.BOOLEAN
+            const model = this.buildModel('BuildInstanceTestModelName', {
+                type: 'boolean'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var instance = model.build(true);
+            const instance = model.build(true);
 
             instance.should.be.an.instanceof(model.Instance);
         });
@@ -512,9 +523,9 @@ describe('Model', function() {
         describe('`sanitize` option', function() {
             before(function() {
                 this.model = this.buildModel('Test9', {
-                    type: DataTypes.BOOLEAN
+                    type: 'boolean'
                 });
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
 
                 this.sanitizeSpy = sinon.spy(this.model.Instance.prototype, 'sanitize');
             });
@@ -524,6 +535,7 @@ describe('Model', function() {
             });
 
             after(function() {
+                this.odm.Model.validator.removeSchema(/.*/);
                 this.sanitizeSpy.restore();
             });
 
@@ -553,69 +565,64 @@ describe('Model', function() {
         describe('default Instance values', function() {
             before(function() {
                 this.ownerModel = this.buildModel('Owner', {
-                    type: DataTypes.STRING
+                    type: 'string'
                 });
                 this.modelManager.add(this.ownerModel);
-                this.ownerModel.$init(this.modelManager);
+                this.ownerModel._init(this.modelManager);
 
                 this.model = this.buildModel('Car', {
-                    type: DataTypes.HASH_TABLE,
-                    schema: {
+                    type: 'object',
+                    required: ['color', 'owner', 'dimensions', 'accessTypes'],
+                    properties: {
                         color: {
-                            type: DataTypes.STRING,
+                            type: 'string',
                             default: 'black'
                         },
-                        brand: {
-                            type: DataTypes.STRING,
-                            allowEmptyValue: true
-                        },
+                        brand: { type: 'string' },
                         owner: {
-                            type: DataTypes.COMPLEX('Owner'),
-                            default: this.ownerModel.build('David')
+                            type: 'object',
+                            relation: {type: 'Owner'}
                         },
                         dimensions: {
-                            type: DataTypes.HASH_TABLE,
-                            schema: {
+                            type: 'object',
+                            default: {},
+                            properties: {
                                 height: {
-                                    type: DataTypes.INT,
+                                    type: 'integer',
                                     default: 170
                                 },
                                 width: {
-                                    type: DataTypes.INT,
+                                    type: 'integer',
                                     default: 300
                                 },
-                                length: {
-                                    type: DataTypes.INT,
-                                    allowEmptyValue: true
-                                },
+                                length: { type: 'integer' },
                             }
                         },
                         accessTypes: {
-                            type: DataTypes.ARRAY,
+                            type: 'array',
                             default: ['ground', 'air', 'space']
                         },
                         apps: {
-                            type: DataTypes.ARRAY,
-                            allowEmptyValue: true,
-                            schema: {
-                                type: DataTypes.STRING,
-                                default: 'app_name'
+                            type: 'array',
+                            items: {
+                                type: 'string'
                             }
                         }
                     }
                 });
 
                 this.modelManager.add(this.model);
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
             });
 
             after(function() {
                 this.modelManager.models = {};
+                this.odm.Model.validator.removeSchema(/.*/);
             });
 
             it('should assign default values to properties with undefined values', function() {
-                var instance = this.model.build();
-                var data = instance.getData();
+                const instance = this.model.build();
+                const data = instance.getData();
 
                 data.should.have.property('color', 'black');
                 data.should.have.property('dimensions').that.is.eql({
@@ -625,15 +632,25 @@ describe('Model', function() {
                 data.should.have.property('accessTypes').that.is.eql([
                         'ground', 'air', 'space'
                 ]);
-                data.should.have.property('owner').that.is.instanceof(this.ownerModel.Instance);
             });
 
-            it('should assign default values to properties with null values', function() {
-                var instance = this.model.build({
+            it('should NOT assign default values to properties with null values', function() {
+                const instance = this.model.build({
                     color: null,
                     dimensions: null,
                 });
-                var data = instance.getData();
+                const data = instance.getData();
+
+                data.should.have.property('color', null);
+                data.should.have.property('dimensions', null);
+            });
+
+            it('should assign default values to properties with undefined values', function() {
+                const instance = this.model.build({
+                    color: undefined,
+                    dimensions: undefined,
+                });
+                const data = instance.getData();
 
                 data.should.have.property('color', 'black');
                 data.should.have.property('dimensions').that.is.eql({
@@ -642,16 +659,8 @@ describe('Model', function() {
                 });
             });
 
-            it('should assign cloned default owner instance object', function() {
-                var instance = this.model.build();
-                var data = instance.getData();
-
-                data.should.have.property('owner').that.is.not.equal(this.model.defaults.owner);
-                data.owner.getData().should.be.equal(this.model.defaults.owner.getData());
-            });
-
             it('(default values) should not overwrite provided instance data values', function() {
-                var instance = this.model.build({
+                const instance = this.model.build({
                     accessTypes: ['ground'],
                     dimensions: {
                         length: 350,
@@ -659,7 +668,7 @@ describe('Model', function() {
                     },
                     color: 'red'
                 });
-                var data = instance.getData();
+                const data = instance.getData();
 
                 data.should.have.property('color', 'red');
                 data.should.have.property('dimensions').that.is.eql({
@@ -671,53 +680,57 @@ describe('Model', function() {
             });
 
             it('should not assign default value to the `apps` collection', function() {
-                var instance = this.model.build({});
-                var data = instance.getData();
+                const instance = this.model.build({});
+                const data = instance.getData();
 
-                data.should.have.property('apps', undefined);
+                data.should.not.have.property('apps');
             });
         });
     });
 
     describe('create', function() {
-        it('should return fulfilled promise with persisted instance', function() {
-            var model = this.buildModel('Test9', {
-                type: DataTypes.INT
-            });
-            model.$init(this.modelManager);
-            var saveStub = sinon.stub(model.Instance.prototype, 'save').returns(Promise.resolve());
+        afterEach(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
 
-            var promise = model.create(5);
+        it('should return fulfilled promise with persisted instance', function() {
+            const model = this.buildModel('Test9', {
+                type: 'integer'
+            });
+            model._init(this.modelManager);
+            const saveStub = sinon.stub(model.Instance.prototype, 'save').returns(Promise.resolve());
+
+            const promise = model.create(5);
             return promise.should.have.been.fulfilled.then(function(instance) {
                 instance.should.have.been.an.instanceof(model.Instance);
             });
         });
 
         it('should allow to define a `Key` object under which document should be created', function() {
-            var model = this.buildModel('Test11', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test11', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
-            var insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
+            model._init(this.modelManager);
+            const insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
 
-            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
 
-            var promise = model.create(5, {key: key});
+            const promise = model.create(5, {key: key});
             return promise.should.have.been.fulfilled.then(function(instance) {
                 insertStub.should.have.been.calledWith(key);
             });
         });
 
         it('should allow to define an `id` string value a document should be saved with', function() {
-            var model = this.buildModel('Test11', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test11', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
-            var insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
+            model._init(this.modelManager);
+            const insertStub = sinon.stub(model.storage, 'insert').returns(Promise.resolve({}));
 
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
 
-            var promise = model.create(5, {key: id});
+            const promise = model.create(5, {key: id});
             return promise.should.have.been.fulfilled.then(function(instance) {
                 expect(insertStub.args[0][0]).to.be.an.instanceof(model.Key);
                 expect(insertStub.args[0][0].getId()).to.be.equal(id);
@@ -730,7 +743,7 @@ describe('Model', function() {
 
             before(function() {
                 this.model = this.buildModel('Test10', {
-                    type: DataTypes.HASH_TABLE
+                    type: 'object'
                 }, {
                     indexes: {
                         refDocs: {
@@ -740,15 +753,16 @@ describe('Model', function() {
                         }
                     }
                 });
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
             });
 
             after(function() {
                 delete this.model;
+                this.odm.Model.validator.removeSchema(/.*/);
             });
 
             beforeEach(function() {
-                var doc = {
+                const doc = {
                     cas: '12312312',
                     value: {
                         _id: '3e5d622e-5786-4d79-9062-b4e2b48ce541',
@@ -771,9 +785,9 @@ describe('Model', function() {
             });
 
             it('should accept instance of `Key` in place of `id` string (dynamic part of key)', function() {
-                var self = this;
-                var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-                var promise = this.model.getByIdOrFail(key);
+                const self = this;
+                const key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
+                const promise = this.model.getByIdOrFail(key);
 
                 return promise.should.be.fulfilled.then(function(){
                     self.getStub.should.have.been.calledOnce;
@@ -782,8 +796,8 @@ describe('Model', function() {
             });
 
             it('should return resolved Promise with raw data from bucket if method`s `options.plain` option is set', function() {
-                var self = this;
-                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
+                const self = this;
+                const promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
                     plain:true
                 });
 
@@ -795,20 +809,20 @@ describe('Model', function() {
             });
 
             it('should run defined `beforeGet` and `afterGet` hooks before and after `get` operation', function() {
-                var self = this;
+                const self = this;
 
-                var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
+                const hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
 
-                var options = {
+                const options = {
                     hooks: true,
                     paranoid: false
                 };
 
-                var optionsMatcher = sinon.match(function(opt) {
+                const optionsMatcher = sinon.match(function(opt) {
                     return opt.hooks === true && opt.paranoid === false;
                 });
 
-                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', options);
+                const promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', options);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.been.calledOnce;
@@ -830,10 +844,10 @@ describe('Model', function() {
             });
 
             it('should call `getAndLock` instead of `get` if `options.lockTime` is set', function() {
-                var self = this;
-                var opt = { lockTime: 15 };
-                var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-                var promise = this.model.getByIdOrFail(key, opt);
+                const self = this;
+                const opt = { lockTime: 15 };
+                const key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
+                const promise = this.model.getByIdOrFail(key, opt);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.callCount(0);
@@ -843,9 +857,9 @@ describe('Model', function() {
             });
 
             it('should call `touch` method for every ref docs if `options.expiry` option is set', function() {
-                var self = this;
-                var opt = { expiry: 3600 };
-                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', opt);
+                const self = this;
+                const opt = { expiry: 3600 };
+                const promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', opt);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.callCount(0);
@@ -855,10 +869,10 @@ describe('Model', function() {
             });
 
             it('should call `getAndTouch` method on instance if `options.expiry` options is set', function() {
-                var self = this;
-                var opt = { expiry: 31 };
-                var key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
-                var promise = this.model.getByIdOrFail(key, opt);
+                const self = this;
+                const opt = { expiry: 31 };
+                const key = this.model.buildKey('3e5d622e-5786-4d79-9062-b4e2b48ce541');
+                const promise = this.model.getByIdOrFail(key, opt);
 
                 return promise.should.be.fulfilled.then(function(doc){
                     self.getStub.should.have.callCount(0);
@@ -868,11 +882,11 @@ describe('Model', function() {
             });
 
             it('should NOT run hooks if `options.hooks` is false', function() {
-                var self = this;
+                const self = this;
 
-                var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
+                const hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
 
-                var promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
+                const promise = this.model.getByIdOrFail('3e5d622e-5786-4d79-9062-b4e2b48ce541', {
                     hooks: false
                 });
 
@@ -886,15 +900,15 @@ describe('Model', function() {
         describe('performs queries to mocked couchbase version', function() {
 
             before(function() {
-                var self = this;
+                const self = this;
 
                 this.model = this.buildModel('Test20', {
-                    type: DataTypes.HASH_TABLE
+                    type: 'object'
                 }, {
                     paranoid:true,
                     timestamps: true,
                 });
-                this.model.$init(this.modelManager);
+                this.model._init(this.modelManager);
 
                 return this.model.create({some: 'data'}).then(function(doc) {
                     self.doc = doc;
@@ -905,10 +919,11 @@ describe('Model', function() {
             after(function() {
                 delete this.model;
                 delete this.doc;
+                this.odm.Model.validator.removeSchema(/.*/);
             });
 
             it('should NOT call the `getAndLock` method if the `lockTime` option is set AND the relevant document IS soft-deleted', function() {
-                var getAndLockSpy = sinon.spy(this.model.storage, 'getAndLock');
+                const getAndLockSpy = sinon.spy(this.model.storage, 'getAndLock');
                 return this.model.getByIdOrFail(this.doc.getKey(), {lockTime: 20})
                     .should.be.rejected.then(function() {
                         getAndLockSpy.should.have.callCount(0);
@@ -917,7 +932,7 @@ describe('Model', function() {
             });
 
             it('should NOT call the `getAndTouch` method if the `expiry` option is set AND the relevant document IS soft-deleted', function() {
-                var getAndTouchSpy = sinon.spy(this.model.storage, 'getAndTouch');
+                const getAndTouchSpy = sinon.spy(this.model.storage, 'getAndTouch');
                 return this.model.getByIdOrFail(this.doc.getKey(), {expiry: 1000})
                     .should.be.rejected.then(function() {
                         getAndTouchSpy.should.have.callCount(0);
@@ -934,7 +949,7 @@ describe('Model', function() {
             });
 
             it('should return fulfilled promise with soft-deleted document if `getByIdOrFail` method\'s `options.paranoid===false`', function() {
-                var self = this;
+                const self = this;
 
                 return this.model.getByIdOrFail(this.doc.getKey(), {paranoid:false})
                     .should.be.fulfilled.then(function(doc) {
@@ -954,15 +969,15 @@ describe('Model', function() {
 
     describe('getById', function() {
         before(function() {
-            var self = this;
+            const self = this;
 
             this.model = this.buildModel('Test20', {
-                type: DataTypes.HASH_TABLE
+                type: 'object'
             }, {
                 paranoid:true,
                 timestamps: true,
             });
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
 
             return this.model.create({some: 'data'}).then(function(doc) {
                 self.doc = doc;
@@ -973,6 +988,7 @@ describe('Model', function() {
         after(function() {
             delete this.model;
             delete this.doc;
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should return resolved promise with `null` if model\'s `options.paranoid` option === true and a document is soft-deleted', function() {
@@ -984,10 +1000,10 @@ describe('Model', function() {
         });
 
         it('should return rejected promise with a `StorageError`', function() {
-            var error = new ODM.errors.StorageError('getById test error');
+            const error = new ODM.errors.StorageError('getById test error');
             error.code = ODM.StorageAdapter.errorCodes.connectError;
 
-            var getStub = sinon.stub(ODM.StorageAdapter.prototype, 'get');
+            const getStub = sinon.stub(ODM.StorageAdapter.prototype, 'get');
             getStub.rejects(error);
 
             return this.model.getById('c72714e3-f540-499b-be1c-9d1ab8c991b0')
@@ -1001,14 +1017,14 @@ describe('Model', function() {
     describe('getMulti', function() {
         before(function() {
             this.model = this.buildModel('Test11', {
-                type: DataTypes.STRING
+                type: 'string'
             }, {});
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
         });
 
         beforeEach(function() {
 
-            var doc = {
+            const doc = {
                 cas: '12312312',
                 value: 'testvalue'
             }
@@ -1022,15 +1038,16 @@ describe('Model', function() {
 
         after(function() {
             delete this.model;
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it("should return fulfilled promise with data object containing indexed list of results by document's id (indexed=true)", function() {
-            var self = this;
-            var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
-            var id = '35854458-4b27-4433-8a38-df2ea405e067';
+            const self = this;
+            const key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
+            const id = '35854458-4b27-4433-8a38-df2ea405e067';
 
-            var pool = [key, id];
-            var promise = this.model.getMulti(pool);
+            const pool = [key, id];
+            const promise = this.model.getMulti(pool);
 
             return promise.should.be.fulfilled.then(function(results) {
                 self.getStub.should.have.been.calledTwice;
@@ -1046,12 +1063,12 @@ describe('Model', function() {
         });
 
         it('should return fulfilled promise with data object containing collection of results (indexed=false)', function() {
-            var self = this;
-            var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
-            var id = '35854458-4b27-4433-8a38-df2ea405e067';
+            const self = this;
+            const key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
+            const id = '35854458-4b27-4433-8a38-df2ea405e067';
 
-            var pool = [key, id];
-            var promise = this.model.getMulti(pool, {indexed: false});
+            const pool = [key, id];
+            const promise = this.model.getMulti(pool, {indexed: false});
 
             return promise.should.be.fulfilled.then(function(results) {
                 self.getStub.should.have.been.calledTwice;
@@ -1069,21 +1086,21 @@ describe('Model', function() {
         });
 
         it('should include catched errors in place of otherwise resolved values in resolved map object', function() {
-            var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
-            var id = '35854458-4b27-4433-8a38-df2ea405e067';
+            const key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
+            const id = '35854458-4b27-4433-8a38-df2ea405e067';
 
-            var keyNotFoundErr = new ODM.errors.StorageError('Key was not found ');
+            const keyNotFoundErr = new ODM.errors.StorageError('Key was not found ');
             keyNotFoundErr.code = ODM.StorageAdapter.errorCodes.keyNotFound;
 
-            var networkErr = new ODM.errors.StorageError('Network error');
+            const networkErr = new ODM.errors.StorageError('Network error');
             networkErr.code = ODM.StorageAdapter.errorCodes.networkError;
 
             this.getStub.onFirstCall().rejects(keyNotFoundErr);
             this.getStub.onSecondCall().rejects(networkErr);
-            var pool = [key, id];
-            var promise = this.model.getMulti(pool);
+            const pool = [key, id];
+            const promise = this.model.getMulti(pool);
 
-            var expectedOutput = {
+            const expectedOutput = {
                 data: {},
                 failed: [key.getId(), id],
                 resolved: []
@@ -1095,14 +1112,14 @@ describe('Model', function() {
         });
 
         it('should run hooks only once per `getMulti` operation if `options.individualHooks` option is not set', function() {
-            var self = this;
-            var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
-            var id = '35854458-4b27-4433-8a38-df2ea405e067';
-            var pool = [key, id];
+            const self = this;
+            const key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
+            const id = '35854458-4b27-4433-8a38-df2ea405e067';
+            const pool = [key, id];
 
-            var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
+            const hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
 
-            var promise = this.model.getMulti(pool, {individualHooks: false});
+            const promise = this.model.getMulti(pool, {individualHooks: false});
 
             return promise.should.be.fulfilled.then(function(results){
                 hookStub.should.have.callCount(2);
@@ -1111,14 +1128,14 @@ describe('Model', function() {
         });
 
         it('should run hooks for each get request if `options.individualHooks` is true', function() {
-            var self = this;
-            var key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
-            var id = '35854458-4b27-4433-8a38-df2ea405e067';
-            var pool = [key, id];
+            const self = this;
+            const key = this.model.buildKey('090d4df4-e5f7-4dda-8e78-1fe3e4c5156a');
+            const id = '35854458-4b27-4433-8a38-df2ea405e067';
+            const pool = [key, id];
 
-            var hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
+            const hookStub = sinon.stub(this.model, 'runHooks').returns(Promise.resolve());
 
-            var promise = this.model.getMulti(pool, {individualHooks: true});
+            const promise = this.model.getMulti(pool, {individualHooks: true});
 
             return promise.should.be.fulfilled.then(function(results){
                 hookStub.should.have.callCount(4);
@@ -1130,9 +1147,9 @@ describe('Model', function() {
     describe('remove', function() {
         before(function() {
             this.model = this.buildModel('Test12', {
-                type: DataTypes.INT
+                type: 'integer'
             });
-            this.model.$init(this.modelManager);
+            this.model._init(this.modelManager);
 
             this.getByIdStub = sinon.stub(ODM.Model.prototype, 'getByIdOrFail');
         });
@@ -1143,18 +1160,19 @@ describe('Model', function() {
 
         after(function() {
             this.getByIdStub.restore();
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         it('should find a document which should be removed and then call `destroy` method on the instance object', function() {
 
-            var self = this;
-            var instance = this.model.build(5);
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            const self = this;
+            const instance = this.model.build(5);
+            const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
 
             this.getByIdStub.returns(Promise.resolve(instance));
-            var destroyStub = sinon.stub(this.model.Instance.prototype, 'destroy').returns(instance);
+            const destroyStub = sinon.stub(this.model.Instance.prototype, 'destroy').returns(instance);
 
-            var promise = this.model.remove(id);
+            const promise = this.model.remove(id);
 
             return promise.should.have.been.fulfilled.then(function(instanceObject) {
                 self.getByIdStub.should.have.been.calledWith(id);
@@ -1165,29 +1183,33 @@ describe('Model', function() {
         });
 
         it('should return rejected promise with a `StorageError` when there is no such document in a bucket', function() {
-            var keyNotFoundErr = new ODM.errors.StorageError('key not found test error');
+            const keyNotFoundErr = new ODM.errors.StorageError('key not found test error');
             keyNotFoundErr.code = ODM.StorageAdapter.errorCodes.keyNotFound;
 
             this.getByIdStub.rejects(keyNotFoundErr);
-            var promise = this.model.remove('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            const promise = this.model.remove('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
 
             return promise.should.be.rejectedWith(keyNotFoundErr);
         });
     });
 
     describe('touch', function() {
+        after(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
+
         it('should call `StorageAdapter.touch` method with provided `Key` object and other options', function() {
-            var model = this.buildModel('Test13', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test13', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
-            var expiry = 50;
+            const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            const expiry = 50;
 
-            var touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
+            const touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
 
-            var promise = model.touch(key, expiry);
+            const promise = model.touch(key, expiry);
 
             return promise.should.have.been.fulfilled.then(function() {
                 touchStub.should.have.been.calledWithExactly(key, expiry);
@@ -1196,19 +1218,19 @@ describe('Model', function() {
         });
 
         it('should allow to provide an `id` value instead of whole `Key` object', function() {
-            var model = this.buildModel('Test14', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test14', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
 
-            var touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
+            const touchStub = sinon.stub(model.storage, 'touch').returns(Promise.resolve({}));
 
-            var promise = model.touch(id);
+            const promise = model.touch(id);
 
             return promise.should.have.been.fulfilled.then(function() {
-                var keyArg = touchStub.args[0][0];
+                const keyArg = touchStub.args[0][0];
                 keyArg.should.be.an.instanceof(model.Key);
                 keyArg.getId().should.be.equal(id);
                 touchStub.should.have.been.calledOnce;
@@ -1217,18 +1239,22 @@ describe('Model', function() {
     });
 
     describe('unlock', function() {
+        after(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
+
         it('should call `StorageAdapter.unlock` method with provided `Key` object', function() {
-            var model = this.buildModel('Test15', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test15', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
-            var cas = '12345';
+            const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            const cas = '12345';
 
-            var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
+            const unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
 
-            var promise = model.unlock(key, cas);
+            const promise = model.unlock(key, cas);
 
             return promise.should.have.been.fulfilled.then(function() {
                 unlockStub.should.have.been.calledWith(key, cas);
@@ -1237,20 +1263,20 @@ describe('Model', function() {
         });
 
         it('should allow to provide an `id` value instead of whole `Key` object', function() {
-            var model = this.buildModel('Test16', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test16', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
-            var cas = '123';
+            const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            const cas = '123';
 
-            var unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
+            const unlockStub = sinon.stub(model.storage, 'unlock').returns(Promise.resolve({}));
 
-            var promise = model.unlock(id, cas);
+            const promise = model.unlock(id, cas);
 
             return promise.should.have.been.fulfilled.then(function() {
-                var keyArg = unlockStub.args[0][0];
+                const keyArg = unlockStub.args[0][0];
                 unlockStub.should.have.been.calledOnce;
                 unlockStub.should.have.been.calledWith(
                     sinon.match.instanceOf(model.Key),
@@ -1262,17 +1288,21 @@ describe('Model', function() {
     });
 
     describe('exists', function() {
+        after(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
+
         it('should call `StorageAdapter.exists` method with provided `Key` object', function() {
-            var model = this.buildModel('Test17', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test17', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
+            const key = model.buildKey('4f1d7ac5-7555-43cc-8699-5e5efa23cd68');
 
-            var existsStub = sinon.stub(model.storage, 'exists').returns(Promise.resolve({}));
+            const existsStub = sinon.stub(model.storage, 'exists').returns(Promise.resolve({}));
 
-            var promise = model.exists(key);
+            const promise = model.exists(key);
 
             return promise.should.have.been.fulfilled.then(function() {
                 existsStub.should.have.been.calledWith(key);
@@ -1281,19 +1311,19 @@ describe('Model', function() {
         });
 
         it('should allow to provide an `id` value instead of whole `Key` object', function() {
-            var model = this.buildModel('Test18', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test18', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
-            var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+            const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
 
-            var existsStub = sinon.stub(model.storage, 'exists').returns(Promise.resolve({}));
+            const existsStub = sinon.stub(model.storage, 'exists').returns(Promise.resolve({}));
 
-            var promise = model.exists(id);
+            const promise = model.exists(id);
 
             return promise.should.have.been.fulfilled.then(function() {
-                var keyArg = existsStub.args[0][0];
+                const keyArg = existsStub.args[0][0];
                 keyArg.should.be.an.instanceof(model.Key);
                 keyArg.getId().should.be.equal(id);
                 existsStub.should.have.been.calledOnce;
@@ -1303,12 +1333,13 @@ describe('Model', function() {
 
     describe('getByRefDoc', function() {
         before(function() {
-            var modelName = 'Test17';
-            var model = this.buildModel(modelName, {
-                type: DataTypes.HASH_TABLE,
-                schema: {
+            const modelName = 'Test17';
+            const model = this.buildModel(modelName, {
+                type: 'object',
+                required: ['username'],
+                properties: {
                     username: {
-                        type: DataTypes.STRING
+                        type: 'string'
                     }
                 }
             }, {
@@ -1319,7 +1350,7 @@ describe('Model', function() {
                 }
             });
 
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             this.getStub = sinon.stub(model.storage, 'get');
 
@@ -1336,12 +1367,13 @@ describe('Model', function() {
             delete this.modelName;
 
             this.getStub.restore();
+            this.odm.Model.validator.removeSchema(/.*/);
         });
 
         describe('getByRefDocOrFail', function() {
             it('should return resolved promise', function() {
-                var self = this;
-                var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+                const self = this;
+                const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
                 var key = this.modelName + '_' + id;
                 var username = 'happie';
                 var expectedRefDocKey = this.modelName + '_username_' + username;
@@ -1383,7 +1415,7 @@ describe('Model', function() {
         describe('getByRefDoc (or null)', function() {
             it("should call `Model.getByIdOrFail` with correct document's key and options", function() {
 
-                var self = this;
+                const self = this;
                 var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
                 var key = this.modelName + '_' + id;
                 var username = 'happie';
@@ -1428,9 +1460,9 @@ describe('Model', function() {
             })
 
             it("should return parent's document `Key` object instead of document's data if the `lean` option is set (true)", function() {
-                var self = this;
-                var id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
-                var key = this.modelName + '_' + id;
+                const self = this;
+                const id = '4f1d7ac5-7555-43cc-8699-5e5efa23cd68';
+                const key = this.modelName + '_' + id;
 
                 //on first call it returns parent document key
                 this.getStub.onFirstCall().returns(Promise.resolve({
@@ -1444,8 +1476,8 @@ describe('Model', function() {
             });
 
             it('should return rejected promise with an Error if unexpected Error (other than keyNotFound err) occurs while getting a refDoc document', function() {
-                var self = this;
-                var error = new Error('test error');
+                const self = this;
+                const error = new Error('test error');
 
                 //on first call it returns parent document key
                 this.getStub.onFirstCall().returns(Promise.reject(error));
@@ -1456,11 +1488,15 @@ describe('Model', function() {
     });
 
     describe('toString', function() {
+        before(function() {
+            this.odm.Model.validator.removeSchema(/.*/);
+        });
+
         it('should return correctly formated string', function() {
-            var model = this.buildModel('Test21', {
-                type: DataTypes.INT
+            const model = this.buildModel('Test21', {
+                type: 'integer'
             });
-            model.$init(this.modelManager);
+            model._init(this.modelManager);
 
             model.toString().should.be.equal('[object CouchbaseModel:Test21]');
         });

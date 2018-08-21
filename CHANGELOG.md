@@ -1,12 +1,15 @@
 ## FUTURE
 
-* [BUGFIX] `DataTypes.INT` was failing with negative integer numbers
+* [CHANGED] model option `paranoid=true` does NOT implicitly enable `timestamps` option (only `deleted_at` property is considered indstead of additional properties `created_at` & `updated_at`)
+* [ADDED] a new Model instance method `isDirty()`
+* [CHANGED] dropped support for build-in custom Model schema format which has been replaced with `json-schema` validation provided by `Ajv` package
+* [CHANGED] `Instance.prototype.sanitize` does not accept any options
 * [BUGFIX] When Model's instance method was overriden with user defined function, the function was being called with incorrect context object
 * [CHANGED] `Document` methods `insert` & `replace` & `remove` & `touch` returns resolved promise with self (Document object) when operation succeeds
 * [BUGFIX] `Model.prototype.unlock` was not accepting `cas` argument thus the unlock operation could not succeed
 * [ADDED] `Instance.prototype.touch` which operates on all reference documents in addition to the main document
 * [ADDED] new public method `Instance.prototype.getRefDocs` which has been part of private API
-* [CHANGED] `Instance.prototype.update` method behaves as one would expect, that is, more or less its syntax sugar for `instance.setData()` followed by `instance.save()`. This also fixes the method design issue which broke update hooks.
+* [CHANGED] `Instance.prototype.update` method behaves as one would expect, that is, its syntax sugar for `instance.setData()` followed by `instance.save()`. This also fixes the method design issue which broke update hooks.
 * [BUGFIX] `storageAdapter` methods should always clone received `options` object as native `couchbase` sdk does not do that and we need to be sure options objects are not shared and mutated between individual operations
 * [REMOVED] unused `debug` module dependency
 * [BUGFIX] updated `bluebird` module dependency
@@ -19,7 +22,7 @@
 * [BUGFIX] the `caseSensitive`option on `Key` object was being owerwritten by `true` boolean
 * [BUGFIX] default Model's property values of Array type are cloned before they are applied to a model instance
 * [BUGFIX] the `Model.build` method should initialize instance's associations before data sanitization/validation
-* [CHANGED] `Instance.cloneData` method has been made part of private (renamed to `Instance.$cloneData`)
+* [CHANGED] `Instance.cloneData` method has been made part of private (renamed to `Instance._cloneData`)
 * [CHANGED] `Instance.destroy` & `Instance.update` methods will return rejected promise with an `InstanceError` when calling the methods on a Model instance object with no `cas` value set (the operation can be forced by the `force=true`)
 * [CHANGED] format of the second argument of the `Model.buildKey` method has changed. The method accepts `options` object instead of boolean argument
 * [CHANGED] the `afterFailedIndexRemoval` hook type is triggered not just for `StorageError` but also for any other error that occurs while removing outdated reference document indexes
@@ -31,7 +34,7 @@
 * [ADDED] support for defining default array item values in a schema definition
 * [ADDED] new `Instance.populate` method - handles loading of Model's associations
 * [ADDED] new `Model.getByIdOrFail` which returns rejected promise with `StorageError` when a document is not found in a bucket
-* [ADDED] new `Model.buildRefDocKey` method (Model's private method `$buildRefDocKey` has been updated and made public)
+* [ADDED] new `Model.buildRefDocKey` method (Model's private method `_buildRefDocKey` has been updated and made public)
 * [ADDED] new `getByRefDocOrFail` method for every defined refDoc index. The method returns rejected promise with `StorageError` when a document is not found in a bucket
 * [ADDED] new `lean` option to `Model` "getByRefDoc" methods - if true, the method returns document's `Key` object instead of fetched document's data
 * [ADDED] new `refDocKey` Model option which allows us to provide custom constructor object used for generating reference document keys
@@ -48,7 +51,7 @@
 * [BUGFIX] - `Model.getById` was throwing synchronous exeption when building of document's `Key` object failed. See #12
 * [BUGFIX] - Setting Model's association default value on schema definition property of `Complex` type was throwing unexpected `ValidationError`/`TypeError`. See #19
 * [BUGFIX] - It was not possible to update `refDoc` index of already persisted `Instance` with no index value present yet. See #15
-* [BUGFIX] - Semantic error - `Instance.update` method was trowing "Cannot read property '$buildRefDocument' of null". See #14
+* [BUGFIX] - Semantic error - `Instance.update` method was trowing "Cannot read property '_buildRefDocument' of null". See #14
 
 ## v1.0.0
 

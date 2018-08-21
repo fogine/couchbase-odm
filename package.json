@@ -1,6 +1,6 @@
 {
   "name": "kouchbase-odm",
-  "version": "3.0.0-dev.20180419",
+  "version": "3.0.0-dev.20180619",
   "author": "fogine",
   "keywords": [
     "couchbase",
@@ -13,6 +13,9 @@
     "type": "git",
     "url": "https://github.com/fogine/couchbase-odm.git"
   },
+  "engines": {
+    "node": ">=6.4.0"
+  },
   "bugs": {
     "url": "https://github.com/fogine/couchbase-odm/issues"
   },
@@ -21,18 +24,19 @@
   "scripts": {
     "unit-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/unit/**/*.js'",
     "functional-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/functional/**/*.js'",
-    "tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/**/*.js'",
+    "tests": "node --use-strict ./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/**/*.js'",
     "test": "npm run tests",
     "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json -u ./tutorials --verbose",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --ui bdd -R spec 'tests/**/*.js' -t 5000"
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "^3.4.7",
-    "couchbase": "^2.1.8",
-    "lodash": "^4.0.0",
-    "moment": "^2.13.0",
-    "node-uuid": "^1.4.7"
+    "ajv": "^6.5.1",
+    "ajv-keywords": "^3.2.0",
+    "bluebird": "^3.5.1",
+    "couchbase": "^2.4.6",
+    "lodash": "^4.17.0",
+    "node-uuid": "^1.4.8"
   },
   "devDependencies": {
     "realm-jsdoc": "0.x",

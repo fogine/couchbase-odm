@@ -1,29 +1,27 @@
-var _              = require("lodash");
-var Promise        = require('bluebird');
-var sinon          = require('sinon');
-var sinonChai      = require("sinon-chai");
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var couchbase      = require('couchbase').Mock;
+const _              = require("lodash");
+const Promise        = require('bluebird');
+const sinon          = require('sinon');
+const sinonChai      = require("sinon-chai");
+const chai           = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const couchbase      = require('couchbase').Mock;
 
-var ODM          = require('../../index.js');
+const ODM          = require('../../index.js');
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
-
-var DataTypes = ODM.DataTypes;
 
 chai.use(sinonChai);
 chai.use(chaiAsPromised);
 chai.should();
 
-var assert = sinon.assert;
-var expect = chai.expect;
+const assert = sinon.assert;
+const expect = chai.expect;
 
 describe('CouchbaseODM', function() {
     before(function() {
-        var cluster = new couchbase.Cluster();
-        var bucket = this.bucket = cluster.openBucket('functional');
+        const cluster = new couchbase.Cluster();
+        const bucket = this.bucket = cluster.openBucket('functional');
     });
 
     describe('define', function() {
@@ -33,10 +31,10 @@ describe('CouchbaseODM', function() {
 
         describe('`hooks` option', function() {
             it('should accept single hook function for given event (hook) type', function() {
-                var beforeValidateSpy = sinon.spy();
+                const beforeValidateSpy = sinon.spy();
 
-                var model = this.odm.define('Model', {
-                    type: DataTypes.STRING
+                const model = this.odm.define('Model', {
+                    type: 'string'
                 }, {
                     hooks: {
                         beforeValidate: beforeValidateSpy
@@ -50,10 +48,10 @@ describe('CouchbaseODM', function() {
 
         describe('`bucket` option', function() {
             it('should not modify provided `bucket` option value', function() {
-                var bucketBck = _.cloneDeep(this.bucket);
+                const bucketBck = _.cloneDeep(this.bucket);
 
-                var model = this.odm.define('Model2', {
-                    type: DataTypes.STRING
+                const model = this.odm.define('Model2', {
+                    type: 'string'
                 }, {
                     bucket: this.bucket
                 });
