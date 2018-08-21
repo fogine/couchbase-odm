@@ -1,22 +1,23 @@
 language: node_js
 node_js:
-- "4.2.2"
+- "6.8"
+- "8.11"
 
 # nodejs version 0.6 is not supported by official node couchbase sdk
 # nodejs 0.8 is also not supported by this package
-addons:
-    code_climate:
-        repo_token:
-            secure: "hhJPNjn6W4qrYFkzqTB1uewbm3lxI/w2HoeiBC6TA/FpKoqMl7DlHULCuZpT8aAZ9ww3ieULWS+6hbnjxWLwYqOCI+Joe5pmKHAbo12NaXtazEYr384DWXpFszTLDXU5wC9drVXaU7U3oH0ku52BzZ9vQIjInqxiheOrVUckHVJKPTkM4BBAh/16yy4HLnxsJFfAJNAVohD78jwVOO+BpjPftM/tauT6Vcy13nc3Z/5EGm1KkdmwTy3ZKBtax+b5Ingw8SjA2flm4EZmfE3rdkcvAZwg9ZNRS0SysWhE92Try7hN391w7S05Zno1vFCsqO0+QibPjza2arHHsL1476nUYUdS6NLVLXfTO9OCsQPpWW0AavwYUSZV/8f6hGROfR8QgXt8vcFjNKIeKZ2Gw7jGE4Bi28yO7FKjuEihd3I2083lpazmUK3LTB/9nTUOZYpXbSXzA9JzvWEWGJKhl8trzwETl01KIg0nMoz9UcPvJD84GE2JDLOBN0VR5wGazSMXarGIxm4UjMJFL0hnnfkCsCfgxKICaIsbpl647n1qDFw9oeCsvIIXu28tH5x89ARvFvASjVvizsnLmNj77hPx0KpHifj9W/ztfZKxXGX4gfpVxsR3nCeZIaVp/W49IogV2WDJR4o+cdkntMFKn6RaC7p3kJ9f6w1/nekcEzc="
+before_script:
+    - sudo ln -s $(which node) /bin
+    - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > /tmp/cc-test-reporter
+    - chmod +x /tmp/cc-test-reporter
 
 script:
+    - /tmp/cc-test-reporter before-build
     - npm run-script unit-tests
     - npm run-script coverage
 
-after_script:
-    - codeclimate-test-reporter < ./coverage/lcov.info
+after_success:
+    - /tmp/cc-test-reporter after-build
     - bash ./deploy.sh
-
 env:
   global:
       - ENCRYPTION_LABEL: 18374567a143

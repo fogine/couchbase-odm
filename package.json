@@ -1,7 +1,7 @@
 {
   "name": "kouchbase-odm",
-  "version": "2.0.0-rc.1",
-  "author": "fogine <fogine@opmbx.org",
+  "version": "3.0.0-alpha.1",
+  "author": "fogine",
   "keywords": [
     "couchbase",
     "odm",
@@ -9,40 +9,42 @@
     "promise",
     "n1ql"
   ],
-  "repository" : {
-      "type" : "git",
-      "url" : "https://github.com/fogine/couchbase-odm.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/fogine/couchbase-odm.git"
+  },
+  "engines": {
+    "node": ">=6.4.0"
   },
   "bugs": {
-      "url": "https://github.com/fogine/couchbase-odm/issues"
+    "url": "https://github.com/fogine/couchbase-odm/issues"
   },
   "description": "Couchbase Promise based ODM",
   "private": false,
   "scripts": {
     "unit-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/unit/**/*.js'",
     "functional-tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/functional/**/*.js'",
-    "tests": "./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/**/*.js'",
+    "tests": "node --use-strict ./node_modules/.bin/mocha --ui bdd --colors --check-leaks -t 5000 --reporter spec 'tests/**/*.js'",
     "test": "npm run tests",
     "generate-docs": "./node_modules/.bin/jsdoc --configure .jsdoc.json -u ./tutorials --verbose",
     "coverage": "./node_modules/istanbul/lib/cli.js cover ./node_modules/mocha/bin/_mocha -- --ui bdd -R spec 'tests/**/*.js' -t 5000"
   },
   "license": "MIT",
   "dependencies": {
-    "bluebird": "3.3.*",
-    "couchbase": "^2.1.8",
-    "debug": "2.2.*",
-    "lodash": "^4.0.0",
-    "moment": "^2.13.0",
-    "node-uuid": "^1.4.7"
+    "ajv": "^6.5.1",
+    "ajv-keywords": "^3.2.0",
+    "bluebird": "^3.5.1",
+    "couchbase": "^2.4.6",
+    "lodash": "^4.17.0",
+    "node-uuid": "^1.4.8"
   },
   "devDependencies": {
     "realm-jsdoc": "0.x",
     "chai": "^3.5.0",
     "chai-as-promised": "^5.3.0",
-    "codeclimate-test-reporter": "^0.3.1",
     "istanbul": "^0.4.3",
     "jsdoc": "^3.4.0",
-    "mocha": "^2.4.5",
+    "mocha": "^2.5.3",
     "sinon": "^1.17.3",
     "sinon-as-promised": "^4.0.0",
     "sinon-chai": "^2.8.0"

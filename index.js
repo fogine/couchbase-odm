@@ -16,14 +16,11 @@ var UUID4Key       = require("./lib/key/uuid4Key.js");
 var Key            = require("./lib/key/key.js");
 
 var Operation       = require("./lib/operation.js");
-var DataTypes       = require("./lib/dataType.js").types;
 var RelationTypes   = require("./lib/relationType.js");
 var Instance        = require("./lib/instance.js");
 var Document        = require("./lib/document.js");
 var Model           = require("./lib/model.js");
 var ModelManager    = require("./lib/modelManager.js");
-var SchemaSanitizer = require("./lib/sanitizer/schema.js");
-var DataSanitizer   = require("./lib/sanitizer/data.js");
 var StorageAdapter  = require("./lib/storageAdapter.js");
 var Hook            = require("./lib/hook.js");
 
@@ -132,7 +129,7 @@ CouchbaseODM.prototype.define = function(name, schema, options) {
     });
 
     var model = new Model(name, schema, options);
-    model.$init(this.modelManager);
+    model._init(this.modelManager);
 
     this.modelManager.add(model);
 
@@ -179,15 +176,12 @@ CouchbaseODM.Key             = CouchbaseODM.prototype.Key             = Key;
 CouchbaseODM.UUID4Key        = CouchbaseODM.prototype.UUID4Key        = UUID4Key;
 CouchbaseODM.IncrementalKey  = CouchbaseODM.prototype.IncrementalKey  = IncrementalKey;
 CouchbaseODM.RefDocKey       = CouchbaseODM.prototype.RefDocKey       = RefDocKey;
-CouchbaseODM.DataTypes       = CouchbaseODM.prototype.DataTypes       = DataTypes;
 CouchbaseODM.RelationTypes   = CouchbaseODM.prototype.RelationTypes   = RelationTypes;
 CouchbaseODM.Operation       = CouchbaseODM.prototype.Operation       = Operation;
 CouchbaseODM.Instance        = CouchbaseODM.prototype.Instance        = Instance;
 CouchbaseODM.Document        = CouchbaseODM.prototype.Document        = Document;
 CouchbaseODM.Model           = CouchbaseODM.prototype.Model           = Model;
 CouchbaseODM.ModelManager    = CouchbaseODM.prototype.ModelManager    = ModelManager;
-CouchbaseODM.SchemaSanitizer = CouchbaseODM.prototype.SchemaSanitizer = SchemaSanitizer;
-CouchbaseODM.DataSanitizer   = CouchbaseODM.prototype.DataSanitizer   = DataSanitizer;
 CouchbaseODM.StorageAdapter  = CouchbaseODM.prototype.StorageAdapter  = StorageAdapter;
 CouchbaseODM.Hook            = CouchbaseODM.prototype.Hook            = Hook;
 CouchbaseODM.CouchbaseODM    = CouchbaseODM.prototype.CouchbaseODM    = CouchbaseODM;
@@ -217,11 +211,6 @@ module.exports = CouchbaseODM;
  */
 
 /**
- * @name CouchbaseODM.DataTypes
- * @type DataTypes
- */
-
-/**
  * @name CouchbaseODM.Operation
  * @type Operation
  */
@@ -244,11 +233,6 @@ module.exports = CouchbaseODM;
 /**
  * @name CouchbaseODM.ModelManager
  * @type ModelManager
- */
-
-/**
- * @name CouchbaseODM.Sanitizer
- * @type Sanitizer
  */
 
 /**
@@ -289,11 +273,6 @@ module.exports = CouchbaseODM;
  */
 
 /**
- * @name CouchbaseODM.prototype.DataTypes
- * @type DataTypes
- */
-
-/**
  * @name CouchbaseODM.prototype.Operation
  * @type Operation
  */
@@ -316,11 +295,6 @@ module.exports = CouchbaseODM;
 /**
  * @name CouchbaseODM.prototype.ModelManager
  * @type ModelManager
- */
-
-/**
- * @name CouchbaseODM.prototype.Sanitizer
- * @type Sanitizer
  */
 
 /**

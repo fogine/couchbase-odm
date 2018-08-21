@@ -1,12 +1,11 @@
-var _              = require("lodash");
-var Promise        = require('bluebird');
-var sinon          = require('sinon');
-var chai           = require('chai');
-var chaiAsPromised = require('chai-as-promised');
-var sinonChai      = require("sinon-chai");
-var couchbase      = require('couchbase').Mock;
-var ODM            = require('../../index.js');
-var DataTypes      = ODM.DataTypes;
+const _              = require("lodash");
+const Promise        = require('bluebird');
+const sinon          = require('sinon');
+const chai           = require('chai');
+const chaiAsPromised = require('chai-as-promised');
+const sinonChai      = require("sinon-chai");
+const couchbase      = require('couchbase').Mock;
+const ODM            = require('../../index.js');
 
 //this makes sinon-as-promised available in sinon:
 require('sinon-as-promised');
@@ -15,20 +14,20 @@ chai.use(sinonChai);
 chai.use(chaiAsPromised);
 chai.should();
 
-var assert = sinon.assert;
-var expect = chai.expect;
+const assert = sinon.assert;
+const expect = chai.expect;
 
 describe('Model Manager', function() {
 
     before(function() {
-        var cluster = new couchbase.Cluster();
-        var bucket = cluster.openBucket('test');
+        const cluster = new couchbase.Cluster();
+        const bucket = cluster.openBucket('test');
 
-        var odm = new ODM({bucket: bucket});
+        const odm = new ODM({bucket: bucket});
 
         this.buildModel = function(name, schema, options) {
             options = _.merge({}, odm.options, options || {});
-            var model = new ODM.Model(name, schema, options);
+            const model = new ODM.Model(name, schema, options);
             return model;
         };
     });
@@ -39,9 +38,9 @@ describe('Model Manager', function() {
 
     describe('ModelManager.add', function() {
         it('should throw `ModelManagerError` if provided argument value is not instance of `Model`', function() {
-            var self = this;
+            const self = this;
 
-            var invalidValues = [
+            const invalidValues = [
                 null,
                 undefined,
                 '',
@@ -61,8 +60,8 @@ describe('Model Manager', function() {
         })
 
         it('should throw `ModelManagerError` when we try to register a model object with a name that is already used for another model', function() {
-            var self = this;
-            var model1 = this.buildModel('test1', {type: DataTypes.STRING});
+            const self = this;
+            const model1 = this.buildModel('test1', {type: 'string'});
 
             this.modelManager.add(model1);
 
@@ -74,7 +73,7 @@ describe('Model Manager', function() {
         })
 
         it('should register `Model` object', function() {
-            var model1 = this.buildModel('test1', {type: DataTypes.STRING});
+            const model1 = this.buildModel('test1', {type: 'string'});
             this.modelManager.add(model1);
 
             this.modelManager.models.should.have.property('test1').which.is.equal(model1);
@@ -83,7 +82,7 @@ describe('Model Manager', function() {
 
     describe('ModelManager.get', function() {
         it('should throw `ModelNotFoundError` when we try to get a model object with a name that is not registered', function() {
-            var self = this;
+            const self = this;
 
             function test() {
                 self.modelManager.get('test1');
@@ -93,9 +92,9 @@ describe('Model Manager', function() {
         })
 
         it('should throw `ModelManagerError` when we provide non-string argument as `name` of a model to the `get` method', function() {
-            var self = this;
+            const self = this;
 
-            var invalidValues = [
+            const invalidValues = [
                 null,
                 undefined,
                 1,
@@ -114,8 +113,8 @@ describe('Model Manager', function() {
         })
 
         it('should return the Model object', function() {
-            var self = this;
-            var model1 = this.buildModel('test1', {type: DataTypes.STRING});
+            const self = this;
+            const model1 = this.buildModel('test1', {type: 'string'});
 
             this.modelManager.add(model1);
 
@@ -125,14 +124,14 @@ describe('Model Manager', function() {
 
     describe('ModelManager.getAll', function() {
         it('should return hash table with all registered model objects', function() {
-            var self = this;
-            var model1 = this.buildModel('test1', {type: DataTypes.STRING});
-            var model2 = this.buildModel('test2', {type: DataTypes.STRING});
+            const self = this;
+            const model1 = this.buildModel('test1', {type: 'string'});
+            const model2 = this.buildModel('test2', {type: 'string'});
 
             this.modelManager.add(model1);
             this.modelManager.add(model2);
 
-            var models = this.modelManager.getAll();
+            const models = this.modelManager.getAll();
 
             models.should.have.property('test1', model1);
             models.should.have.property('test2', model2);

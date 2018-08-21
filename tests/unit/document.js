@@ -252,7 +252,8 @@ describe("Document", function() {
             return this.doc.insert(this.opt).bind(this).then(function(result) {
                 this.insert.should.have.been.calledAfter(this.keyGenerateSpy);
                 this.insert.should.have.been.calledWith(this.key, this.data, this.opt);
-                result.should.be.equal(response);
+                this.doc.getCAS().should.be.equal(response.cas);
+                result.should.be.equal(this.doc);
             });
         });
 
@@ -262,7 +263,7 @@ describe("Document", function() {
             var key = this.buildKey();
             doc.setKey(key);
 
-            this.insert.returns(Promise.reject(new StorageError));
+            this.insert.rejects(new StorageError);
             var promise = doc.insert(opt);
             return promise.should.be.rejectedWith(StorageError).then(function() {
                 return promise.catch(function(err) {
@@ -311,21 +312,23 @@ describe("Document", function() {
 
             var response = { cas: 123 };
             this.replace.returns(Promise.resolve(response));
+            var casBck = this.doc.getCAS();
 
             return this.doc.replace(this.opt).bind(this).then(function(result) {
                 this.replace.should.have.been.calledAfter(this.keyGenerateSpy);
                 this.replace.should.have.been.calledWith(
                         this.key,
                         this.data,
-                        {expiry: this.opt.expiry, cas: this.doc.getCAS()}
+                        {expiry: this.opt.expiry, cas: casBck}
                 );
-                result.should.be.equal(response);
+                result.should.be.equal(this.doc);
+                this.doc.getCAS().should.be.equal(response.cas);
             });
         });
 
         it('should assing self (document) to a `StorageError` if storageAdapter.replace is rejected', function() {
 
-            this.replace.returns(Promise.reject(new StorageError));
+            this.replace.rejects(new StorageError);
             var promise = this.doc.replace(this.opt);
             var doc = this.doc;
 
@@ -363,20 +366,22 @@ describe("Document", function() {
 
             var response = { cas: 123 };
             this.remove.returns(Promise.resolve(response));
+            var casBck = this.doc.getCAS();
 
             return this.doc.remove().bind(this).then(function(result) {
                 this.remove.should.have.been.calledAfter(this.keyGenerateSpy);
                 this.remove.should.have.been.calledWith(
                         this.key,
-                        {cas: this.doc.getCAS()}
+                        {cas: casBck}
                 );
-                result.should.be.equal(response);
+                result.should.be.equal(this.doc);
+                this.doc.getCAS().should.be.equal(response.cas);
             });
         });
 
         it('should assing self (document) to a `StorageError` if storageAdapter.remove is rejected', function() {
 
-            this.remove.returns(Promise.reject(new StorageError));
+            this.remove.rejects(new StorageError);
             var promise = this.doc.remove(this.opt);
             var doc = this.doc;
 
@@ -399,7 +404,7 @@ describe("Document", function() {
             var self = this;
 
             var error = new StorageError('test error');
-            this.touch.returns(Promise.reject(error));
+            this.touch.rejects(error);
 
             return this.doc.touch(10).should.be.rejected.then(function(error) {
                 error.should.have.property('doc').that.is.equal(self.doc);
