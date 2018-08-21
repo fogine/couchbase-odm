@@ -19,6 +19,14 @@
   "bugs": {
     "url": "https://github.com/fogine/couchbase-odm/issues"
   },
+  "files": {
+    "lib",
+    "tutorials",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "index.js"
+  },
   "description": "Couchbase Promise based ODM",
   "private": false,
   "scripts": {
