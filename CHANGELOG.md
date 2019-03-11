@@ -1,3 +1,7 @@
+## FUTURE
+
+* [FIXED] invalid `ajv` custom validation keyword definition (`ajv` started to strictly validate keyword definition objects, unfortunately it broke backward compatibility)
+
 ## v3.0.0-alpha.1
 
 * [CHANGED] model option `paranoid=true` does NOT implicitly enable `timestamps` option (only `deleted_at` property is considered indstead of additional properties `created_at` & `updated_at`)
