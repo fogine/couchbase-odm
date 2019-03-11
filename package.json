@@ -1,6 +1,6 @@
 {
   "name": "kouchbase-odm",
-  "version": "3.0.0-alpha.1",
+  "version": "3.0.0",
   "author": "fogine",
   "keywords": [
     "couchbase",
@@ -19,6 +19,14 @@
   "bugs": {
     "url": "https://github.com/fogine/couchbase-odm/issues"
   },
+  "files": [
+    "lib",
+    "tutorials",
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "index.js"
+  ],
   "description": "Couchbase Promise based ODM",
   "private": false,
   "scripts": {
@@ -31,10 +39,10 @@
   },
   "license": "MIT",
   "dependencies": {
-    "ajv": "^6.5.1",
+    "ajv": "^6.10.0",
     "ajv-keywords": "^3.2.0",
     "bluebird": "^3.5.1",
-    "couchbase": "^2.4.6",
+    "couchbase": "^2.6.3",
     "lodash": "^4.17.0",
     "node-uuid": "^1.4.8"
   },
