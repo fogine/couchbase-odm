@@ -1,4 +1,4 @@
-## FUTURE
+## v3.0.0
 
 * [FIXED] invalid `ajv` custom validation keyword definition (`ajv` started to strictly validate keyword definition objects, unfortunately it broke backward compatibility)
 
